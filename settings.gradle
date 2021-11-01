@@ -1,0 +1,5 @@
+rootProject.name = 'scala-spigot-1.8'
+include "sspigot-core"
+include 'sspigot-server'
+include 'sspigot-api'
+

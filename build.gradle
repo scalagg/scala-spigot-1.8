@@ -1,0 +1,53 @@
+plugins {
+    id "maven-publish"
+    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+allprojects {
+    group 'gg.scala'
+    version '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    task prepareKotlinBuildScriptModel {
+
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
+    }
+
+    compileKotlin {
+        kotlinOptions.javaParameters = true
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+
+        exclude "**/*.kotlin_metadata"
+        exclude "**/*.kotlin_builtins"
+        exclude "META-INF/"
+
+        archiveFileName = "Lemon.jar"
+    }
+
+    publishing {
+        publications {
+            shadow(MavenPublication) { publication ->
+                project.shadow.component(publication)
+            }
+        }
+    }
+
+    tasks.build.dependsOn(shadowJar, publishing)
+}
