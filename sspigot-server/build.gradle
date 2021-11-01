@@ -1,9 +1,43 @@
 plugins {
     id 'java'
 }
+
+repositories {
+    maven {
+        url "https://maven.elmakers.com/repository/"
+    }
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/groups/public/"
+    }
+    maven {
+        url "https://ci.destroystokyo.com/plugin/repository/everything/"
+    }
+}
+
 dependencies {
+    implementation project(":sspigot-api")
+
+    implementation "org.spigotmc:minecraft-server:1.8.8-SNAPSHOT"
+    implementation "net.sf.jopt-simple:jopt-simple:3.2"
+    implementation "jline:jline:2.12"
+    implementation "org.xerial:sqlite-jdbc:3.7.2"
+    implementation "mysql:mysql-connector-java:5.1.14"
+
+    implementation "net.jafama:jafama:2.1.0"
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+shadowJar {
+    relocate 'joptsimple', 'org.bukkit.craftbukkit.libs.joptsimple'
+    relocate 'jline', 'org.bukkit.craftbukkit.libs.jline'
+    relocate 'org.ibex', 'org.bukkit.craftbukkit.libs.org.ibex'
+    relocate 'org.gjt', 'org.bukkit.craftbukkit.libs.org.gjt'
+
+    exclude "org.bukkit.craftbukkit.Main*"
+    relocate 'org.bukkit.craftbukkit', 'org.bukkit.craftbukkit.v1_8_R3'
+    relocate 'net.minecraft.server', 'net.minecraft.server.v1_8_R3'
 }
 
 test {
