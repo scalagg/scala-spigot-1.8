@@ -2,13 +2,13 @@ package org.bukkit.plugin.java;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
-import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.ServerConfig;
+import com.avaje.ebean.dbmigration.DdlGenerator;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import org.apache.commons.lang.Validate;
+import org.avaje.datasource.DataSourceConfig;
 import org.bukkit.Server;
 import org.bukkit.Warning.WarningState;
 import org.bukkit.command.Command;
@@ -456,20 +456,6 @@ public abstract class JavaPlugin extends PluginBase {
     @Override
     public EbeanServer getDatabase() {
         return ebean;
-    }
-
-    protected void installDDL() {
-        SpiEbeanServer serv = (SpiEbeanServer) getDatabase();
-        DdlGenerator gen = serv.getDdlGenerator();
-
-        gen.runScript(false, gen.generateCreateDdl());
-    }
-
-    protected void removeDDL() {
-        SpiEbeanServer serv = (SpiEbeanServer) getDatabase();
-        DdlGenerator gen = serv.getDdlGenerator();
-
-        gen.runScript(true, gen.generateDropDdl());
     }
 
     @Override

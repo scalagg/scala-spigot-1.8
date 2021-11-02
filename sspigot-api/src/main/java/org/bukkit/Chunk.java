@@ -1,6 +1,5 @@
 package org.bukkit;
 
-import com.minexd.spigot.chunk.FakeMultiBlockChange;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -123,7 +122,4 @@ public interface Chunk {
 	 */
 	boolean unload();
 
-	// RageSpigot start
-	FakeMultiBlockChange createFakeBlockUpdate(final Location[] locations, final int[] ids, final int[] datas);
-	// RageSpigot end
 }
