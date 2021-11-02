@@ -1,3 +1,41 @@
-dependencies {
-    
+plugins {
+    id "maven-publish"
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
+
+    compileOnly project(":sspigot-api")
+}
+
+compileKotlin {
+    kotlinOptions.javaParameters = true
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+shadowJar {
+    archiveClassifier.set("")
+
+    exclude "**/*.kotlin_metadata"
+    exclude "**/*.kotlin_builtins"
+    exclude "META-INF/"
+
+    archiveFileName = "Lemon.jar"
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+}
+
+tasks.build.dependsOn(shadowJar, publishing)

@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id "maven-publish"
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 repositories {
@@ -16,7 +18,7 @@ repositories {
 
 dependencies {
     implementation project(":sspigot-api")
-    implementation project(":sspigot-core")
+//    implementation project(":sspigot-core")
 
     implementation "org.spigotmc:minecraft-server:1.8.8-SNAPSHOT"
     implementation "net.sf.jopt-simple:jopt-simple:3.2"
@@ -31,15 +33,34 @@ dependencies {
 }
 
 shadowJar {
+    archiveClassifier.set("")
+
     relocate 'joptsimple', 'org.bukkit.craftbukkit.libs.joptsimple'
     relocate 'jline', 'org.bukkit.craftbukkit.libs.jline'
     relocate 'org.ibex', 'org.bukkit.craftbukkit.libs.org.ibex'
     relocate 'org.gjt', 'org.bukkit.craftbukkit.libs.org.gjt'
 
     exclude "org.bukkit.craftbukkit.Main*"
+    exclude "**/*.kotlin_metadata"
+    exclude "**/*.kotlin_builtins"
+    exclude "META-INF/"
+
     relocate 'org.bukkit.craftbukkit', 'org.bukkit.craftbukkit.v1_8_R3'
     relocate 'net.minecraft.server', 'net.minecraft.server.v1_8_R3'
+
+    archiveFileName = "scala-spigot-server.jar"
 }
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+}
+
+tasks.build.dependsOn(shadowJar, publishing)
+
 
 test {
     useJUnitPlatform()
