@@ -3,10 +3,9 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.minexd.spigot.SpigotX;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -321,10 +320,10 @@ public abstract class PlayerList {
         for (int i = 0; i < this.players.size(); ++i) {
             EntityPlayer entityplayer1 = (EntityPlayer) this.players.get(i);
 
-            if (!SpigotX.INSTANCE.getConfig().isHidePlayersFromTab() || entityplayer1.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
+            if (!ScalaSpigot.INSTANCE.getConfig().getHidePlayersFromTabList() || entityplayer1.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
                 entityplayer1.playerConnection.sendPacket(packet);
             }
-            if (!SpigotX.INSTANCE.getConfig().isHidePlayersFromTab() || entityplayer.getBukkitEntity().canSee(entityplayer1.getBukkitEntity())) {
+            if (!ScalaSpigot.INSTANCE.getConfig().getHidePlayersFromTabList() || entityplayer.getBukkitEntity().canSee(entityplayer1.getBukkitEntity())) {
                 entityplayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityplayer1));
             }
         }
