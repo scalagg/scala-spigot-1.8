@@ -1,7 +1,5 @@
 package gg.scala.spigot.logger
 
-import org.bukkit.Bukkit
-
 /**
  * @author GrowlyX
  * @since 11/2/2021
@@ -24,7 +22,7 @@ object Logger
         message: String, level: LogLevel = LogLevel.INFO
     )
     {
-        println("${level.color ?: ""}[${Bukkit.getName()}] [${level.description}] $message$RESET")
+        println("${level.color ?: ""}[Scala] [${level.description}] $message$RESET")
     }
 
     enum class LogLevel(

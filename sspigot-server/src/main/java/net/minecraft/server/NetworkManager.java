@@ -148,15 +148,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             } catch (CancelledPacketHandleException cancelledpackethandleexception) {
                 ;
             }
-            if (this.m instanceof PlayerConnection) {
-                try {
-                    for (PacketHandler handler : SpigotX.INSTANCE.getPacketHandlers()) {
-                        handler.handleReceivedPacket((PlayerConnection) this.m, packet);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
     }

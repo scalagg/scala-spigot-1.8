@@ -2,6 +2,7 @@ package org.spigotmc;
 
 import co.aikar.timings.SpigotTimings;
 import com.minexd.spigot.SpigotX;
+import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.*;
 
 import java.util.List;
@@ -72,7 +73,7 @@ public class ActivationRange
      * @param world
      */
     public static void activateEntities(World world) {
-        if (!SpigotX.INSTANCE.getConfig().isEntityActivation()) {
+        if (!ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation()) {
             return;
         }
 

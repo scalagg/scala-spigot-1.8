@@ -22,6 +22,7 @@ dependencies {
 
     implementation "org.spigotmc:minecraft-server:1.8.8-SNAPSHOT"
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    implementation "net.sf.trove4j:trove4j:3.0.3"
     implementation 'jline:jline:2.14.6'
     implementation 'org.xerial:sqlite-jdbc:3.36.0.2'
     implementation 'mysql:mysql-connector-java:8.0.25'

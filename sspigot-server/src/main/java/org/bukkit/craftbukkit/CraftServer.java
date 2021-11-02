@@ -1,17 +1,16 @@
 package org.bukkit.craftbukkit;
 
-import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.SQLitePlatform;
-import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
+
+import com.avaje.ebean.config.dbplatform.sqlite.SQLitePlatform;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.SpigotXConfig;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -21,6 +20,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.WorldType;
 import net.minecraft.server.*;
 import org.apache.commons.lang.util.Validate;
+import org.avaje.datasource.DataSourceConfig;
 import org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.Warning.WarningState;
@@ -685,9 +685,8 @@ public final class CraftServer implements Server {
         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("spigot-settings")); // PaperSpigot
 
-        // SpigotX
-        SpigotX.INSTANCE.setConfig(new SpigotXConfig());
-        SpigotX.INSTANCE.registerCommands();
+        // ScalaSpigot
+        ScalaSpigot.INSTANCE.initialLoad();
 
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);
@@ -1072,11 +1071,11 @@ public final class CraftServer implements Server {
         ds.setUrl(configuration.getString("database.url"));
         ds.setUsername(configuration.getString("database.username"));
         ds.setPassword(configuration.getString("database.password"));
-        ds.setIsolationLevel(TransactionIsolation.getLevel(configuration.getString("database.isolation")));
+//        ds.setIsolationLevel(TransactionIsolation.getLevel(configuration.getString("database.isolation")));
 
         if (ds.getDriver().contains("sqlite")) {
             config.setDatabasePlatform(new SQLitePlatform());
-            config.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
+//            config.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
         }
 
         config.setDataSourceConfig(ds);
@@ -1305,7 +1304,7 @@ public final class CraftServer implements Server {
     @Deprecated
     public OfflinePlayer getOfflinePlayer(String name) {
         Validate.notNull(name, "Name cannot be null");
-        com.google.common.base.Preconditions.checkArgument( !org.apache.commons.lang.StringUtils.isBlank( name ), "Name cannot be blank" ); // Spigot
+        com.google.common.base.Preconditions.checkArgument( !KotlinBridge.isBlank( name ), "Name cannot be blank" ); // Spigot
 
         OfflinePlayer result = getPlayerExact(name);
         if (result == null) {

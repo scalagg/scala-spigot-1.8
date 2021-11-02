@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;

@@ -4,7 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.minexd.spigot.SpigotX;
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.WeatherType;
@@ -237,7 +237,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         timings.doChunkUnload.startTiming();
 
-        if (SpigotX.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
             this.methodProfiler.c("chunkSource");
             this.chunkProvider.unloadChunks();
         }
@@ -477,7 +477,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
                 this.methodProfiler.c("tickBlocks");
 
-                if (SpigotX.INSTANCE.getConfig().isBlockOperations()) {
+                if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations()) {
                     timings.chunkTicksBlocks.startTiming();
 
                     i1 = this.getGameRules().c("randomTickSpeed");

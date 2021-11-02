@@ -10,6 +10,9 @@ class ScalaSpigotConfig
 {
     val kickForInvalidArmAnimation = true
     val hidePlayersFromTabList = false
+    val automaticChunkUnload = true
+    val handleBlockOperations = false
+    val handleEntityActivation = false
 
     val knockbackConfigs = listOf<KnockbackConfig>()
 }

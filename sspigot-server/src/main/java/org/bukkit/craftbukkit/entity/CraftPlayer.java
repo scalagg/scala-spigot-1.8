@@ -2,14 +2,16 @@ package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.minexd.spigot.SpigotX;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.knockback.configuration.KnockbackConfig;
+import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
 import io.netty.buffer.Unpooled;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.*;
 import net.minecraft.server.PacketPlayOutTitle.EnumTitleAction;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Achievement;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -118,6 +120,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return null;
 		}
 	}
+
+	// ScalaSpigot start
+	private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
+
+	@Override
+	public KnockbackConfig getKnockbackConfig() {
+		return knockbackConfig;
+	}
+
+	/**
+	 * Updates this entity's knockback
+	 * config to the provided one.
+	 *
+	 * @param knockbackConfig the new config
+	 */
+	@Override
+	public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
+		Validate.notNull(knockbackConfig);
+		this.knockbackConfig = knockbackConfig;
+	}
+	// ScalaSpigot end
 
 	@Override
 	public double getEyeHeight() {
@@ -297,7 +320,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		}
 		getHandle().listName = name.equals(getName()) ? null : CraftChatMessage.fromString(name)[0];
 		for (EntityPlayer player : server.getHandle().players) {
-			if (!SpigotX.INSTANCE.getConfig().isHidePlayersFromTab() || player.getBukkitEntity().canSee(this)) {
+			if (!ScalaSpigot.INSTANCE.getConfig().getHidePlayersFromTabList() || player.getBukkitEntity().canSee(this)) {
 				player.playerConnection.sendPacket(
 						new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
 								this.getHandle()));
@@ -1056,7 +1079,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 //			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, other));
 //		}
 
-		if (SpigotX.INSTANCE.getConfig().isHidePlayersFromTab()) {
+		if (ScalaSpigot.INSTANCE.getConfig().getHidePlayersFromTabList()) {
 			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, other));
 		}
 	}
@@ -1621,7 +1644,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	// Kohi end
 
 	// Spigot start
-	private final Spigot spigot = new Spigot() {
+	private final Player.Spigot spigot = new Player.Spigot() {
 
 		@Override
 		public InetSocketAddress getRawAddress() {
@@ -1757,7 +1780,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		}
 	};
 
-	public Spigot spigot() {
+	public Player.Spigot spigot() {
 		return spigot;
 	}
 	// Spigot end
