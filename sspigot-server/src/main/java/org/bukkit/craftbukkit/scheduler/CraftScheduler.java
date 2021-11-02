@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.scheduler;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;

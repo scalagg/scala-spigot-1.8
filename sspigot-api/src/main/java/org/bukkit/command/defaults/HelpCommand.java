@@ -2,9 +2,9 @@ package org.bukkit.command.defaults;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +39,7 @@ public class HelpCommand extends VanillaCommand {
             command = "";
             pageNumber = 1;
         } else if (NumberUtils.isDigits(args[args.length - 1])) {
-            command = StringUtils.join(ArrayUtils.subarray(args, 0, args.length - 1), " ");
+            command = StringUtils.join(Arrays.copyOfRange(args, 0, args.length - 1), " ");
             try {
                 pageNumber = NumberUtils.createInteger(args[args.length - 1]);
             } catch (NumberFormatException exception) {

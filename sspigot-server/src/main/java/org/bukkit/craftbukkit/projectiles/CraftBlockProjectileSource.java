@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.projectiles;
 
 import net.minecraft.server.*;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;

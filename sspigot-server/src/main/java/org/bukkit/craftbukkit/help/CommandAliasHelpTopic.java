@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.help;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.help.HelpMap;

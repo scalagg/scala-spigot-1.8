@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit.entity;
 
 import com.minexd.spigot.knockback.KnockbackProfile;
 import net.minecraft.server.*;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

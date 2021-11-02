@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.SpigotXConfig;
 import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +17,6 @@ import java.net.InetAddress;
 import java.net.Proxy;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;

@@ -1,6 +1,6 @@
 package org.bukkit.permissions;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 

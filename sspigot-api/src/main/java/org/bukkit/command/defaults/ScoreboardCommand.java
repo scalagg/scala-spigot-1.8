@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -101,7 +101,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     String displayName = null;
                     if (args.length > 4) {
-                        displayName = StringUtils.join(ArrayUtils.subarray(args, 4, args.length), ' ');
+                        displayName = StringUtils.join(Arrays.copyOfRange(args, 4, args.length), " ");
                         if (displayName.length() > 32) {
                             sender.sendMessage(ChatColor.RED + "The name '" + displayName + "' is too long for an objective, it can be at most 32 characters long");
                             return false;

@@ -1,8 +1,8 @@
 package org.bukkit.command.defaults;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -51,14 +51,14 @@ public class EnchantCommand extends VanillaCommand {
                 sender.sendMessage("The player isn't holding an item");
             } else {
                 String itemName = item.getType().toString().replaceAll("_", " ");
-                itemName = WordUtils.capitalizeFully(itemName);
+                itemName = StringUtils.capitaliseAllWords(itemName);
 
                 Enchantment enchantment = getEnchantment(args[1].toUpperCase());
                 if (enchantment == null) {
                     sender.sendMessage(String.format("Enchantment does not exist: %s", args[1]));
                 }  else {
                     String enchantmentName = enchantment.getName().replaceAll("_", " ");
-                    enchantmentName = WordUtils.capitalizeFully(enchantmentName);
+                    enchantmentName = StringUtils.capitaliseAllWords(enchantmentName);
 
                     if (!force && !enchantment.canEnchantItem(item)) {
                         sender.sendMessage(String.format("%s cannot be applied to %s", enchantmentName, itemName));

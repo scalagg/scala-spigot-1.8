@@ -25,6 +25,8 @@ package co.aikar.timings;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -108,7 +110,7 @@ class TimingsExport extends Thread {
                 pair("maxmem", runtime.maxMemory()),
                 pair("cpu", runtime.availableProcessors()),
                 pair("runtime", ManagementFactory.getRuntimeMXBean().getUptime()),
-                pair("flags", StringUtils.join(runtimeBean.getInputArguments(), " ")),
+                pair("flags", StringUtils.join(runtimeBean.getInputArguments().toArray(), " ")),
                 pair("gc", toObjectMapper(ManagementFactory.getGarbageCollectorMXBeans(), new Function<GarbageCollectorMXBean, JSONPair>() {
                     @Override
                     public JSONPair apply(GarbageCollectorMXBean input) {
@@ -189,7 +191,7 @@ class TimingsExport extends Thread {
                         pair("version", plugin.getDescription().getVersion()),
                         pair("description", String.valueOf(plugin.getDescription().getDescription()).trim()),
                         pair("website", plugin.getDescription().getWebsite()),
-                        pair("authors", StringUtils.join(plugin.getDescription().getAuthors(), ", "))
+                        pair("authors", StringUtils.join(plugin.getDescription().getAuthors().toArray(), ", "))
                     ));
                 }
             }));
@@ -199,7 +201,14 @@ class TimingsExport extends Thread {
         // Information on the users Config
 
         parent.put("config", createObject(
-            pair("com/minexd/spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
+            // ScalaSpigot start
+            pair(
+                    "scalaspigot",
+                    ScalaSpigot.getGSON().toJsonTree(
+                            ScalaSpigot.INSTANCE.getConfig()
+                    ).getAsJsonObject()
+            ),
+            // ScalaSpigot end
             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
             pair("paperspigot", mapAsJSON(Bukkit.spigot().getPaperSpigotConfig(), null))
         ));

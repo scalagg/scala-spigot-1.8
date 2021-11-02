@@ -20,7 +20,7 @@ import jline.console.ConsoleReader;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.WorldType;
 import net.minecraft.server.*;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.Warning.WarningState;

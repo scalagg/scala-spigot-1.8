@@ -10,7 +10,7 @@ import java.util.List;
  * response from the user.
  */
 public abstract class FixedSetPrompt extends ValidatingPrompt {
-    
+
     protected List<String> fixedSet;
 
     /**
@@ -41,6 +41,6 @@ public abstract class FixedSetPrompt extends ValidatingPrompt {
      *     cheese, and panda were the options used
      */
     protected String formatFixedSet() {
-        return "[" + StringUtils.join(fixedSet, ", ") + "]";
+        return "[" + StringUtils.join(fixedSet.toArray(), ", ") + "]";
     }
 }

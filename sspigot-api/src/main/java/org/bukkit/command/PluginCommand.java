@@ -1,6 +1,6 @@
 package org.bukkit.command;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 

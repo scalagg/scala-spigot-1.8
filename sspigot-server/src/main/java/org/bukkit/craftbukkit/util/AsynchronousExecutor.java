@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.util;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 
 import java.util.*;
 import java.util.concurrent.*;

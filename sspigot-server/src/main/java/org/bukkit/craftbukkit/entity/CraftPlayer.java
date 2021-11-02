@@ -9,7 +9,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.*;
 import net.minecraft.server.PacketPlayOutTitle.EnumTitleAction;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.Achievement;
 import org.bukkit.Material;
 import org.bukkit.Statistic;

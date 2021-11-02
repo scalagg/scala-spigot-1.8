@@ -1,7 +1,12 @@
 package org.bukkit.conversations;
 
+import com.avaje.ebeaninternal.server.lib.util.Str;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
+
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * BooleanPrompt is the base class for any prompt that requires a boolean
@@ -16,7 +21,7 @@ public abstract class BooleanPrompt extends ValidatingPrompt{
     @Override
     protected boolean isInputValid(ConversationContext context, String input) {
         String[] accepted = {"true", "false", "on", "off", "yes", "no" /* Spigot: */, "y", "n", "1", "0", "right", "wrong", "correct", "incorrect", "valid", "invalid"}; // Spigot
-        return ArrayUtils.contains(accepted, input.toLowerCase());
+        return Arrays.asList(accepted).contains(input.toLowerCase());
     }
 
     @Override

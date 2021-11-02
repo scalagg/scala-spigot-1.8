@@ -1,6 +1,6 @@
 package org.bukkit.metadata;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.util.Validate;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.ref.SoftReference;
