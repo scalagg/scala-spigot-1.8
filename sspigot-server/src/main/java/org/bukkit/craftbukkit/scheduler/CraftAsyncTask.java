@@ -1,6 +1,5 @@
 package org.bukkit.craftbukkit.scheduler;
 
-import org.apache.commons.lang.UnhandledException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitWorker;
 
@@ -53,7 +52,7 @@ class CraftAsyncTask extends CraftTask {
             super.run();
         } catch (final Throwable t) {
             thrown = t;
-            throw new UnhandledException(
+            throw new RuntimeException(
                     String.format(
                         "Plugin %s generated an exception while executing task %s",
                         getOwner().getDescription().getFullName(),

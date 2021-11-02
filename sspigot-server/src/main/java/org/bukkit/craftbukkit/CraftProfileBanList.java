@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.util.KotlinBridge;
 import net.minecraft.server.GameProfileBanEntry;
 import net.minecraft.server.GameProfileBanList;
 import net.minecraft.server.JsonListEntry;
@@ -49,8 +50,8 @@ public class CraftProfileBanList implements org.bukkit.BanList {
         }
 
         GameProfileBanEntry entry = new GameProfileBanEntry(profile, new Date(),
-                StringUtils.isBlank(source) ? null : source, expires,
-                StringUtils.isBlank(reason) ? null : reason);
+                KotlinBridge.isBlank(source) ? null : source, expires,
+                KotlinBridge.isBlank(reason) ? null : reason);
 
         list.add(entry);
 

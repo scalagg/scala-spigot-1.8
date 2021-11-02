@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
+import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.BiomeBase;
 import net.minecraft.server.BlockPosition;
 import net.minecraft.server.Chunk;
@@ -60,7 +60,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public void queueUnload(int i, int j) {
         // PaperSpigot start - Asynchronous lighting updates
-        if (SpigotX.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
             return;
         }
         Chunk chunk = chunks.get(LongHash.toLong(i, j));

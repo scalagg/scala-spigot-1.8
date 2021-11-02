@@ -29,6 +29,16 @@ dependencies {
 
     implementation 'net.jafama:jafama:2.3.2'
 
+    compileOnly 'commons-lang:commons-lang:20030203.000129'
+    compileOnly "com.googlecode.json-simple:json-simple:1.1.1"
+
+    compileOnly 'com.google.guava:guava:31.0.1-jre'
+    compileOnly 'com.google.code.gson:gson:2.8.9'
+
+    compileOnly 'org.avaje.ebean:ebean:9.5.1'
+    compileOnly 'org.yaml:snakeyaml:1.29'
+    compileOnly 'net.md-5:bungeecord-chat:1.16-R0.4'
+
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 

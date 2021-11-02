@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.event.inventory.PrepareAnvilRepairEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -351,22 +350,6 @@ public class ContainerAnvil extends Container {
 				i1 += 2;
 				clonedItemStack.setRepairCost(i1);
 				EnchantmentManager.a(map, clonedItemStack);
-
-				if (clonedItemStack != null) {
-					PrepareAnvilRepairEvent prepareAnvilRepairEvent = new PrepareAnvilRepairEvent(this.k
-							.getBukkitEntity(), this.getBukkitView(), this.k.world.getWorld().getBlockAt(this.j.getX
-							(), this.j.getY(), this.j.getZ()), CraftItemStack.asBukkitCopy(itemstack), CraftItemStack
-							.asBukkitCopy(nextItemStack), CraftItemStack.asBukkitCopy(clonedItemStack));
-					Bukkit.getPluginManager().callEvent(prepareAnvilRepairEvent);
-
-					if (prepareAnvilRepairEvent.isCancelled() ||
-					    prepareAnvilRepairEvent.getResult().getType() == Material.AIR) {
-						return;
-					}
-
-					clonedItemStack = CraftItemStack.asNMSCopy(prepareAnvilRepairEvent.getResult());
-
-				}
 			}
 
 			this.g.setItem(0, clonedItemStack);

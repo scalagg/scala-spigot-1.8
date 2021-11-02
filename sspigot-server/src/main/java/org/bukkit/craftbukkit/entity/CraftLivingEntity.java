@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
-import com.minexd.spigot.knockback.KnockbackProfile;
+import gg.scala.spigot.knockback.configuration.KnockbackConfig;
+import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
 import net.minecraft.server.*;
 import org.apache.commons.lang.util.Validate;
 import org.bukkit.Location;
@@ -25,17 +26,26 @@ import java.util.*;
 
 public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
-    // SpigotX start
-    @Override
-    public KnockbackProfile getKnockbackProfile() {
-        return getHandle().getKnockbackProfile();
-    }
+    // ScalaSpigot start
+    private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
 
     @Override
-    public void setKnockbackProfile(KnockbackProfile profile) {
-        getHandle().setKnockbackProfile(profile);
+    public KnockbackConfig getKnockbackConfig() {
+        return knockbackConfig;
     }
-    // SpigotX end
+
+    /**
+     * Updates this entity's knockback
+     * config to the provided one.
+     *
+     * @param knockbackConfig the new config
+     */
+    @Override
+    public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
+        Validate.notNull(knockbackConfig);
+        this.knockbackConfig = knockbackConfig;
+    }
+    // ScalaSpigot end
 
     private CraftEntityEquipment equipment;
 

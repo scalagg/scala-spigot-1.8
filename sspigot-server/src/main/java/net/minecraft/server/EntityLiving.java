@@ -5,14 +5,10 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.event.potion.PotionEffectAddEvent;
-import com.minexd.spigot.event.potion.PotionEffectExpireEvent;
-import com.minexd.spigot.event.potion.PotionEffectExtendEvent;
-import com.minexd.spigot.event.potion.PotionEffectRemoveEvent;
-import com.minexd.spigot.knockback.KnockbackProfile;
-import com.minexd.spigot.util.CraftPotionUtil;
+import gg.scala.spigot.knockback.configuration.KnockbackConfig;
+import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
 import net.jafama.FastMath;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
@@ -31,17 +27,24 @@ public abstract class EntityLiving extends Entity {
     private static final UUID a = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier b = (new AttributeModifier(a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
 
-    // SpigotX start
-    private KnockbackProfile knockbackProfile;
+    // ScalaSpigot start
+    private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
 
-    public KnockbackProfile getKnockbackProfile() {
-        return knockbackProfile;
+    public KnockbackConfig getKnockbackConfig() {
+        return knockbackConfig;
     }
 
-    public void setKnockbackProfile(KnockbackProfile profile) {
-        this.knockbackProfile = profile;
+    /**
+     * Updates this entity's knockback
+     * config to the provided one.
+     *
+     * @param knockbackConfig the new config
+     */
+    public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
+        Validate.notNull(knockbackConfig);
+        this.knockbackConfig = knockbackConfig;
     }
-    // SpigotX end
+    // ScalaSpigot end
 
     private AttributeMapBase c;
     public CombatTracker combatTracker = new CombatTracker(this);
@@ -482,15 +485,6 @@ public abstract class EntityLiving extends Entity {
 
             if (!mobeffect.tick(this)) {
                 if (!this.world.isClientSide) {
-
-                    PotionEffectExpireEvent event = new PotionEffectExpireEvent((LivingEntity) this.getBukkitEntity(), CraftPotionUtil.toBukkit(mobeffect));
-                    this.world.getServer().getPluginManager().callEvent(event);
-                    if (event.isCancelled()) {
-                        // Duration must be extended if event is cancelled
-                        CraftPotionUtil.extendDuration(mobeffect, event.getDuration());
-                        continue;
-                    }
-
                     iterator.remove();
                     this.b(mobeffect);
                 }
@@ -607,24 +601,9 @@ public abstract class EntityLiving extends Entity {
             MobEffect currentEffect = this.effects.get(mobeffect.getEffectId());
 
             if (currentEffect == null) {
-                // Add Effect
-                PotionEffectAddEvent event = new PotionEffectAddEvent((LivingEntity) this.getBukkitEntity(), CraftPotionUtil.toBukkit(mobeffect));
-                this.world.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return;
-                }
-
                 this.effects.put(mobeffect.getEffectId(), mobeffect);
                 this.a(mobeffect);
             } else {
-                // Extend Effect
-                PotionEffectExtendEvent event = new PotionEffectExtendEvent((LivingEntity) this.getBukkitEntity(),
-                        CraftPotionUtil.toBukkit(mobeffect),
-                        CraftPotionUtil.toBukkit(mobeffect));
-                this.world.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return;
-                }
                 currentEffect.a(mobeffect);
                 this.a(currentEffect, true);
             }
@@ -666,12 +645,6 @@ public abstract class EntityLiving extends Entity {
         MobEffect mobeffect = (MobEffect) this.effects.remove(Integer.valueOf(i));
 
         if (mobeffect != null) {
-            PotionEffectRemoveEvent event = new PotionEffectRemoveEvent((LivingEntity) this.getBukkitEntity(), CraftPotionUtil.toBukkit(mobeffect));
-            this.world.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
-
             this.b(mobeffect);
         }
 
@@ -933,22 +906,23 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
-            KnockbackProfile profile = this.getKnockbackProfile() == null ? SpigotX.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
+            final KnockbackConfig config = getKnockbackConfig();
 
             // Kohi start - configurable knockback
             double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
 
-            this.motX /= profile.getFriction();
-            this.motY /= profile.getFriction();
-            this.motZ /= profile.getFriction();
-
-            this.motX -= d0 / magnitude * profile.getHorizontal();
-            this.motY += profile.getVertical();
-            this.motZ -= d1 / magnitude * profile.getHorizontal();
-
-            if (this.motY > profile.getVerticalLimit()) {
-                this.motY = profile.getVerticalLimit();
-            }
+            // TODO: 11/2/2021 finish this
+//            this.motX /= profile.getFriction();
+//            this.motY /= profile.getFriction();
+//            this.motZ /= profile.getFriction();
+//
+//            this.motX -= d0 / magnitude * profile.getHorizontal();
+//            this.motY += profile.getVertical();
+//            this.motZ -= d1 / magnitude * profile.getHorizontal();
+//
+//            if (this.motY > profile.getVerticalLimit()) {
+//                this.motY = profile.getVerticalLimit();
+//            }
             // Kohi end
         }
     }

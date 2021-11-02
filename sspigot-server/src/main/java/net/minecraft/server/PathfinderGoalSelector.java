@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
+import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.MethodProfiler;
 import net.minecraft.server.PathfinderGoal;
 import net.minecraft.server.PathfinderGoalBreed;
@@ -26,7 +26,7 @@ public class PathfinderGoalSelector {
     }
 
     public void a(int i, PathfinderGoal pathfindergoal) {
-        if (!SpigotX.INSTANCE.getConfig().isMobAIEnabled() && !(pathfindergoal instanceof PathfinderGoalBreed)) {
+        if (!ScalaSpigot.INSTANCE.getConfig().getHandleMobIntelligence() && !(pathfindergoal instanceof PathfinderGoalBreed)) {
             return;
         }
 

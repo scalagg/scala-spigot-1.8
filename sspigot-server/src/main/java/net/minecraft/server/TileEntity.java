@@ -3,7 +3,8 @@ package net.minecraft.server;
 import co.aikar.timings.SpigotTimings;
 import co.aikar.timings.Timing;
 import com.google.common.collect.Maps;
-import com.minexd.spigot.util.OptimizedRemoveUtil;
+
+import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.inventory.InventoryHolder;

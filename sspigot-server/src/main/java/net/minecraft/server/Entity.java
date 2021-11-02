@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import co.aikar.timings.SpigotTimings;
 import co.aikar.timings.Timing;
-import com.minexd.spigot.util.OptimizedRemoveUtil;
+import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;

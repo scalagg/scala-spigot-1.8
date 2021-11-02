@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit;
 
 import com.google.common.collect.ImmutableSet;
+import gg.scala.spigot.util.KotlinBridge;
 import net.minecraft.server.IpBanEntry;
 import net.minecraft.server.IpBanList;
 import org.apache.commons.lang.StringUtils;
@@ -37,8 +38,8 @@ public class CraftIpBanList implements org.bukkit.BanList {
         Validate.notNull(target, "Ban target cannot be null");
 
         IpBanEntry entry = new IpBanEntry(target, new Date(),
-                StringUtils.isBlank(source) ? null : source, expires,
-                StringUtils.isBlank(reason) ? null : reason);
+                KotlinBridge.isBlank(source) ? null : source, expires,
+                KotlinBridge.isBlank(reason) ? null : reason);
 
         list.add(entry);
 

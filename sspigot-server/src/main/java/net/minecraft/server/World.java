@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.util.OptimizedRemoveUtil;
+import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftServer;
@@ -1628,7 +1628,7 @@ public abstract class World implements IBlockAccess {
         int j = MathHelper.floor(entity.locZ);
 
         // Spigot start
-        if (SpigotX.INSTANCE.getConfig().isEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
             entity.ticksLived++;
             entity.inactiveTick();
             // PaperSpigot start - Remove entities in unloaded chunks

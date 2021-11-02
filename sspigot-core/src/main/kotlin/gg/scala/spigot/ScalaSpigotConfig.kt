@@ -13,6 +13,7 @@ class ScalaSpigotConfig
     val automaticChunkUnload = true
     val handleBlockOperations = false
     val handleEntityActivation = false
+    val handleMobIntelligence = false
 
     val knockbackConfigs = listOf<KnockbackConfig>()
 }

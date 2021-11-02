@@ -1,7 +1,7 @@
 package org.spigotmc;
 
 import co.aikar.timings.SpigotTimings;
-import com.minexd.spigot.SpigotX;
+
 import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.*;
 
