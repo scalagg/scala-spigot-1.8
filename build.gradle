@@ -13,23 +13,13 @@ allprojects {
     }
 }
 
+dependencies {
+    implementation 'org.yaml:snakeyaml:1.29'
+}
+
 subprojects {
     apply plugin: 'maven-publish'
-    apply plugin: 'org.jetbrains.kotlin.jvm'
     apply plugin: 'com.github.johnrengelman.shadow'
-
-    task prepareKotlinBuildScriptModel {
-
-    }
-
-    dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
-    }
-
-    compileKotlin {
-        kotlinOptions.javaParameters = true
-        kotlinOptions.jvmTarget = "1.8"
-    }
 
     shadowJar {
         archiveClassifier.set("")
@@ -38,7 +28,7 @@ subprojects {
         exclude "**/*.kotlin_builtins"
         exclude "META-INF/"
 
-        archiveFileName = "Lemon.jar"
+        archiveFileName = "scala-spigot-${project.name}.jar"
     }
 
     publishing {
