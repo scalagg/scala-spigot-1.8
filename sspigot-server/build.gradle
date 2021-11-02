@@ -47,6 +47,7 @@ shadowJar {
 
     relocate 'org.bukkit.craftbukkit', 'org.bukkit.craftbukkit.v1_8_R3'
     relocate 'net.minecraft.server', 'net.minecraft.server.v1_8_R3'
+    relocate 'gg.scala.server', 'gg.scala.server.v1_8_R3'
 
     archiveFileName = "scala-spigot-server.jar"
 }
