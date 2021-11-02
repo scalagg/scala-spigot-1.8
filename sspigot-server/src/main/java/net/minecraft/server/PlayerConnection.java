@@ -233,26 +233,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);
 				float deltaAngle = Math.abs(this.lastYaw - to.getYaw()) + Math.abs(this.lastPitch - to.getPitch());
 
-				if (packetplayinflying.hasPos && delta > 0.0D && this.checkMovement && !this.player.dead) {
-					for (MovementHandler handler : SpigotX.INSTANCE.getMovementHandlers()) {
-						try {
-							handler.handleUpdateLocation(player, to, from, packetplayinflying);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-
-				if (packetplayinflying.hasLook && deltaAngle > 0.0F && this.checkMovement && !this.player.dead) {
-					for (MovementHandler handler : SpigotX.INSTANCE.getMovementHandlers()) {
-						try {
-							handler.handleUpdateRotation(player, to, from, packetplayinflying);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-
 				if (((packetplayinflying.hasPos && delta > 0.0D) || (packetplayinflying.hasLook && deltaAngle > 0.0F)) && (this.checkMovement && !this.player.dead)) {
 					this.lastPosX = to.getX();
 					this.lastPosY = to.getY();
