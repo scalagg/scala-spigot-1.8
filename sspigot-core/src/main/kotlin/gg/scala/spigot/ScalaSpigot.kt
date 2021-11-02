@@ -6,7 +6,7 @@ package gg.scala.spigot
  */
 object ScalaSpigot
 {
-
+    lateinit var config: ScalaSpigotConfig
 
     fun initialLoad()
     {

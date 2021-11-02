@@ -8,6 +8,8 @@ import com.minexd.spigot.SpigotX;
 import com.minexd.spigot.handler.MovementHandler;
 import com.minexd.spigot.handler.PacketHandler;
 import com.minexd.spigot.util.NotchUtil;
+import gg.scala.spigot.filter.EventFilterHandler;
+import gg.scala.spigot.mock.AirClickEvent;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -33,6 +35,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 import org.github.paperspigot.PaperSpigotConfig;
+import timings.SpigotTimings;
 
 import java.io.IOException;
 import java.util.*;
@@ -1101,18 +1104,25 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 	private void handleCommand(String s) {
 		SpigotTimings.playerCommandTimer.startTiming();
-		if (org.spigotmc.SpigotConfig.logCommands)
-			this.c.info(this.player.getName() + " issued server command: " + s);
 
 		CraftPlayer player = this.getPlayer();
 
 		PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, s, new LazyPlayerSet());
 		this.server.getPluginManager().callEvent(event);
 
+		// ScalaSpigot start - logging a separate message if the
+		// command process was cancelled on PlayerCommandPreprocessEvent.
 		if (event.isCancelled()) {
+			if (org.spigotmc.SpigotConfig.logCommands)
+				c.info(this.player.getName() + " issued server command: " + s);
+
 			SpigotTimings.playerCommandTimer.stopTiming();
-			return;
+		} else
+		{
+			if (org.spigotmc.SpigotConfig.logCommands)
+				c.info(this.player.getName() + " issued cancelled server command: " + s);
 		}
+		// ScalaSpigot end
 
 		try {
 			if (this.server.dispatchCommand(event.getPlayer(), event.getMessage().substring(1))) {
@@ -1158,7 +1168,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 		this.player.resetIdleTimer();
 
-		if (SpigotX.INSTANCE.getConfig().isFireLeftClickAir()) {
+		if (EventFilterHandler.INSTANCE.shouldCall(AirClickEvent.class)) {
 			float pitch = this.player.pitch;
 			float yaw = this.player.yaw;
 			double locX = this.player.locX;
