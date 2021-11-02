@@ -10,6 +10,7 @@ import com.minexd.spigot.handler.PacketHandler;
 import com.minexd.spigot.util.NotchUtil;
 import gg.scala.spigot.filter.EventFilterHandler;
 import gg.scala.spigot.mock.AirClickEvent;
+import gg.scala.spigot.mock.LeftClickBlockEvent;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -240,7 +241,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					this.lastYaw = to.getYaw();
 					this.lastPitch = to.getPitch();
 
-					if (SpigotX.INSTANCE.getConfig().isFirePlayerMoveEvent()) {
+					if (EventFilterHandler.INSTANCE.shouldCall(PlayerMoveEvent.class)) {
 						Location oldTo = to.clone();
 						PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
 						this.server.getPluginManager().callEvent(event);
@@ -594,7 +595,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						if (!this.minecraftServer.a(worldserver, blockposition, this.player) && worldserver.getWorldBorder().a(blockposition)) {
 							this.player.playerInteractManager.a(blockposition, packetplayinblockdig.b());
 						} else {
-							if (SpigotX.INSTANCE.getConfig().isFireLeftClickBlock()) {
+							if (EventFilterHandler.INSTANCE.shouldCall(LeftClickBlockEvent.class)) {
 								CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, blockposition, packetplayinblockdig.b(), this.player.inventory.getItemInHand());
 							}
 
