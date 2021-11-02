@@ -299,7 +299,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     String displayName = null;
                     if (args.length > 3) {
-                        displayName = StringUtils.join(ArrayUtils.subarray(args, 3, args.length), ' ');
+                        displayName = StringUtils.join(Arrays.copyOfRange(args, 3, args.length), " ");
                         if (displayName.length() > 32) {
                             sender.sendMessage(ChatColor.RED + "The display name '" + displayName + "' is too long for a team, it can be at most 32 characters long");
                             return false;

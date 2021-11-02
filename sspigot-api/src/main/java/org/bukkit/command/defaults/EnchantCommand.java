@@ -99,7 +99,7 @@ public class EnchantCommand extends VanillaCommand {
 
                                 if (enchant.equals(enchantment)) continue;
                                 if (enchant.conflictsWith(enchantment)) {
-                                    sender.sendMessage(String.format("Can't apply the enchantment %s on an item with the enchantment %s", enchantmentName, WordUtils.capitalizeFully(enchant.getName().replaceAll("_", " "))));
+                                    sender.sendMessage(String.format("Can't apply the enchantment %s on an item with the enchantment %s", enchantmentName, StringUtils.capitaliseAllWords(enchant.getName().replaceAll("_", " "))));
                                     conflicts = true;
                                     break;
                                 }
