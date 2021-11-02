@@ -1,4 +1,4 @@
-package timings;
+package co.aikar.timings;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;

@@ -1,13 +1,9 @@
 package net.minecraft.server;
 
-import co.aikar.timings.SpigotTimings;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.handler.MovementHandler;
-import com.minexd.spigot.handler.PacketHandler;
-import com.minexd.spigot.util.NotchUtil;
+import gg.scala.server.NotchUtil;
 import gg.scala.spigot.filter.EventFilterHandler;
 import gg.scala.spigot.mock.AirClickEvent;
 import gg.scala.spigot.mock.LeftClickBlockEvent;
@@ -36,7 +32,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 import org.github.paperspigot.PaperSpigotConfig;
-import timings.SpigotTimings;
+import co.aikar.timings.SpigotTimings;
 
 import java.io.IOException;
 import java.util.*;
@@ -819,14 +815,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 		try {
 			this.networkManager.handle(packet);
-
-			for (PacketHandler handler : SpigotX.INSTANCE.getPacketHandlers()) {
-				try {
-					handler.handleSentPacket(this, packet);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 		} catch (Throwable throwable) {
 			CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
 			CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
@@ -989,9 +977,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		if (!async && s.startsWith("/")) {
 			if (!org.bukkit.Bukkit.isPrimaryThread()) {
 				final String fCommandLine = s;
-
-				MinecraftServer.LOGGER.log(org.apache.logging.log4j.Level.ERROR, "Command Dispatched Async: " + fCommandLine);
-				MinecraftServer.LOGGER.log(org.apache.logging.log4j.Level.ERROR, "Please notify author of plugin causing this execution to fix this bug! see: http://bit.ly/1oSiM6C", new Throwable());
 
 				Waitable wait = new Waitable() {
 					@Override
