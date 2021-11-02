@@ -29,6 +29,30 @@ object ScalaSpigot
         Logger.send("ScalaSpigot has initialized. (${System.currentTimeMillis() - initialization}ms)")
     }
 
+    @JvmOverloads
+    fun reloadConfig(silently: Boolean = false): Boolean
+    {
+        if (!silently)
+        {
+            Logger.send("Attempting a reload of scala-spigot.json...")
+        }
+
+        try
+        {
+            internalLoadConfig()
+        } catch (exception: Exception)
+        {
+            if (!silently)
+            {
+                Logger.send("Failed to reload scala-spigot.json!")
+            }
+
+            return false
+        }
+
+        return true
+    }
+
     private fun internalLoadConfig()
     {
         val file = File("scala-spigot.json")

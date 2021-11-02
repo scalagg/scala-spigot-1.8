@@ -1,6 +1,6 @@
 package org.bukkit.entity;
 
-import com.minexd.spigot.knockback.KnockbackProfile;
+import gg.scala.spigot.knockback.configuration.KnockbackConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,18 +19,21 @@ import java.util.Set;
  */
 public interface LivingEntity extends Entity, Damageable, ProjectileSource {
 
-    //RageSpigot start
     /**
-     * Gets the knockback profile of this player.
+     * Returns the current KnockbackConfig
+     * for this entity.
+     *
+     * @return the applied {@link KnockbackConfig}
      */
-    public KnockbackProfile getKnockbackProfile();
+    public KnockbackConfig getKnockbackConfig();
 
     /**
-     * Sets the knockback profile of this player. The player's knockback
-     * profile overrides the global knockback profile.
+     * Updates this entity's knockback
+     * config to the provided one.
+     *
+     * @param knockbackConfig the new config
      */
-    public void setKnockbackProfile(KnockbackProfile profile);
-    //RageSpigot end
+    public void setKnockbackConfig(KnockbackConfig knockbackConfig);
 
     /**
      * Gets the height of the living entity's eyes above its Location.
