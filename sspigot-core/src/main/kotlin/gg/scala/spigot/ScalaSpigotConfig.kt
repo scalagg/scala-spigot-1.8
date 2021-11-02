@@ -6,5 +6,5 @@ package gg.scala.spigot
  */
 class ScalaSpigotConfig
 {
-
+    val kickForInvalidArmAnimation = true
 }

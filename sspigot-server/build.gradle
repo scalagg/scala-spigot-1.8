@@ -21,15 +21,15 @@ dependencies {
     implementation project(":sspigot-core")
 
     implementation "org.spigotmc:minecraft-server:1.8.8-SNAPSHOT"
-    implementation "net.sf.jopt-simple:jopt-simple:3.2"
-    implementation "jline:jline:2.12"
-    implementation "org.xerial:sqlite-jdbc:3.7.2"
-    implementation "mysql:mysql-connector-java:5.1.14"
+    implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    implementation 'jline:jline:2.14.6'
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.2'
+    implementation 'mysql:mysql-connector-java:8.0.25'
 
-    implementation "net.jafama:jafama:2.1.0"
+    implementation 'net.jafama:jafama:2.3.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 shadowJar {

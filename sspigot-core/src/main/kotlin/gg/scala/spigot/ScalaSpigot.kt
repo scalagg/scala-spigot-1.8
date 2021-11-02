@@ -1,15 +1,56 @@
 package gg.scala.spigot
 
+import com.google.common.io.Files
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.LongSerializationPolicy
+import gg.scala.spigot.logger.Logger
+import java.io.File
+
 /**
  * @author GrowlyX
  * @since 11/1/2021
  */
 object ScalaSpigot
 {
-    lateinit var config: ScalaSpigotConfig
+    @JvmStatic
+    val GSON: Gson = GsonBuilder().setPrettyPrinting()
+        .setLongSerializationPolicy(LongSerializationPolicy.STRING).create()
+
+    var config = ScalaSpigotConfig()
+
+    private val initialization = System.currentTimeMillis()
 
     fun initialLoad()
     {
+        Logger.send("Starting ScalaSpigot initialization...")
+        internalLoadConfig()
 
+        Logger.send("ScalaSpigot has initialized. (${System.currentTimeMillis() - initialization}ms)")
+    }
+
+    private fun internalLoadConfig()
+    {
+        val file = File("scala-spigot.json")
+
+        if (file.exists())
+        {
+            file.createNewFile().also {
+                if (it)
+                {
+                    Files.write(GSON.toJson(config), file, Charsets.UTF_8)
+
+                    Logger.send("Created scala-spigot.json.")
+                } else
+                {
+                    Logger.send("Failed to create scala-spigot.json, using default values.", Logger.LogLevel.SEVERE)
+                }
+            }
+        }
+
+        val reader = Files.newReader(file, Charsets.UTF_8)
+        config = GSON.fromJson(reader, ScalaSpigotConfig::class.java)
+
+        Logger.send("Loaded spigot configuration from scala-spigot.json.")
     }
 }

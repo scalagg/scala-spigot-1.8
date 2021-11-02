@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import com.minexd.spigot.SpigotX;
 import com.minexd.spigot.SpigotXConfig;
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ import java.net.InetAddress;
 import java.net.Proxy;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -119,7 +121,20 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.setServerIp("127.0.0.1");
         } else {
             this.setOnlineMode(this.propertyManager.getBoolean("online-mode", true));
-            this.setServerIp(this.propertyManager.getString("server-ip", ""));
+
+            // ScalaSpigot start
+            String serverIp = this.propertyManager.getString("server-ip", "");
+
+            // checking if the server ip
+            // has not been set by the user
+            if (serverIp.equals(""))
+            {
+                // automatically setting the server ip to 127.0.0.1 (for use on Scala servers)
+                serverIp = "127.0.0.1";
+            }
+
+            this.setServerIp(serverIp);
+            // ScalaSpigot end
         }
 
         this.setSpawnAnimals(this.propertyManager.getBoolean("spawn-animals", false));
@@ -162,14 +177,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("spigot-settings"));
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
 
-        // Load SpigotX
-        SpigotX.INSTANCE.setConfig(new SpigotXConfig());
-        SpigotX.INSTANCE.registerCommands();
-
-        LOGGER.info("* Allocated memory: " + (Runtime.getRuntime().maxMemory() / 1024L / 1024L));
-        LOGGER.info("* Online Mode: " + this.getOnlineMode());
-        LOGGER.info("* Server Address: " + this.getServerIp() + ":" + this.getPort());
-        LOGGER.info("* View Distance: " + this.getPlayerList().getCserver().getViewDistance());
+        // Load ScalaSpigot
+        ScalaSpigot.INSTANCE.initialLoad();
 
         this.a(MinecraftEncryption.b());
 

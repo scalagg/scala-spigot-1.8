@@ -12,6 +12,11 @@ repositories {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
 
+    // sspigot-api should contain the
+    // following dependencies across all versions.
+    compileOnly 'com.google.code.gson:gson:2.8.9'
+    compileOnly 'com.google.guava:guava:31.0.1-jre'
+
     compileOnly project(":sspigot-api")
 }
 

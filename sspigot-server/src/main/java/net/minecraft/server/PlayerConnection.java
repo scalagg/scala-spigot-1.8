@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import gg.scala.server.NotchUtil;
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.filter.EventFilterHandler;
 import gg.scala.spigot.mock.AirClickEvent;
 import gg.scala.spigot.mock.LeftClickBlockEvent;
@@ -1110,7 +1111,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			return;
 		}
 
-		if (SpigotX.INSTANCE.getConfig().isInvalidArmAnimationKick()) {
+		if (ScalaSpigot.INSTANCE.getConfig().getKickForInvalidArmAnimation()) {
 			if (lastSwingTick != MinecraftServer.currentTick) {
 				swings = 0;
 				lastSwingTick = MinecraftServer.currentTick;
