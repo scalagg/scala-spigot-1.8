@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
     id "maven-publish"
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
@@ -15,6 +16,8 @@ repositories {
         url "https://ci.destroystokyo.com/plugin/repository/everything/"
     }
 }
+
+mainClassName = "org.bukkit.craftbukkit.Main"
 
 dependencies {
     implementation project(":sspigot-api")
