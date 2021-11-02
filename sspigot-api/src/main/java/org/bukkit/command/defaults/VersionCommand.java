@@ -3,6 +3,7 @@ package org.bukkit.command.defaults;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -75,21 +76,21 @@ public class VersionCommand extends BukkitCommand {
 
 	private void describeToSender(Plugin plugin, CommandSender sender) {
 		PluginDescriptionFile desc = plugin.getDescription();
-		sender.sendMessage(desc.getName() + " version " + desc.getVersion());
+		sender.sendMessage(ChatColor.GOLD + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
 
 		if (desc.getDescription() != null) {
 			sender.sendMessage(desc.getDescription());
 		}
 
 		if (desc.getWebsite() != null) {
-			sender.sendMessage("Website: " + desc.getWebsite());
+			sender.sendMessage("Website: " + ChatColor.GREEN + desc.getWebsite());
 		}
 
 		if (!desc.getAuthors().isEmpty()) {
 			if (desc.getAuthors().size() == 1) {
-				sender.sendMessage("Author: " + getAuthors(desc));
+				sender.sendMessage("Author: " + ChatColor.GREEN + getAuthors(desc));
 			} else {
-				sender.sendMessage("Authors: " + getAuthors(desc));
+				sender.sendMessage("Authors: " + ChatColor.GREEN + getAuthors(desc));
 			}
 		}
 	}
@@ -120,6 +121,13 @@ public class VersionCommand extends BukkitCommand {
 		Validate.notNull(alias, "Alias cannot be null");
 
 		if (args.length == 1) {
+			// ScalaSpigot start
+			if (!sender.hasPermission("scalaspigot.tab-complete"))
+			{
+				return ImmutableList.of();
+			}
+			// ScalaSpigot end
+
 			List<String> completions = new ArrayList<String>();
 			String toComplete = args[0].toLowerCase();
 			for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
