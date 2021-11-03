@@ -5,6 +5,7 @@ import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
@@ -176,6 +177,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         // Load ScalaSpigot
         ScalaSpigot.INSTANCE.initialLoad();
+        ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
 
         this.a(MinecraftEncryption.b());
 

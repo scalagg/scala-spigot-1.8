@@ -687,6 +687,7 @@ public final class CraftServer implements Server {
 
         // ScalaSpigot
         ScalaSpigot.INSTANCE.initialLoad();
+        ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
 
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);

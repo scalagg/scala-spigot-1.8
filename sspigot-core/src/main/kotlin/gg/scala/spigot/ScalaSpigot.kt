@@ -25,7 +25,6 @@ object ScalaSpigot
     fun initialLoad()
     {
         Logger.send("Starting ScalaSpigot initialization...")
-        internalLoadConfig()
 
         KnockbackHandler.initialLoad()
 
@@ -33,7 +32,7 @@ object ScalaSpigot
     }
 
     @JvmOverloads
-    fun reloadConfig(silently: Boolean = false): Boolean
+    fun reloadConfig(silently: Boolean = false, parent: File): Boolean
     {
         if (!silently)
         {
@@ -42,7 +41,7 @@ object ScalaSpigot
 
         try
         {
-            internalLoadConfig()
+            internalLoadConfig(parent)
         } catch (exception: Exception)
         {
             if (!silently)
@@ -56,11 +55,11 @@ object ScalaSpigot
         return true
     }
 
-    private fun internalLoadConfig()
+    fun internalLoadConfig(parent: File)
     {
-        val file = File("scala-spigot.json")
+        val file = File(parent, "scala-spigot.json")
 
-        if (file.exists())
+        if (!file.exists())
         {
             file.createNewFile().also {
                 if (it)
