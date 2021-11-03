@@ -86,8 +86,8 @@ public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
     // ScalaSpigot start
     private final String serverName = "ScalaSpigot";
-    // ScalaSpigot
-    private final String serverVersion;
+    private final String serverVersion = "HORS-1";
+    // ScalaSpigot end
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
     private final ServicesManager servicesManager = new SimpleServicesManager();
@@ -143,7 +143,6 @@ public final class CraftServer implements Server {
                 return player.getBukkitEntity();
             }
         }));
-        this.serverVersion = CraftServer.class.getPackage().getImplementationVersion();
         online.value = console.getPropertyManager().getBoolean("online-mode", true);
 
         Bukkit.setServer(this);
