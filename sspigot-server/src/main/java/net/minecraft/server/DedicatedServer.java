@@ -246,7 +246,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             long i1 = System.nanoTime() - j;
             String s3 = String.format("%.3fs", (double) i1 / 1.0E9D);
 
-            LOGGER.info("Finished loading the server in " + s3 + "...");
+            LOGGER.info("[Scala] Finished loading the server in " + s3 + ".");
 
             if (this.propertyManager.getBoolean("enable-query", false)) {
                 LOGGER.info("* Enabled GS4 Query");
