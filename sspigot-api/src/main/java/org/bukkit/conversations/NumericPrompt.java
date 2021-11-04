@@ -35,7 +35,7 @@ public abstract class NumericPrompt extends ValidatingPrompt{
         {
             return acceptValidatedInput(context, NumberUtils.createNumber(input));
         } catch (NumberFormatException e) {
-            return acceptValidatedInput(context, NumberUtils.INTEGER_ZERO);
+            return acceptValidatedInput(context, 0);
         }
     }
 

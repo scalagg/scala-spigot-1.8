@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit.command;
 
 import net.minecraft.server.CommandException;
 import net.minecraft.server.*;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.Level;
 import org.bukkit.Location;
 import org.bukkit.command.*;

@@ -1,6 +1,6 @@
 package org.bukkit.plugin.java;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.Warning;
 import org.bukkit.Warning.WarningState;

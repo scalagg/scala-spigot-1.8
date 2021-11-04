@@ -1,6 +1,6 @@
 package org.bukkit.configuration.file;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 
 /**
  * Various settings for controlling the input and output of a {@link

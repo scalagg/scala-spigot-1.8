@@ -1,6 +1,6 @@
 package org.bukkit.configuration.serialization;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;

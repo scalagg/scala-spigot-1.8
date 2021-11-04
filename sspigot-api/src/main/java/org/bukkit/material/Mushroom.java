@@ -1,6 +1,6 @@
 package org.bukkit.material;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 

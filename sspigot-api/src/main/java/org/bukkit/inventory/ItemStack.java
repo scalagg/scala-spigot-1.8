@@ -1,7 +1,7 @@
 package org.bukkit.inventory;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Utility;

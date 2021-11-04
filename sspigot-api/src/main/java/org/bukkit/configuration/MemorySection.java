@@ -1,6 +1,6 @@
 package org.bukkit.configuration;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;

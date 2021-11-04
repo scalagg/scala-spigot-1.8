@@ -8,7 +8,7 @@ import net.minecraft.server.GameProfileBanList;
 import net.minecraft.server.JsonListEntry;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

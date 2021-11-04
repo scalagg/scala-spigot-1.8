@@ -1,6 +1,6 @@
 package org.bukkit.inventory;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 

@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.util;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

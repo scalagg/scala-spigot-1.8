@@ -1,7 +1,7 @@
 package org.bukkit;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.map.MapView;
 import org.bukkit.material.*;
 import org.bukkit.potion.Potion;

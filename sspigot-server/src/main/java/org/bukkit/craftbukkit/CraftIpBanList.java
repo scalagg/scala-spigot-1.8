@@ -5,7 +5,7 @@ import gg.scala.spigot.util.KotlinBridge;
 import net.minecraft.server.IpBanEntry;
 import net.minecraft.server.IpBanList;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

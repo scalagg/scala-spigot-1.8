@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Sound;
 
 import static org.bukkit.Sound.*;

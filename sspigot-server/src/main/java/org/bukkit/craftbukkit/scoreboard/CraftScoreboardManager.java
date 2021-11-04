@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.scoreboard;
 
 import net.minecraft.server.*;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.util.WeakCollection;
 import org.bukkit.entity.Player;

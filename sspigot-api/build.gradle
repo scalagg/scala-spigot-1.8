@@ -16,7 +16,7 @@ dependencies {
     compileOnly "net.sf.trove4j:trove4j:3.0.3"
     compileOnly project(":sspigot-core")
 
-    implementation 'commons-lang:commons-lang:20030203.000129'
+    implementation 'commons-lang:commons-lang:2.6'
     implementation "com.googlecode.json-simple:json-simple:1.1.1"
 
     implementation 'com.google.guava:guava:31.0.1-jre'

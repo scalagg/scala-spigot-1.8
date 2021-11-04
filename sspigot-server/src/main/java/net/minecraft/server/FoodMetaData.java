@@ -13,7 +13,7 @@ public class FoodMetaData {
 
     // CraftBukkit start - added EntityHuman constructor
     public FoodMetaData(EntityHuman entityhuman) {
-        org.apache.commons.lang.util.Validate.notNull(entityhuman);
+        org.apache.commons.lang.Validate.notNull(entityhuman);
         this.entityhuman = entityhuman;
     }
     // CraftBukkit end

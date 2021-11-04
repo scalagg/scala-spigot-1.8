@@ -1,6 +1,6 @@
 package org.bukkit.configuration;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 
 import java.util.Map;
 

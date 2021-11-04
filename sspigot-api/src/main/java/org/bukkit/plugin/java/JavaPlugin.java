@@ -7,7 +7,7 @@ import com.avaje.ebean.dbmigration.DdlGenerator;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 import org.avaje.datasource.DataSourceConfig;
 import org.bukkit.Server;
 import org.bukkit.Warning.WarningState;

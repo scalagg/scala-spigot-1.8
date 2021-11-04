@@ -1,6 +1,6 @@
 package org.bukkit.potion;
 
-import org.apache.commons.lang.util.Validate;
+import org.apache.commons.lang.Validate;
 
 import java.util.HashMap;
 import java.util.Map;

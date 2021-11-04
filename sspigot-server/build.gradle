@@ -33,8 +33,7 @@ dependencies {
 
     implementation 'net.jafama:jafama:2.3.2'
 
-    implementation 'commons-lang:commons-lang:2.6'
-    compileOnly 'commons-lang:commons-lang:20030203.000129'
+    compileOnly 'commons-lang:commons-lang:2.6'
     compileOnly "com.googlecode.json-simple:json-simple:1.1.1"
 
     compileOnly 'com.google.guava:guava:31.0.1-jre'
