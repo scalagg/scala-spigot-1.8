@@ -14,8 +14,8 @@ repositories {
 
 dependencies {
     compileOnly "net.sf.trove4j:trove4j:3.0.3"
-    compileOnly project(":sspigot-core")
 
+    // do not change AT ALL PLEASE or BAD
     implementation 'commons-lang:commons-lang:2.6'
     implementation "com.googlecode.json-simple:json-simple:1.1.1"
 

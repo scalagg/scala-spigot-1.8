@@ -7,17 +7,24 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+
+    maven { url "https://repo.aikar.co/content/groups/aikar/" }
+    maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
 
-    // sspigot-api should contain the
-    // following dependencies across all versions.
     compileOnly 'com.google.code.gson:gson:2.8.9'
     compileOnly 'com.google.guava:guava:31.0.1-jre'
 
-//    compileOnly project(":sspigot-api")
+    implementation 'com.github.NoSequel.CommandAPI:shared:c3f21168be'
+    implementation 'com.github.NoSequel.CommandAPI:bukkit:c3f21168be'
+
+    implementation 'net.jafama:jafama:2.3.2'
+
+    compileOnly project(":sspigot-api")
 }
 
 compileKotlin {
@@ -30,9 +37,8 @@ shadowJar {
 
     exclude "**/*.kotlin_metadata"
     exclude "**/*.kotlin_builtins"
-    exclude "META-INF/"
 
-    archiveFileName = "Lemon.jar"
+    archiveFileName = "scala-spigot-core.jar"
 }
 
 publishing {

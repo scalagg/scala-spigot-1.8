@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 
 import static org.bukkit.util.Java15Compat.Arrays_copyOfRange;
 
-public class SimpleCommandMap implements CommandMap {
+public class
+SimpleCommandMap implements CommandMap {
     private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
     protected final Map<String, Command> knownCommands = new HashMap<String, Command>();
     private final Server server;
