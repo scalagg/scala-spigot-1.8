@@ -5,11 +5,14 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gg.scala.spigot.knockback.configuration.KnockbackConfig;
-import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
+import gg.scala.spigot.preset.KnockbackHandler;
+import gg.scala.spigot.preset.knockback.KnockbackPreset;
+import jline.internal.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 import net.jafama.FastMath;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
@@ -28,22 +31,10 @@ public abstract class EntityLiving extends Entity {
     private static final AttributeModifier b = (new AttributeModifier(a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
 
     // ScalaSpigot start
-    private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
-
-    public KnockbackConfig getKnockbackConfig() {
-        return knockbackConfig;
-    }
-
-    /**
-     * Updates this entity's knockback
-     * config to the provided one.
-     *
-     * @param knockbackConfig the new config
-     */
-    public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
-        Validate.notNull(knockbackConfig);
-        this.knockbackConfig = knockbackConfig;
-    }
+    @Getter
+    @Setter
+    @Nullable
+    private KnockbackPreset knockbackPreset = KnockbackHandler.INSTANCE.getActivePreset();
     // ScalaSpigot end
 
     private AttributeMapBase c;
@@ -906,23 +897,23 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
-            final KnockbackConfig config = getKnockbackConfig();
+
+            final KnockbackPreset preset = this.knockbackPreset;
 
             // Kohi start - configurable knockback
             double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
 
-            // TODO: 11/2/2021 finish this
-//            this.motX /= profile.getFriction();
-//            this.motY /= profile.getFriction();
-//            this.motZ /= profile.getFriction();
-//
-//            this.motX -= d0 / magnitude * profile.getHorizontal();
-//            this.motY += profile.getVertical();
-//            this.motZ -= d1 / magnitude * profile.getHorizontal();
-//
-//            if (this.motY > profile.getVerticalLimit()) {
-//                this.motY = profile.getVerticalLimit();
-//            }
+            this.motX /= preset.getFriction();
+            this.motY /= preset.getFriction();
+            this.motZ /= preset.getFriction();
+
+            this.motX -= d0 / magnitude * preset.getHorizontal();
+            this.motY += preset.getVertical();
+            this.motZ -= d1 / magnitude * preset.getHorizontal();
+
+            if (this.motY > preset.getVerticalLimit()) {
+                this.motY = preset.getVerticalLimit();
+            }
             // Kohi end
         }
     }

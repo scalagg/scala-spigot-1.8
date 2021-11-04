@@ -4,9 +4,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.ScalaSpigot;
-import gg.scala.spigot.knockback.configuration.KnockbackConfig;
-import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
+import gg.scala.spigot.preset.KnockbackHandler;
+import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
+import jline.internal.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.*;
 import net.minecraft.server.PacketPlayOutTitle.EnumTitleAction;
@@ -122,24 +125,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	}
 
 	// ScalaSpigot start
-	private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
-
-	@Override
-	public KnockbackConfig getKnockbackConfig() {
-		return knockbackConfig;
-	}
-
-	/**
-	 * Updates this entity's knockback
-	 * config to the provided one.
-	 *
-	 * @param knockbackConfig the new config
-	 */
-	@Override
-	public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
-		Validate.notNull(knockbackConfig);
-		this.knockbackConfig = knockbackConfig;
-	}
+	@Getter
+	@Setter
+	@Nullable
+	private KnockbackPreset knockbackConfig = KnockbackHandler.INSTANCE.getActivePreset();
 	// ScalaSpigot end
 
 	@Override

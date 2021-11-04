@@ -1,6 +1,6 @@
 package org.bukkit.entity;
 
-import gg.scala.spigot.knockback.configuration.KnockbackConfig;
+import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,9 +23,9 @@ public interface LivingEntity extends Entity, Damageable, ProjectileSource {
      * Returns the current KnockbackConfig
      * for this entity.
      *
-     * @return the applied {@link KnockbackConfig}
+     * @return the applied {@link KnockbackPreset}
      */
-    public KnockbackConfig getKnockbackConfig();
+    public KnockbackPreset getKnockbackConfig();
 
     /**
      * Updates this entity's knockback
@@ -33,7 +33,7 @@ public interface LivingEntity extends Entity, Damageable, ProjectileSource {
      *
      * @param knockbackConfig the new config
      */
-    public void setKnockbackConfig(KnockbackConfig knockbackConfig);
+    public void setKnockbackConfig(KnockbackPreset knockbackConfig);
 
     /**
      * Gets the height of the living entity's eyes above its Location.

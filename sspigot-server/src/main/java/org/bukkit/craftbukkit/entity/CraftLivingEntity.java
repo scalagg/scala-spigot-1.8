@@ -1,7 +1,10 @@
 package org.bukkit.craftbukkit.entity;
 
-import gg.scala.spigot.knockback.configuration.KnockbackConfig;
-import gg.scala.spigot.knockback.configuration.defaults.DefaultKnockbackConfig;
+import gg.scala.spigot.preset.KnockbackHandler;
+import gg.scala.spigot.preset.knockback.KnockbackPreset;
+import jline.internal.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -27,24 +30,10 @@ import java.util.*;
 public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
     // ScalaSpigot start
-    private KnockbackConfig knockbackConfig = DefaultKnockbackConfig.INSTANCE;
-
-    @Override
-    public KnockbackConfig getKnockbackConfig() {
-        return knockbackConfig;
-    }
-
-    /**
-     * Updates this entity's knockback
-     * config to the provided one.
-     *
-     * @param knockbackConfig the new config
-     */
-    @Override
-    public void setKnockbackConfig(KnockbackConfig knockbackConfig) {
-        Validate.notNull(knockbackConfig);
-        this.knockbackConfig = knockbackConfig;
-    }
+    @Getter
+    @Setter
+    @Nullable
+    private KnockbackPreset knockbackConfig = KnockbackHandler.INSTANCE.getActivePreset();
     // ScalaSpigot end
 
     private CraftEntityEquipment equipment;

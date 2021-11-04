@@ -1,6 +1,7 @@
 package gg.scala.spigot
 
-import gg.scala.spigot.knockback.configuration.KnockbackConfig
+import gg.scala.spigot.preset.knockback.KnockbackPreset
+import gg.scala.spigot.preset.potion.PotionPreset
 
 /**
  * @author GrowlyX
@@ -15,5 +16,7 @@ class ScalaSpigotConfig
     val handleEntityActivation = false
     val handleMobIntelligence = false
 
-    val knockbackConfigs = listOf<KnockbackConfig>()
+    val knockbackConfigs = listOf<KnockbackPreset>()
+    val potionConfigs = listOf<PotionPreset>()
+
 }
