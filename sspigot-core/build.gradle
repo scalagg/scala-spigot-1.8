@@ -10,7 +10,6 @@ repositories {
 
     maven { url "https://repo.aikar.co/content/groups/aikar/" }
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
-    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -19,12 +18,7 @@ dependencies {
     compileOnly 'com.google.code.gson:gson:2.8.9'
     compileOnly 'com.google.guava:guava:31.0.1-jre'
 
-    implementation 'com.github.NoSequel.CommandAPI:shared:c3f21168be'
-    implementation 'com.github.NoSequel.CommandAPI:bukkit:c3f21168be'
-
     implementation 'net.jafama:jafama:2.3.2'
-
-    compileOnly project(":sspigot-api")
 }
 
 compileKotlin {

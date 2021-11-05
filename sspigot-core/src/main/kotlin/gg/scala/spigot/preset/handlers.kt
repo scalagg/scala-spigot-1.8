@@ -23,13 +23,13 @@ object PotionHandler : PresetHandler<PotionPreset>() {
     override fun initialLoad() {
         this.presets.add(
             PotionPreset(
-                id = "retardpots",
+                id = "Default",
                 details = listOf(
                     ""
                 ),
-                offset = 0.5F,
-                speed = 500F,
-                distance = -50F
+                offset = -20F,
+                speed = 0.5F,
+                distance = 0.05F
             )
         )
 

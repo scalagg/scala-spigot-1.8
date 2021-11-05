@@ -49,7 +49,7 @@ public class EntityPotion extends EntityProjectile {
             return 0.5F;
         }
 
-        return preset.getOffset();
+        return preset.getSpeed();
     }
 
     protected float l() {
@@ -59,7 +59,7 @@ public class EntityPotion extends EntityProjectile {
             return -20.0F;
         }
 
-        return preset.getSpeed();
+        return preset.getOffset();
     }
 
     public void setPotionValue(int i) {
