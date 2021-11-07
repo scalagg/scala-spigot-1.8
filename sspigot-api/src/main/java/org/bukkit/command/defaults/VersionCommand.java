@@ -37,7 +37,6 @@ public class VersionCommand extends BukkitCommand {
 			                   Bukkit.getVersion() +
 			                   " (Implementing API version " +
 			                   Bukkit.getBukkitVersion() + ")");
-			// sendVersion(sender);
 		} else {
 			StringBuilder name = new StringBuilder();
 

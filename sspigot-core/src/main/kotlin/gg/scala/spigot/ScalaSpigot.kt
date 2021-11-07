@@ -7,8 +7,6 @@ import com.google.gson.LongSerializationPolicy
 import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
-import gg.scala.spigot.preset.PresetHandler
-import gg.scala.spigot.preset.knockback.KnockbackPreset
 import java.io.File
 
 /**

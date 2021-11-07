@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.command.KnockbackCommand;
 import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -341,7 +342,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String getVersion() {
-        return serverVersion + " (MC: " + console.getVersion() + ")";
+        return "development (MC: " + console.getVersion() + ")";
     }
 
     @Override
@@ -685,8 +686,10 @@ public final class CraftServer implements Server {
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("spigot-settings")); // PaperSpigot
 
         // ScalaSpigot
-        ScalaSpigot.INSTANCE.initialLoad();
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
+        ScalaSpigot.INSTANCE.initialLoad();
+
+        commandMap.register("spigot", new KnockbackCommand());
 
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);

@@ -1,10 +1,180 @@
 package gg.scala.spigot.command
 
+import gg.scala.spigot.ScalaSpigot
+import gg.scala.spigot.preset.KnockbackHandler
+import gg.scala.spigot.preset.knockback.KnockbackPreset
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
+
 /**
  * @author GrowlyX
  * @since 11/3/2021
  */
-class KnockbackCommand
+class KnockbackCommand : Command("knockback")
 {
+
+    override fun execute(
+        sender: CommandSender,
+        commandLabel: String,
+        args: Array<String>
+    ): Boolean
+    {
+        if (!testPermission(sender))
+        {
+            return true
+        }
+
+        if (args.isEmpty())
+        {
+            sender.sendMessage("${ChatColor.RED}Usage: /$commandLabel <create|delete|view|list|edit|set> <name>")
+            return true
+        }
+
+        when (args[0].lowercase())
+        {
+            "create" ->
+            {
+                if (args.size >= 2)
+                {
+                    if (KnockbackHandler.findPreset(args[1]) != null)
+                    {
+                        sender.sendMessage("alr exits")
+                        return true
+                    }
+
+                    val preset = KnockbackPreset(
+                        args[1], listOf("Default description."),
+
+                        friction = 2.0,
+                        horizontal = 0.35,
+                        vertical = 0.35,
+                        verticalLimit = 0.4,
+                        extraHorizontal = 0.425,
+                        extraVertical = 0.085
+                    )
+
+                    KnockbackHandler.presets.add(preset)
+
+                    sender.sendMessage("created new kb")
+
+                    ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "delete" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = KnockbackHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        KnockbackHandler.presets.remove(existing)
+
+                        ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                        sender.sendMessage("delet")
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "list" ->
+            {
+                sender.sendMessage("${ChatColor.GOLD}Knockback presets")
+
+                KnockbackHandler.presets.forEach {
+                    sender.sendMessage(it.id)
+                }
+            }
+            "view" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = KnockbackHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        sender.sendMessage(ScalaSpigot.GSON.toJson(existing))
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "set" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = KnockbackHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        KnockbackHandler.activePreset = existing
+                        sender.sendMessage("set ok")
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "edit" ->
+            {
+                if (args.size >= 4)
+                {
+                    val existing = KnockbackHandler.findPreset(args[1])
+
+                    if (existing == null)
+                    {
+                        sender.sendMessage("not exist")
+                        return true
+                    }
+
+                    val type = args[2]
+                    val field = KnockbackPreset::class.java.fields.firstOrNull {
+                        it.name == type
+                    }
+
+                    if (field == null)
+                    {
+                        sender.sendMessage("invailid fucker")
+                        sender.sendMessage("valid: ${KnockbackPreset::class.java.fields.joinToString(separator = ", ") {it.name}}")
+                        return true
+                    }
+
+                    try
+                    {
+                        val value = args[3]
+                        field.set(existing, value)
+
+                        sender.sendMessage("set to $value")
+
+                        ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                    } catch (exception: Exception)
+                    {
+                        sender.sendMessage("sorry was invalid type or something: ${exception.message}")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name, type, and value.")
+                }
+            }
+        }
+
+        return true
+    }
 
 }

@@ -176,8 +176,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
 
         // Load ScalaSpigot
-        ScalaSpigot.INSTANCE.initialLoad();
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
+        ScalaSpigot.INSTANCE.initialLoad();
 
         this.a(MinecraftEncryption.b());
 

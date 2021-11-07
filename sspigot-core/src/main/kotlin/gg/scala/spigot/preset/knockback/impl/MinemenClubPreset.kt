@@ -3,14 +3,9 @@ package gg.scala.spigot.preset.knockback.impl
 import gg.scala.spigot.preset.knockback.KnockbackPreset
 
 class MinemenClubPreset(
-    override val id: String = "Minemen Club",
+    override val id: String = "default",
     override var details: List<String> = listOf(
-        "Updates the values of",
-        "a specified kb-config to",
-        "Mineman Club's knockback",
-        "values.",
-        "",
-        "Note: This may not be accurate."
+        "default"
     ),
 
     // knockback values
