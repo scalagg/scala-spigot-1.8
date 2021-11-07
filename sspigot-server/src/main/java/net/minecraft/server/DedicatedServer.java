@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
+import gg.scala.server.KnockbackCommand;
 import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -178,6 +179,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // Load ScalaSpigot
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
         ScalaSpigot.INSTANCE.initialLoad();
+
+        server.getCommandMap().register("scalaspigot", new KnockbackCommand());
 
         this.a(MinecraftEncryption.b());
 

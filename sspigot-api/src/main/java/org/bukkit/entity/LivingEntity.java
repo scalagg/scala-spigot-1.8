@@ -20,22 +20,6 @@ import java.util.Set;
 public interface LivingEntity extends Entity, Damageable, ProjectileSource {
 
     /**
-     * Returns the current KnockbackConfig
-     * for this entity.
-     *
-     * @return the applied {@link KnockbackPreset}
-     */
-    public KnockbackPreset getKnockbackConfig();
-
-    /**
-     * Updates this entity's knockback
-     * config to the provided one.
-     *
-     * @param knockbackConfig the new config
-     */
-    public void setKnockbackConfig(KnockbackPreset knockbackConfig);
-
-    /**
      * Gets the height of the living entity's eyes above its Location.
      *
      * @return height of the living entity's eyes above its location

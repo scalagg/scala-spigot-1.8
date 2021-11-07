@@ -4,6 +4,7 @@ import com.google.common.io.Files
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.LongSerializationPolicy
+import gg.scala.spigot.filter.EventFilterHandler
 import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
@@ -29,6 +30,7 @@ object ScalaSpigot
 
         KnockbackHandler.initialLoad()
         PotionHandler.initialLoad()
+        EventFilterHandler.initialLoad()
 
         Logger.send("ScalaSpigot has initialized. (${System.currentTimeMillis() - initialization}ms)")
     }

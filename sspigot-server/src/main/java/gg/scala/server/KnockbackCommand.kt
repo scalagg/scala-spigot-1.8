@@ -1,4 +1,4 @@
-package gg.scala.spigot.command
+package gg.scala.server
 
 import gg.scala.spigot.ScalaSpigot
 import gg.scala.spigot.preset.KnockbackHandler
@@ -7,12 +7,13 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.command.defaults.BukkitCommand
 
 /**
  * @author GrowlyX
  * @since 11/3/2021
  */
-class KnockbackCommand : Command("knockback")
+class KnockbackCommand : BukkitCommand("knockback")
 {
 
     override fun execute(
@@ -144,21 +145,32 @@ class KnockbackCommand : Command("knockback")
                     }
 
                     val type = args[2]
-                    val field = KnockbackPreset::class.java.fields.firstOrNull {
+                    val field = KnockbackPreset::class.java.declaredFields.firstOrNull {
                         it.name == type
                     }
 
                     if (field == null)
                     {
                         sender.sendMessage("invailid fucker")
-                        sender.sendMessage("valid: ${KnockbackPreset::class.java.fields.joinToString(separator = ", ") {it.name}}")
+                        sender.sendMessage("valid: ")
+                        sender.sendMessage(
+                            """
+                                    friction: Double,
+                                    horizontal: Double,
+                                    vertical: Double,
+                                    verticalLimit: Double,
+                                    extraHorizontal: Double,
+                                    extraVertical: Double
+                            """.trimIndent()
+                        )
                         return true
                     }
 
                     try
                     {
                         val value = args[3]
-                        field.set(existing, value)
+                        field.isAccessible = true
+                        field.set(existing, value.toDouble())
 
                         sender.sendMessage("set to $value")
 

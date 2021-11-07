@@ -1,5 +1,8 @@
 package gg.scala.spigot.filter
 
+import gg.scala.spigot.ScalaSpigot
+import gg.scala.spigot.logger.Logger
+
 /**
  * @author GrowlyX
  * @since 11/2/2021
@@ -7,6 +10,19 @@ package gg.scala.spigot.filter
 object EventFilterHandler
 {
     private val filters = mutableMapOf<Class<*>, Boolean>()
+
+    fun initialLoad()
+    {
+        ScalaSpigot.config.disabledEvents.forEach {
+            try
+            {
+                filters[Class.forName(it)] = false
+            } catch (exception: Exception)
+            {
+               Logger.send("Failed to disable $it", Logger.LogLevel.SEVERE)
+            }
+        }
+    }
 
     fun shouldCall(event: Class<*>): Boolean
     {

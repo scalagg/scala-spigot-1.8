@@ -19,4 +19,8 @@ class ScalaSpigotConfig
     val knockbackConfigs = listOf<KnockbackPreset>()
     val potionConfigs = listOf<PotionPreset>()
 
+    val disabledEvents = listOf(
+        "AirClickEvent"
+    )
+
 }

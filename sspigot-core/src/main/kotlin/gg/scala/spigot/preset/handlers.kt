@@ -14,7 +14,8 @@ object KnockbackHandler : PresetHandler<KnockbackPreset>() {
         if (this.presets.isEmpty())
         {
             this.presets.add(
-                MinemenClubPreset(
+                KnockbackPreset(
+                    "default", listOf(""),
                     friction = 2.0,
                     horizontal = 0.35,
                     vertical = 0.35,
@@ -32,7 +33,7 @@ object PotionHandler : PresetHandler<PotionPreset>() {
     override fun initialLoad() {
         this.presets.add(
             PotionPreset(
-                id = "Default",
+                id = "default",
                 details = listOf(
                     ""
                 ),
