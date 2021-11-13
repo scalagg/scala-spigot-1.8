@@ -16,10 +16,10 @@ class ScalaSpigotConfig
     val handleEntityActivation = false
     val handleMobIntelligence = false
 
-    val knockbackConfigs = listOf<KnockbackPreset>()
-    val potionConfigs = listOf<PotionPreset>()
+    val knockbackConfigs = mutableListOf<KnockbackPreset>()
+    val potionConfigs = mutableListOf<PotionPreset>()
 
-    val disabledEvents = listOf(
+    val disabledEvents = mutableListOf(
         "AirClickEvent"
     )
 

@@ -5,7 +5,6 @@ import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.knockback.KnockbackPreset
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.defaults.BukkitCommand
 
@@ -60,7 +59,7 @@ class KnockbackCommand : BukkitCommand("knockback")
 
                     sender.sendMessage("created new kb")
 
-                    ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                    ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                 } else
                 {
                     sender.sendMessage("${ChatColor.RED}You must provide a name.")
@@ -76,7 +75,7 @@ class KnockbackCommand : BukkitCommand("knockback")
                     {
                         KnockbackHandler.presets.remove(existing)
 
-                        ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                        ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                         sender.sendMessage("delet")
                     } else
                     {
@@ -153,15 +152,7 @@ class KnockbackCommand : BukkitCommand("knockback")
                     {
                         sender.sendMessage("invailid fucker")
                         sender.sendMessage("valid: ")
-                        sender.sendMessage(
-                            """
-                                    friction: Double,
-                                    horizontal: Double,
-                                    vertical: Double,
-                                    verticalLimit: Double,
-                                    extraHorizontal: Double,
-                                    extraVertical: Double
-                            """.trimIndent()
+                        sender.sendMessage(KnockbackPreset::class.java.declaredFields.joinToString(separator = ", ") {it.name}
                         )
                         return true
                     }
@@ -174,7 +165,7 @@ class KnockbackCommand : BukkitCommand("knockback")
 
                         sender.sendMessage("set to $value")
 
-                        ScalaSpigot.reloadConfig(silently = true, Bukkit.getWorldContainer())
+                        ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                     } catch (exception: Exception)
                     {
                         sender.sendMessage("sorry was invalid type or something: ${exception.message}")

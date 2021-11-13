@@ -1062,12 +1062,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			entry.clear(getHandle(), sendDestroy);
 		}
 
-//		getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, other));
-//
-//		if (!SpigotX.INSTANCE.getConfig().isHidePlayersFromTab()) {
-//			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, other));
-//		}
-
 		if (ScalaSpigot.INSTANCE.getConfig().getHidePlayersFromTabList()) {
 			getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, other));
 		}

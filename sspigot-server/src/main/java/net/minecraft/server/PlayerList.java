@@ -380,12 +380,6 @@ public abstract class PlayerList {
             EntityPlayer entityplayer2 = (EntityPlayer) this.players.get(i);
 
             entityplayer2.playerConnection.sendPacket(packet);
-
-            /*
-            if (!entityplayer2.getBukkitEntity().canSee(entityplayer.getBukkitEntity())) {
-                entityplayer2.getBukkitEntity().removeDisconnectingPlayer(entityplayer.getBukkitEntity()); // SpigotX
-            }
-            */
         }
         // This removes the scoreboard (and player reference) for the specific player in the manager
         cserver.getScoreboardManager().removePlayer(entityplayer.getBukkitEntity());

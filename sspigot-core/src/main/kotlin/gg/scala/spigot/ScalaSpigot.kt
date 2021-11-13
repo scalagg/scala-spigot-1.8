@@ -35,6 +35,20 @@ object ScalaSpigot
         Logger.send("ScalaSpigot has initialized. (${System.currentTimeMillis() - initialization}ms)")
     }
 
+    fun saveConfig(parent: File)
+    {
+
+
+        config.knockbackConfigs.clear()
+        config.knockbackConfigs.addAll(KnockbackHandler.presets)
+
+        config.potionConfigs.clear()
+        config.potionConfigs.addAll(PotionHandler.presets)
+
+        val file = File(parent, "scala-spigot.json")
+        Files.write(GSON.toJson(config), file, Charsets.UTF_8)
+    }
+
     @JvmOverloads
     fun reloadConfig(silently: Boolean = false, parent: File): Boolean
     {

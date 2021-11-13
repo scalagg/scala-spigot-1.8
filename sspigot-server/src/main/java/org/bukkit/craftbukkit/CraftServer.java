@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
 import gg.scala.server.KnockbackCommand;
+import gg.scala.server.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
@@ -744,6 +745,7 @@ public final class CraftServer implements Server {
         enablePlugins(PluginLoadOrder.POSTWORLD);
 
         getCommandMap().register("scalaspigot", new KnockbackCommand());
+        getCommandMap().register("scalaspigot", new PotionCommand());
     }
 
     private void loadIcon() {

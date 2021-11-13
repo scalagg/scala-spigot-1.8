@@ -3,6 +3,8 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.preset.KnockbackHandler;
+import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import net.jafama.FastMath;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
@@ -1010,11 +1012,12 @@ public abstract class EntityHuman extends EntityLiving {
 
                 if (damaged) {
                     if (i > 0) {
-                        // TODO: 11/2/2021 fix this
-//                        entity.g(
-//                                (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal()), profile.getExtraVertical(),
-//                                (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal())
-//                        );
+                        final KnockbackPreset knockbackPreset = KnockbackHandler.INSTANCE.getActivePreset();
+
+                        entity.g(
+                                (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()), knockbackPreset.getExtraVertical(),
+                                (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
+                        );
 
                         this.motX *= 0.6D;
                         this.motZ *= 0.6D;

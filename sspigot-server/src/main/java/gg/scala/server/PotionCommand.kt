@@ -1,0 +1,182 @@
+package gg.scala.server
+
+import gg.scala.spigot.ScalaSpigot
+import gg.scala.spigot.preset.KnockbackHandler
+import gg.scala.spigot.preset.PotionHandler
+import gg.scala.spigot.preset.knockback.KnockbackPreset
+import gg.scala.spigot.preset.potion.PotionPreset
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
+import org.bukkit.command.defaults.BukkitCommand
+
+/**
+ * @author GrowlyX
+ * @since 11/3/2021
+ */
+class PotionCommand : BukkitCommand("potion")
+{
+
+    override fun execute(
+        sender: CommandSender,
+        commandLabel: String,
+        args: Array<String>
+    ): Boolean
+    {
+        if (!testPermission(sender))
+        {
+            return true
+        }
+
+        if (args.isEmpty())
+        {
+            sender.sendMessage("${ChatColor.RED}Usage: /$commandLabel <create|delete|view|list|edit|set> <name>")
+            return true
+        }
+
+        when (args[0].lowercase())
+        {
+            "create" ->
+            {
+                if (args.size >= 2)
+                {
+                    if (PotionHandler.findPreset(args[1]) != null)
+                    {
+                        sender.sendMessage("alr exits")
+                        return true
+                    }
+
+                    val preset = PotionPreset(
+                        id = "default",
+                        details = listOf(""),
+                        offset = -20F,
+                        speed = 0.5F,
+                        distance = 0.05F
+                    )
+
+                    PotionHandler.presets.add(preset)
+
+                    sender.sendMessage("created new pot")
+
+                    ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "delete" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = PotionHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        PotionHandler.presets.remove(existing)
+
+                        ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
+                        sender.sendMessage("delet")
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "list" ->
+            {
+                sender.sendMessage("${ChatColor.GOLD}Pot presets")
+
+                KnockbackHandler.presets.forEach {
+                    sender.sendMessage(it.id)
+                }
+            }
+            "view" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = PotionHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        sender.sendMessage(ScalaSpigot.GSON.toJson(existing))
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "set" ->
+            {
+                if (args.size >= 2)
+                {
+                    val existing = PotionHandler.findPreset(args[1])
+
+                    if (existing != null)
+                    {
+                        PotionHandler.activePreset = existing
+                        sender.sendMessage("set ok")
+                    } else
+                    {
+                        sender.sendMessage("not exist")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name.")
+                }
+            }
+            "edit" ->
+            {
+                if (args.size >= 4)
+                {
+                    val existing = PotionHandler.findPreset(args[1])
+
+                    if (existing == null)
+                    {
+                        sender.sendMessage("not exist")
+                        return true
+                    }
+
+                    val type = args[2]
+                    val field = PotionPreset::class.java.declaredFields.firstOrNull {
+                        it.name == type
+                    }
+
+                    if (field == null)
+                    {
+                        sender.sendMessage("invailid fucker")
+                        sender.sendMessage("valid: ")
+                        sender.sendMessage(PotionPreset::class.java.declaredFields.joinToString(separator = ", ") {it.name}
+                        )
+                        return true
+                    }
+
+                    try
+                    {
+                        val value = args[3]
+                        field.isAccessible = true
+                        field.set(existing, value.toFloat())
+
+                        sender.sendMessage("set to $value")
+
+                        ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
+                    } catch (exception: Exception)
+                    {
+                        sender.sendMessage("sorry was invalid type or something: ${exception.message}")
+                    }
+                } else
+                {
+                    sender.sendMessage("${ChatColor.RED}You must provide a name, type, and value.")
+                }
+            }
+        }
+
+        return true
+    }
+
+}

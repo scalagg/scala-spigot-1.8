@@ -898,7 +898,8 @@ public abstract class EntityLiving extends Entity {
             this.ai = true;
 
 
-            final KnockbackPreset preset = this.knockbackPreset;
+//            final KnockbackPreset preset = this.knockbackPreset;
+            final KnockbackPreset preset = KnockbackHandler.INSTANCE.getActivePreset();
 
             // Kohi start - configurable knockback
             double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);

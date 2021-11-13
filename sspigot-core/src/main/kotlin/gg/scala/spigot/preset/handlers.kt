@@ -31,17 +31,24 @@ object KnockbackHandler : PresetHandler<KnockbackPreset>() {
 }
 object PotionHandler : PresetHandler<PotionPreset>() {
     override fun initialLoad() {
-        this.presets.add(
-            PotionPreset(
-                id = "default",
-                details = listOf(
-                    ""
-                ),
-                offset = -20F,
-                speed = 0.5F,
-                distance = 0.05F
+        ScalaSpigot.config.potionConfigs.forEach {
+            this.presets.add(it)
+        }
+
+        if (this.presets.isEmpty())
+        {
+            this.presets.add(
+                PotionPreset(
+                    id = "default",
+                    details = listOf(
+                        ""
+                    ),
+                    offset = -20F,
+                    speed = 0.5F,
+                    distance = 0.05F
+                )
             )
-        )
+        }
 
         this.activePreset = this.presets[0]
     }
