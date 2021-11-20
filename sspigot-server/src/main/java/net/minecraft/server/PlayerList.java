@@ -36,7 +36,7 @@ public abstract class PlayerList {
     private static final Logger f = LogManager.getLogger();
     private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
     private final MinecraftServer server;
-    public final List<EntityPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+    public List<EntityPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
     private final Map<UUID, EntityPlayer> j = Maps.newHashMap();
     private final GameProfileBanList k;
     private final IpBanList l;
@@ -54,6 +54,13 @@ public abstract class PlayerList {
     @Getter
     private CraftServer cserver;
     private final Map<String,EntityPlayer> playersByName = new org.spigotmc.CaseInsensitiveMap<>();
+
+    // ScalaSpigot start
+    public void sortPlayerList(Comparator<EntityPlayer> comparator)
+    {
+        players.sort(comparator);
+    }
+    // ScalaSpigot end
 
     public PlayerList(MinecraftServer minecraftserver) {
         this.cserver = minecraftserver.server = new CraftServer(minecraftserver, this);
