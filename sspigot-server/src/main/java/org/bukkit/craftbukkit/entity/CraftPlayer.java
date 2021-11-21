@@ -45,6 +45,7 @@ import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 import org.github.paperspigot.Title;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -127,7 +128,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	// ScalaSpigot start
 	@Getter
 	@Setter
-	@Nullable
+	@NotNull
 	private KnockbackPreset knockbackConfig = KnockbackHandler.INSTANCE.getActivePreset();
 	// ScalaSpigot end
 

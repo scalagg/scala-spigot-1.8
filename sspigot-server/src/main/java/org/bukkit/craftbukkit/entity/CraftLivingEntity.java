@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
     // ScalaSpigot start
     @Getter
     @Setter
-    @Nullable
+    @NotNull
     private KnockbackPreset knockbackConfig = KnockbackHandler.INSTANCE.getActivePreset();
     // ScalaSpigot end
 

@@ -1,4 +1,4 @@
-package gg.scala.server
+package gg.scala.server.command
 
 import gg.scala.spigot.ScalaSpigot
 import gg.scala.spigot.preset.KnockbackHandler
@@ -21,8 +21,9 @@ class KnockbackCommand : BukkitCommand("knockback")
         args: Array<String>
     ): Boolean
     {
-        if (!testPermission(sender))
+        if (!sender.isOp)
         {
+            sender.sendMessage("${ChatColor.RED}You do not have permission to perform this command!")
             return true
         }
 

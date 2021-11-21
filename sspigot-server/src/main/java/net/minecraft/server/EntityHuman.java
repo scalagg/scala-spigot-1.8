@@ -1012,7 +1012,7 @@ public abstract class EntityHuman extends EntityLiving {
 
                 if (damaged) {
                     if (i > 0) {
-                        final KnockbackPreset knockbackPreset = KnockbackHandler.INSTANCE.getActivePreset();
+                        final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
                         entity.g(
                                 (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()), knockbackPreset.getExtraVertical(),

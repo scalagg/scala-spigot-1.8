@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import gg.scala.server.KnockbackCommand;
-import gg.scala.server.PotionCommand;
+import gg.scala.server.command.KnockbackCommand;
+import gg.scala.server.command.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

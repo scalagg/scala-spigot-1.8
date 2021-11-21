@@ -3,7 +3,8 @@ package gg.scala.spigot.preset
 open class PresetHandler<T : Preset> {
 
     val presets = mutableListOf<T>()
-    var activePreset: T? = null
+
+    lateinit var activePreset: T
 
     open fun initialLoad() {
 

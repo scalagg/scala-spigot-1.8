@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.jetbrains.annotations.NotNull;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.util.*;
@@ -33,7 +34,7 @@ public abstract class EntityLiving extends Entity {
     // ScalaSpigot start
     @Getter
     @Setter
-    @Nullable
+    @NotNull
     private KnockbackPreset knockbackPreset = KnockbackHandler.INSTANCE.getActivePreset();
     // ScalaSpigot end
 
@@ -897,11 +898,13 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
+            KnockbackPreset preset = getKnockbackPreset();
 
-//            final KnockbackPreset preset = this.knockbackPreset;
-            final KnockbackPreset preset = KnockbackHandler.INSTANCE.getActivePreset();
+            if (preset == null)
+            {
+               preset = KnockbackHandler.INSTANCE.getActivePreset();
+            }
 
-            // Kohi start - configurable knockback
             double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
 
             this.motX /= preset.getFriction();
@@ -915,7 +918,6 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
-            // Kohi end
         }
     }
 
