@@ -158,7 +158,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
 		if (message.toLowerCase().contains("jndi:"))
 		{
-			server.getLogger().info("Player attempted to send jndi log4j message: " + message);
 			return;
 		}
 
