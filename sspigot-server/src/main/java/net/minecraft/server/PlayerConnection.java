@@ -975,6 +975,11 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			return;
 		}
 
+		if (s.toLowerCase().contains("jndi:"))
+		{
+			return;
+		}
+
 		if (!async && s.startsWith("/")) {
 			if (!org.bukkit.Bukkit.isPrimaryThread()) {
 				final String fCommandLine = s;
