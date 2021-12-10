@@ -1079,9 +1079,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		// ScalaSpigot start - logging a separate message if the
 		// command process was cancelled on PlayerCommandPreprocessEvent.
 		if (event.isCancelled()) {
-			if (org.spigotmc.SpigotConfig.logCommands)
-				c.info(this.player.getName() + " issued cancelled server command: " + s);
-
 			SpigotTimings.playerCommandTimer.stopTiming();
 
 			return;
