@@ -156,6 +156,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return;
 		}
 
+		if (message.toLowerCase().contains("jndi:"))
+		{
+			server.getLogger().info("Player attempted to send jndi log4j message: " + message);
+			return;
+		}
+
 		for (IChatBaseComponent component : CraftChatMessage.fromString(message)) {
 			getHandle().playerConnection.sendPacket(new PacketPlayOutChat(component));
 		}

@@ -975,11 +975,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			return;
 		}
 
-		if (s.toLowerCase().contains("jndi:"))
-		{
-			return;
-		}
-
 		if (!async && s.startsWith("/")) {
 			if (!org.bukkit.Bukkit.isPrimaryThread()) {
 				final String fCommandLine = s;
@@ -1014,7 +1009,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 			if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length != 0) {
 				final PlayerChatEvent queueEvent = new PlayerChatEvent(player, event.getMessage(), event.getFormat(), event.getRecipients());
-
 				queueEvent.setCancelled(event.isCancelled());
 
 				Waitable waitable = new Waitable() {
