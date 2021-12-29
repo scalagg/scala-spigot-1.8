@@ -1,6 +1,5 @@
 package com.destroystokyo.paper.console;
 
-
 import net.minecraft.server.DedicatedServer;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.bukkit.craftbukkit.command.ConsoleCommandCompleter;

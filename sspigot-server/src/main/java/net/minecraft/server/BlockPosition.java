@@ -4,6 +4,7 @@ import com.google.common.collect.AbstractIterator;
 import net.minecraft.server.BaseBlockPosition;
 import net.minecraft.server.Entity;
 import net.minecraft.server.*;
+import net.minecrell.terminalconsole.TerminalConsoleAppender;
 
 import java.util.Iterator;
 

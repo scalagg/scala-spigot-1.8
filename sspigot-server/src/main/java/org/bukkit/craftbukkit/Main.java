@@ -154,12 +154,7 @@ public class Main {
         } else if (options.has("v")) {
             System.out.println(CraftServer.class.getPackage().getImplementationVersion());
         } else {
-            String path = new File(".").getAbsolutePath();
 
-            if (path.contains("!") || path.contains("")) {
-                System.err.println("Cannot run server in a directory with ! or  in the pathname. Please rename the affected folders and try again.");
-                return;
-            }
 
             try {
                 if (options.has("nojline")) {
@@ -187,7 +182,7 @@ public class Main {
                     System.out.println("Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions.");
                 }
 
-                System.out.println("Loading libraries, please wait...");
+                System.out.println("Libraries are loading, please wait...");
 
                 MinecraftServer.main(options);
             } catch (Throwable t) {
