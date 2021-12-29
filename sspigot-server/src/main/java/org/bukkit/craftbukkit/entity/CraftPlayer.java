@@ -7,7 +7,6 @@ import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
-import jline.internal.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.BaseComponent;

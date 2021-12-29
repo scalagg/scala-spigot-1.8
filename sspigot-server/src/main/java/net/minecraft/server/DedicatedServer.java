@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.destroystokyo.paper.console.PaperConsole;
 import com.google.common.collect.Lists;
 import gg.scala.server.command.KnockbackCommand;
 import gg.scala.server.command.PotionCommand;
@@ -64,24 +65,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                     return;
                 }
 
-                jline.console.ConsoleReader bufferedreader = reader;
-                String s;
-
-                try {
-                    while (!isStopped() && isRunning()) {
-                        if (org.bukkit.craftbukkit.Main.useJline) {
-                            s = bufferedreader.readLine(">", null);
-                        } else {
-                            s = bufferedreader.readLine();
-                        }
-                        if (s != null && s.trim().length() > 0) {
-                            issueCommand(s, net.minecraft.server.DedicatedServer.this);
-                        }
-                    }
-                } catch (IOException ioexception) {
-                    LOGGER.error("Exception handling console input", ioexception);
-                }
-
+                new PaperConsole(DedicatedServer.this).start();
             }
         };
 
@@ -97,14 +81,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         global.addHandler(new org.bukkit.craftbukkit.util.ForwardLogHandler());
 
         final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
-
-        for (org.apache.logging.log4j.core.Appender appender : logger.getAppenders().values()) {
-            if (appender instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
-                logger.removeAppender(appender);
-            }
-        }
-
-        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
         System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));

@@ -17,7 +17,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
-import jline.console.ConsoleReader;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.WorldType;
 import net.minecraft.server.*;
@@ -88,7 +87,7 @@ public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
     // ScalaSpigot start
     private final String serverName = "ScalaSpigot";
-    private final String serverVersion = "HORS-1";
+    private final String serverVersion = "DEV";
     // ScalaSpigot end
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
@@ -1044,10 +1043,6 @@ public final class CraftServer implements Server {
     @Override
     public Logger getLogger() {
         return logger;
-    }
-
-    public ConsoleReader getReader() {
-        return console.reader;
     }
 
     @Override

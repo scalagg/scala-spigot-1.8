@@ -1080,7 +1080,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		// command process was cancelled on PlayerCommandPreprocessEvent.
 		if (event.isCancelled()) {
 			SpigotTimings.playerCommandTimer.stopTiming();
-
 			return;
 		}
 

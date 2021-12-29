@@ -1,46 +1,58 @@
 package org.bukkit.craftbukkit.command;
 
-import jline.console.completer.Completer;
+import net.minecraft.server.DedicatedServer;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.util.Waitable;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.ParsedLine;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public class ConsoleCommandCompleter implements Completer {
-    private final CraftServer server;
+    private final DedicatedServer server;
 
-    public ConsoleCommandCompleter(CraftServer server) {
+    public ConsoleCommandCompleter(DedicatedServer server) {
         this.server = server;
     }
 
-    public int complete(final String buffer, final int cursor, final List<CharSequence> candidates) {
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+        final CraftServer server = this.server.server;
+        final String buffer = line.line();
+        // Paper end
+
         Waitable<List<String>> waitable = new Waitable<List<String>>() {
             @Override
             protected List<String> evaluate() {
                 return server.getCommandMap().tabComplete(server.getConsoleSender(), buffer);
             }
         };
-        this.server.getServer().processQueue.add(waitable);
+
+        server.getServer().processQueue.add(waitable);
+
         try {
             List<String> offers = waitable.get();
             if (offers == null) {
-                return cursor;
+                return;
             }
-            candidates.addAll(offers);
 
-            final int lastSpace = buffer.lastIndexOf(' ');
-            if (lastSpace == -1) {
-                return cursor - buffer.length();
-            } else {
-                return cursor - (buffer.length() - lastSpace - 1);
+            // Paper start - JLine update
+            for (String completion : offers) {
+                if (completion.isEmpty()) {
+                    continue;
+                }
+
+                candidates.add(new Candidate(completion));
             }
+            // Paper end
         } catch (ExecutionException e) {
-            this.server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
+            server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return cursor;
     }
 }

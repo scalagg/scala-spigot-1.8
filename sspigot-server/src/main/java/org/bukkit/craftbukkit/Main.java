@@ -3,7 +3,7 @@ package org.bukkit.craftbukkit;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
-import org.fusesource.jansi.AnsiConsole;
+import net.minecrell.terminalconsole.TerminalConsoleAppender;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,45 +156,35 @@ public class Main {
         } else {
             String path = new File(".").getAbsolutePath();
 
-            if (path.contains("!") || path.contains("+")) {
-                System.err.println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
+            if (path.contains("!") || path.contains("")) {
+                System.err.println("Cannot run server in a directory with ! or  in the pathname. Please rename the affected folders and try again.");
                 return;
             }
 
             try {
-                // This trick bypasses Maven Shade's clever rewriting of our getProperty call when using String literals
-                String jline_UnsupportedTerminal = new String(new char[] {'j','l','i','n','e','.','U','n','s','u','p','p','o','r','t','e','d','T','e','r','m','i','n','a','l'});
-                String jline_terminal = new String(new char[] {'j','l','i','n','e','.','t','e','r','m','i','n','a','l'});
-
-                useJline = !(jline_UnsupportedTerminal).equals(System.getProperty(jline_terminal));
-
                 if (options.has("nojline")) {
-                    System.setProperty("user.language", "en");
+                    System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
                     useJline = false;
-                }
-
-                if (useJline) {
-                    AnsiConsole.systemInstall();
-                } else {
-                    System.setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
                 }
 
                 if (options.has("noconsole")) {
                     useConsole = false;
+                    useJline = false; // Paper
+                    System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false"); // Paper
                 }
 
                 int maxPermGen = 0; // In kb
 
                 for (String s : java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments()) {
                     if (s.startsWith("-XX:MaxPermSize")) {
-                        maxPermGen = Integer.parseInt( s.replaceAll( "[^\\d]", "" ) );
+                        maxPermGen = Integer.parseInt(s.replaceAll("[^\\d]", ""));
                         maxPermGen <<= 10 * ("kmg".indexOf(Character.toLowerCase(s.charAt(s.length() - 1))));
                     }
                 }
 
-                if (Float.parseFloat(System.getProperty( "java.class.version")) < 52 && maxPermGen < (128 << 10)) { // 128mb
-                    System.out.println( "Warning, your max perm gen size is not set or less than 128mb. It is recommended you restart Java with the following argument: -XX:MaxPermSize=128M" );
-                    System.out.println( "Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions." );
+                if (Float.parseFloat(System.getProperty("java.class.version")) < 52 && maxPermGen < (128 << 10)) { // 128mb
+                    System.out.println("Warning, your max perm gen size is not set or less than 128mb. It is recommended you restart Java with the following argument: -XX:MaxPermSize=128M");
+                    System.out.println("Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions.");
                 }
 
                 System.out.println("Loading libraries, please wait...");

@@ -14,7 +14,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
-import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -98,7 +97,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     public OptionSet options;
     public org.bukkit.command.ConsoleCommandSender console;
     public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
-    public ConsoleReader reader;
     public static int currentTick = 0;
     public final Thread primaryThread;
     public Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<>();
@@ -116,29 +114,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.Y = this.V.createProfileRepository();
 
         this.options = options;
-
-        if (System.console() == null && System.getProperty("jline.terminal") == null) {
-            System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
-
-            Main.useJline = false;
-        }
-
-        try {
-            reader = new ConsoleReader(System.in, System.out);
-            reader.setExpandEvents(false);
-        } catch (Throwable e) {
-            try {
-                System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
-                System.setProperty("user.language", "en");
-
-                Main.useJline = false;
-
-                reader = new ConsoleReader(System.in, System.out);
-                reader.setExpandEvents(false);
-            } catch (IOException ex) {
-                LOGGER.warn((String) null, ex);
-            }
-        }
 
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
 
@@ -601,7 +576,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 LOGGER.error("Exception stopping the server", throwable1);
             } finally {
                 try {
-                    reader.getTerminal().restore();
+                    net.minecrell.terminalconsole.TerminalConsoleAppender.close();
                 } catch (Exception ignored) {
                 }
 
@@ -988,7 +963,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     }
 
     public void sendMessage(IChatBaseComponent ichatbasecomponent) {
-        LOGGER.info(ichatbasecomponent.c());
+        MinecraftServer.LOGGER.info(org.bukkit.craftbukkit.util.CraftChatMessage.fromComponent(ichatbasecomponent, net.minecraft.server.EnumChatFormat.WHITE));
     }
 
     public boolean a(int i, String s) {

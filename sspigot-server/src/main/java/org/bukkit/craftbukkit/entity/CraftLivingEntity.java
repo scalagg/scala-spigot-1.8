@@ -2,7 +2,6 @@ package org.bukkit.craftbukkit.entity;
 
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
-import jline.internal.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.*;

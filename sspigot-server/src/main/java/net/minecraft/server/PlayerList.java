@@ -64,8 +64,7 @@ public abstract class PlayerList {
 
     public PlayerList(MinecraftServer minecraftserver) {
         this.cserver = minecraftserver.server = new CraftServer(minecraftserver, this);
-        minecraftserver.console = org.bukkit.craftbukkit.command.ColouredConsoleSender.getInstance();
-        minecraftserver.reader.addCompleter(new org.bukkit.craftbukkit.command.ConsoleCommandCompleter(minecraftserver.server));
+        minecraftserver.console = new com.destroystokyo.paper.console.TerminalConsoleCommandSender();
 
         this.k = new GameProfileBanList(a);
         this.l = new IpBanList(b);
