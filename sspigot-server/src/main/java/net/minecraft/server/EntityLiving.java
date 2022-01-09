@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -26,7 +27,7 @@ import java.util.*;
 
 public abstract class EntityLiving extends Entity {
 
-    private static final UUID a = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
+    private static final UUID a = FastUUID.parseUUID("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier b = (new AttributeModifier(a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
 
     // ScalaSpigot start

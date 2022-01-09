@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.eatthepath.uuid.FastUUID;
 import com.google.common.collect.Maps;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
@@ -193,7 +194,7 @@ public class MobEffectList {
     }
 
     public net.minecraft.server.MobEffectList a(IAttribute iattribute, String s, double d0, int i) {
-        AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString(s), this.a(), d0, i);
+        AttributeModifier attributemodifier = new AttributeModifier(FastUUID.parseUUID(s), this.a(), d0, i);
 
         this.J.put(iattribute, attributemodifier);
         return this;

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -293,7 +294,7 @@ public class UserCache {
                         UUID uuid;
 
                         try {
-                            uuid = UUID.fromString(s);
+                            uuid = FastUUID.parseUUID(s);
                         } catch (Throwable throwable) {
                             return null;
                         }

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.eatthepath.uuid.FastUUID;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class EntityZombie extends EntityMonster {
 
     protected static final IAttribute a = (new AttributeRanged((IAttribute) null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).a("Spawn Reinforcements Chance");
-    private static final UUID b = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+    private static final UUID b = FastUUID.parseUUID("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier c = new AttributeModifier(b, "Baby speed boost", org.github.paperspigot.PaperSpigotConfig.babyZombieMovementSpeed, 1); // PaperSpigot - Configurable baby zombie movement speed
     private final PathfinderGoalBreakDoor bm = new PathfinderGoalBreakDoor(this);
     private int bn;

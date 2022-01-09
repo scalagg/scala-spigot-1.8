@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import org.bukkit.Location;
@@ -11,7 +12,7 @@ import java.util.*;
 
 public class EntityEnderman extends EntityMonster {
 
-    private static final UUID a = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
+    private static final UUID a = FastUUID.parseUUID("020E0DFB-87AE-4653-9556-831010E291A0");
     private static final AttributeModifier b = (new AttributeModifier(a, "Attacking speed boost", 0.15000000596046448D, 0)).a(false);
     private static final Set<Block> c = Sets.newIdentityHashSet();
     private boolean bm;
