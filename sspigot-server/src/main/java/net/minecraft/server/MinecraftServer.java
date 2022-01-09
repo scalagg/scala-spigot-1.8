@@ -39,6 +39,7 @@ import java.util.concurrent.FutureTask;
 public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
 
     public static final Logger LOGGER = LogManager.getLogger();
+
     public static final File a = new File("usercache.json");
     public static long LAST_TICK_TIME;
     private static net.minecraft.server.MinecraftServer l;

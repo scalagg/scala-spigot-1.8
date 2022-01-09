@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.command;
 
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -26,7 +27,7 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
 	}
 
 	public void sendRawMessage(String message) {
-		System.out.println(ChatColor.stripColor(message));
+		MinecraftServer.LOGGER.info(message);
 	}
 
 	public void sendMessage(String[] messages) {
