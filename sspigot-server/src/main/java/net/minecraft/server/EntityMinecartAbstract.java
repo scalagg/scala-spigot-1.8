@@ -250,7 +250,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
                 double d0 = this.locX + (this.e - this.locX) / (double) this.d;
                 double d1 = this.locY + (this.f - this.locY) / (double) this.d;
                 double d2 = this.locZ + (this.g - this.locZ) / (double) this.d;
-                double d3 = MathHelper.g(this.h - (double) this.yaw);
+                double d3 = gg.scala.spigot.util.MathHelper.g(this.h - (double) this.yaw);
 
                 this.yaw = (float) ((double) this.yaw + d3 / (double) this.d);
                 this.pitch = (float) ((double) this.pitch + (this.i - (double) this.pitch) / (double) this.d);
@@ -267,10 +267,10 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
             this.lastY = this.locY;
             this.lastZ = this.locZ;
             this.motY -= 0.03999999910593033D;
-            int j = MathHelper.floor(this.locX);
+            int j = gg.scala.spigot.util.MathHelper.floorD(this.locX);
 
-            i = MathHelper.floor(this.locY);
-            int k = MathHelper.floor(this.locZ);
+            i = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+            int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 
             if (BlockMinecartTrackAbstract.e(this.world, new BlockPosition(j, i - 1, k))) {
                 --i;
@@ -300,7 +300,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
                 }
             }
 
-            double d6 = (double) MathHelper.g(this.yaw - this.lastYaw);
+            double d6 = (double) gg.scala.spigot.util.MathHelper.g(this.yaw - this.lastYaw);
 
             if (d6 < -170.0D || d6 >= 170.0D) {
                 this.yaw += 180.0F;
@@ -353,8 +353,8 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
     protected void n() {
         double d0 = this.m();
 
-        this.motX = MathHelper.a(this.motX, -d0, d0);
-        this.motZ = MathHelper.a(this.motZ, -d0, d0);
+        this.motX = gg.scala.spigot.util.MathHelper.a(this.motX, -d0, d0);
+        this.motZ = gg.scala.spigot.util.MathHelper.a(this.motZ, -d0, d0);
         if (this.onGround) {
             // CraftBukkit start - replace magic numbers with our variables
             this.motX *= this.derailedX;
@@ -498,12 +498,12 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
 
         double d13 = this.m();
 
-        d11 = MathHelper.a(d11, -d13, d13);
-        d12 = MathHelper.a(d12, -d13, d13);
+        d11 = gg.scala.spigot.util.MathHelper.a(d11, -d13, d13);
+        d12 = gg.scala.spigot.util.MathHelper.a(d12, -d13, d13);
         this.move(d11, 0.0D, d12);
-        if (aint[0][1] != 0 && MathHelper.floor(this.locX) - blockposition.getX() == aint[0][0] && MathHelper.floor(this.locZ) - blockposition.getZ() == aint[0][2]) {
+        if (aint[0][1] != 0 && gg.scala.spigot.util.MathHelper.floorD(this.locX) - blockposition.getX() == aint[0][0] && gg.scala.spigot.util.MathHelper.floorD(this.locZ) - blockposition.getZ() == aint[0][2]) {
             this.setPosition(this.locX, this.locY + (double) aint[0][1], this.locZ);
-        } else if (aint[1][1] != 0 && MathHelper.floor(this.locX) - blockposition.getX() == aint[1][0] && MathHelper.floor(this.locZ) - blockposition.getZ() == aint[1][2]) {
+        } else if (aint[1][1] != 0 && gg.scala.spigot.util.MathHelper.floorD(this.locX) - blockposition.getX() == aint[1][0] && gg.scala.spigot.util.MathHelper.floorD(this.locZ) - blockposition.getZ() == aint[1][2]) {
             this.setPosition(this.locX, this.locY + (double) aint[1][1], this.locZ);
         }
 
@@ -522,8 +522,8 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
             this.setPosition(this.locX, vec3d1.b, this.locZ);
         }
 
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 
         if (i != blockposition.getX() || j != blockposition.getZ()) {
             d5 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ);
@@ -580,9 +580,9 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
     }
 
     public Vec3D k(double d0, double d1, double d2) {
-        int i = MathHelper.floor(d0);
-        int j = MathHelper.floor(d1);
-        int k = MathHelper.floor(d2);
+        int i = gg.scala.spigot.util.MathHelper.floorD(d0);
+        int j = gg.scala.spigot.util.MathHelper.floorD(d1);
+        int k = gg.scala.spigot.util.MathHelper.floorD(d2);
 
         if (BlockMinecartTrackAbstract.e(this.world, new BlockPosition(i, j - 1, k))) {
             --j;
@@ -706,7 +706,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
 
                     // CraftBukkit - collision
                     if (d2 >= 9.999999747378752E-5D && !collisionEvent.isCollisionCancelled()) {
-                        d2 = (double) MathHelper.sqrt(d2);
+                        d2 = (double) gg.scala.spigot.util.MathHelper.sqrt(d2);
                         d0 /= d2;
                         d1 /= d2;
                         double d3 = 1.0D / d2;
@@ -727,7 +727,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
                             double d4 = entity.locX - this.locX;
                             double d5 = entity.locZ - this.locZ;
                             Vec3D vec3d = (new Vec3D(d4, 0.0D, d5)).a();
-                            Vec3D vec3d1 = (new Vec3D((double) MathHelper.cos(this.yaw * 3.1415927F / 180.0F), 0.0D, (double) MathHelper.sin(this.yaw * 3.1415927F / 180.0F))).a();
+                            Vec3D vec3d1 = (new Vec3D((double) gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F), 0.0D, (double) gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F))).a();
                             double d6 = Math.abs(vec3d.b(vec3d1));
 
                             if (d6 < 0.800000011920929D) {

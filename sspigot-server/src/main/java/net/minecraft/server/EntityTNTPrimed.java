@@ -160,7 +160,7 @@ public class EntityTNTPrimed extends Entity {
         double d4 = this.locY + this.getHeadHeight() - d1;
         double d5 = this.locZ - d2;
 
-        return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+        return (double) gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
     }
 
     @Override

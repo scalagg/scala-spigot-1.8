@@ -33,13 +33,13 @@ public class WorldGenPackedIce2 extends WorldGenerator {
             for (k = 0; k < i; ++k) {
                 float f = (1.0F - (float) k / (float) i) * (float) j;
 
-                l = MathHelper.f(f);
+                l = gg.scala.spigot.util.MathHelper.f(f);
 
                 for (int i1 = -l; i1 <= l; ++i1) {
-                    float f1 = (float) MathHelper.a(i1) - 0.25F;
+                    float f1 = (float) gg.scala.spigot.util.MathHelper.a(i1) - 0.25F;
 
                     for (int j1 = -l; j1 <= l; ++j1) {
-                        float f2 = (float) MathHelper.a(j1) - 0.25F;
+                        float f2 = (float) gg.scala.spigot.util.MathHelper.a(j1) - 0.25F;
 
                         if ((i1 == 0 && j1 == 0 || f1 * f1 + f2 * f2 <= f * f) && (i1 != -l && i1 != l && j1 != -l && j1 != l || random.nextFloat() <= 0.75F)) {
                             Block block = world.getType(blockposition.a(i1, k, j1)).getBlock();

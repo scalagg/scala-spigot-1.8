@@ -96,10 +96,10 @@ public class ActivationRange
             animalBB = player.getBoundingBox().grow( animalActivationRange, 256, animalActivationRange );
             monsterBB = player.getBoundingBox().grow( monsterActivationRange, 256, monsterActivationRange );
 
-            int i = MathHelper.floor( maxBB.a / 16.0D );
-            int j = MathHelper.floor( maxBB.d / 16.0D );
-            int k = MathHelper.floor( maxBB.c / 16.0D );
-            int l = MathHelper.floor( maxBB.f / 16.0D );
+            int i = gg.scala.spigot.util.MathHelper.floorD( maxBB.a / 16.0D );
+            int j = gg.scala.spigot.util.MathHelper.floorD( maxBB.d / 16.0D );
+            int k = gg.scala.spigot.util.MathHelper.floorD( maxBB.c / 16.0D );
+            int l = gg.scala.spigot.util.MathHelper.floorD( maxBB.f / 16.0D );
 
             for ( int i1 = i; i1 <= j; ++i1 )
             {
@@ -254,8 +254,8 @@ public class ActivationRange
         {
             isActive = false;
         }
-        int x = MathHelper.floor( entity.locX );
-        int z = MathHelper.floor( entity.locZ );
+        int x = gg.scala.spigot.util.MathHelper.floorD( entity.locX );
+        int z = gg.scala.spigot.util.MathHelper.floorD( entity.locZ );
         // Make sure not on edge of unloaded chunk
         Chunk chunk = entity.world.getChunkIfLoaded( x >> 4, z >> 4 );
         if ( isActive && !( chunk != null && chunk.areNeighborsLoaded( 1 ) ) )

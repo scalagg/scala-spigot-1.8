@@ -165,7 +165,7 @@ public class EntityFallingBlock extends Entity {
         Block block = this.block.getBlock();
 
         if (this.hurtEntities) {
-            int i = MathHelper.f(f - 1.0F);
+            int i = gg.scala.spigot.util.MathHelper.f(f - 1.0F);
 
             if (i > 0) {
                 ArrayList arraylist = Lists.newArrayList(this.world.getEntities(this, this.getBoundingBox()));
@@ -177,7 +177,7 @@ public class EntityFallingBlock extends Entity {
                     Entity entity = (Entity) iterator.next();
 
                     CraftEventFactory.entityDamage = this; // CraftBukkit
-                    entity.damageEntity(damagesource, (float) Math.min(MathHelper.d((float) i * this.fallHurtAmount), this.fallHurtMax));
+                    entity.damageEntity(damagesource, (float) Math.min(gg.scala.spigot.util.MathHelper.d((float) i * this.fallHurtAmount), this.fallHurtMax));
                     CraftEventFactory.entityDamage = null; // CraftBukkit
                 }
 
@@ -290,7 +290,7 @@ public class EntityFallingBlock extends Entity {
         double d4 = this.locY + this.getHeadHeight() - d1;
         double d5 = this.locZ - d2;
 
-        return (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+        return (double) gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
     }
 
     @Override

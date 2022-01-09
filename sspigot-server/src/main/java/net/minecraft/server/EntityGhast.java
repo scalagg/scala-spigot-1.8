@@ -267,7 +267,7 @@ public class EntityGhast extends EntityFlying implements IMonster {
 
                 if (this.h-- <= 0) {
                     this.h += this.g.bc().nextInt(5) + 2;
-                    d3 = (double) MathHelper.sqrt(d3);
+                    d3 = (double) gg.scala.spigot.util.MathHelper.sqrt(d3);
                     if (this.b(this.b, this.c, this.d, d3)) {
                         this.g.motX += d0 / d3 * 0.1D;
                         this.g.motY += d1 / d3 * 0.1D;

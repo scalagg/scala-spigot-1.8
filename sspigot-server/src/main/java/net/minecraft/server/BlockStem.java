@@ -94,7 +94,7 @@ public class BlockStem extends BlockPlant implements IBlockFragilePlantElement {
     }
 
     public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
-        int i = ((Integer) iblockdata.get(AGE)).intValue() + MathHelper.nextInt(world.random, 2, 5);
+        int i = ((Integer) iblockdata.get(AGE)).intValue() + gg.scala.spigot.util.MathHelper.nextInt(world.random, 2, 5);
 
         // world.setTypeAndData(blockposition, iblockdata.set(BlockStem.AGE, Integer.valueOf(Math.min(7, i))), 2);
         CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, Math.min(7, i)); // CraftBukkit

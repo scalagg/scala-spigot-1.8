@@ -51,22 +51,22 @@ public class EntityFishingHook extends Entity {
         this.owner.hookedFish = this;
         this.setSize(0.25F, 0.25F);
         this.setPositionRotation(entityhuman.locX, entityhuman.locY + (double) entityhuman.getHeadHeight(), entityhuman.locZ, entityhuman.yaw, entityhuman.pitch);
-        this.locX -= (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locX -= (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.locY -= 0.10000000149011612D;
-        this.locZ -= (double) (MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locZ -= (double) (gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.setPosition(this.locX, this.locY, this.locZ);
         float f = 0.4F;
 
-        this.motX = (double) (-MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-        this.motZ = (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-        this.motY = (double) (-MathHelper.sin(this.pitch / 180.0F * 3.1415927F) * f);
+        this.motX = (double) (-gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+        this.motZ = (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+        this.motY = (double) (-gg.scala.spigot.util.MathHelper.sin(this.pitch / 180.0F * 3.1415927F) * f);
         this.c(this.motX, this.motY, this.motZ, 1.5F, 1.0F);
     }
 
     protected void h() {}
 
     public void c(double d0, double d1, double d2, float f, float f1) {
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
@@ -80,7 +80,7 @@ public class EntityFishingHook extends Entity {
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -93,7 +93,7 @@ public class EntityFishingHook extends Entity {
             double d0 = this.locX + (this.aA - this.locX) / (double) this.az;
             double d1 = this.locY + (this.aB - this.locY) / (double) this.az;
             double d2 = this.locZ + (this.aC - this.locZ) / (double) this.az;
-            double d3 = MathHelper.g(this.aD - (double) this.yaw);
+            double d3 = gg.scala.spigot.util.MathHelper.g(this.aD - (double) this.yaw);
 
             this.yaw = (float) ((double) this.yaw + d3 / (double) this.az);
             this.pitch = (float) ((double) this.pitch + (this.aE - (double) this.pitch) / (double) this.az);
@@ -207,7 +207,7 @@ public class EntityFishingHook extends Entity {
 
             if (!this.as) {
                 this.move(this.motX, this.motY, this.motZ);
-                float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                float f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
                 this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 
@@ -285,17 +285,17 @@ public class EntityFishingHook extends Entity {
                             if (this.ax <= 0) {
                                 this.motY -= 0.20000000298023224D;
                                 this.makeSound("random.splash", 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-                                f3 = (float) MathHelper.floor(this.getBoundingBox().b);
+                                f3 = (float) gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b);
                                 worldserver.a(EnumParticle.WATER_BUBBLE, this.locX, (double) (f3 + 1.0F), this.locZ, (int) (1.0F + this.width * 20.0F), (double) this.width, 0.0D, (double) this.width, 0.20000000298023224D, new int[0]);
                                 worldserver.a(EnumParticle.WATER_WAKE, this.locX, (double) (f3 + 1.0F), this.locZ, (int) (1.0F + this.width * 20.0F), (double) this.width, 0.0D, (double) this.width, 0.20000000298023224D, new int[0]);
-                                this.av = MathHelper.nextInt(this.random, 10, 30);
+                                this.av = gg.scala.spigot.util.MathHelper.nextInt(this.random, 10, 30);
                             } else {
                                 this.ay = (float) ((double) this.ay + this.random.nextGaussian() * 4.0D);
                                 f3 = this.ay * 0.017453292F;
-                                f5 = (float) MathHelper.sin(f3);
-                                f4 = MathHelper.cos(f3);
+                                f5 = (float) gg.scala.spigot.util.MathHelper.sin(f3);
+                                f4 = (float) gg.scala.spigot.util.MathHelper.cos(f3);
                                 d8 = this.locX + (double) (f5 * (float) this.ax * 0.1F);
-                                d12 = (double) ((float) MathHelper.floor(this.getBoundingBox().b) + 1.0F);
+                                d12 = (double) ((float) gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b) + 1.0F);
                                 d11 = this.locZ + (double) (f4 * (float) this.ax * 0.1F);
                                 block = worldserver.getType(new BlockPosition((int) d8, (int) d12 - 1, (int) d11)).getBlock();
                                 if (block == Blocks.WATER || block == Blocks.FLOWING_WATER) {
@@ -322,11 +322,11 @@ public class EntityFishingHook extends Entity {
                             }
 
                             if (this.random.nextFloat() < f3) {
-                                f5 = MathHelper.a(this.random, 0.0F, 360.0F) * 0.017453292F;
-                                f4 = MathHelper.a(this.random, 25.0F, 60.0F);
-                                d8 = this.locX + (double) (MathHelper.sin(f5) * f4 * 0.1F);
-                                d12 = (double) ((float) MathHelper.floor(this.getBoundingBox().b) + 1.0F);
-                                d11 = this.locZ + (double) (MathHelper.cos(f5) * f4 * 0.1F);
+                                f5 = gg.scala.spigot.util.MathHelper.a(this.random, 0.0F, 360.0F) * 0.017453292F;
+                                f4 = gg.scala.spigot.util.MathHelper.a(this.random, 25.0F, 60.0F);
+                                d8 = this.locX + (double) (gg.scala.spigot.util.MathHelper.sin(f5) * f4 * 0.1F);
+                                d12 = (double) ((float) gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b) + 1.0F);
+                                d11 = this.locZ + (double) (gg.scala.spigot.util.MathHelper.cos(f5) * f4 * 0.1F);
                                 block = worldserver.getType(new BlockPosition((int) d8, (int) d12 - 1, (int) d11)).getBlock();
                                 if (block == Blocks.WATER || block == Blocks.FLOWING_WATER) {
                                     worldserver.a(EnumParticle.WATER_SPLASH, d8, d12, d11, 2 + this.random.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D, new int[0]);
@@ -334,11 +334,11 @@ public class EntityFishingHook extends Entity {
                             }
 
                             if (this.aw <= 0) {
-                                this.ay = MathHelper.a(this.random, 0.0F, 360.0F);
-                                this.ax = MathHelper.nextInt(this.random, 20, 80);
+                                this.ay = gg.scala.spigot.util.MathHelper.a(this.random, 0.0F, 360.0F);
+                                this.ax = gg.scala.spigot.util.MathHelper.nextInt(this.random, 20, 80);
                             }
                         } else {
-                            this.aw = MathHelper.nextInt(this.random, this.world.paperSpigotConfig.fishingMinTicks, this.world.paperSpigotConfig.fishingMaxTicks); // PaperSpigot - Configurable fishing tick range
+                            this.aw = gg.scala.spigot.util.MathHelper.nextInt(this.random, this.world.paperSpigotConfig.fishingMinTicks, this.world.paperSpigotConfig.fishingMaxTicks); // PaperSpigot - Configurable fishing tick range
                             this.aw -= EnchantmentManager.h(this.owner) * 20 * 5;
                         }
                     }
@@ -407,11 +407,11 @@ public class EntityFishingHook extends Entity {
                 double d0 = this.owner.locX - this.locX;
                 double d1 = this.owner.locY - this.locY;
                 double d2 = this.owner.locZ - this.locZ;
-                double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                double d3 = (double) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
                 double d4 = 0.1D;
 
                 this.hooked.motX += d0 * d4;
-                this.hooked.motY += d1 * d4 + (double) MathHelper.sqrt(d3) * 0.08D;
+                this.hooked.motY += d1 * d4 + (double) gg.scala.spigot.util.MathHelper.sqrt(d3) * 0.08D;
                 this.hooked.motZ += d2 * d4;
                 b0 = 3;
             } else if (this.av > 0) {
@@ -428,11 +428,11 @@ public class EntityFishingHook extends Entity {
                 double d5 = this.owner.locX - this.locX;
                 double d6 = this.owner.locY - this.locY;
                 double d7 = this.owner.locZ - this.locZ;
-                double d8 = (double) MathHelper.sqrt(d5 * d5 + d6 * d6 + d7 * d7);
+                double d8 = (double) gg.scala.spigot.util.MathHelper.sqrt(d5 * d5 + d6 * d6 + d7 * d7);
                 double d9 = 0.1D;
 
                 entityitem.motX = d5 * d9;
-                entityitem.motY = d6 * d9 + (double) MathHelper.sqrt(d8) * 0.08D;
+                entityitem.motY = d6 * d9 + (double) gg.scala.spigot.util.MathHelper.sqrt(d8) * 0.08D;
                 entityitem.motZ = d7 * d9;
                 this.world.addEntity(entityitem);
                 // CraftBukkit start - this.random.nextInt(6) + 1 -> playerFishEvent.getExpToDrop()
@@ -477,8 +477,8 @@ public class EntityFishingHook extends Entity {
         float f1 = 0.1F - (float) i * 0.025F - (float) j * 0.01F;
         float f2 = 0.05F + (float) i * 0.01F - (float) j * 0.01F;
 
-        f1 = MathHelper.a(f1, 0.0F, 1.0F);
-        f2 = MathHelper.a(f2, 0.0F, 1.0F);
+        f1 = gg.scala.spigot.util.MathHelper.a(f1, 0.0F, 1.0F);
+        f2 = gg.scala.spigot.util.MathHelper.a(f2, 0.0F, 1.0F);
         if (f < f1) {
             this.owner.b(StatisticList.D);
             return ((PossibleFishingResult) WeightedRandom.a(this.random, d)).a(this.random);

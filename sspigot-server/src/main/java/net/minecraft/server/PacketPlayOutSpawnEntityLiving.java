@@ -31,9 +31,9 @@ public class PacketPlayOutSpawnEntityLiving implements Packet<PacketListenerPlay
 	public PacketPlayOutSpawnEntityLiving(EntityLiving var1) {
 		this.a = var1.getId();
 		this.b = (byte)EntityTypes.a(var1);
-		this.c = MathHelper.floor(var1.locX * 32.0D);
-		this.d = MathHelper.floor(var1.locY * 32.0D);
-		this.e = MathHelper.floor(var1.locZ * 32.0D);
+		this.c = gg.scala.spigot.util.MathHelper.floorD(var1.locX * 32.0D);
+		this.d = gg.scala.spigot.util.MathHelper.floorD(var1.locY * 32.0D);
+		this.e = gg.scala.spigot.util.MathHelper.floorD(var1.locZ * 32.0D);
 		this.i = (byte)((int)(var1.yaw * 256.0F / 360.0F));
 		this.j = (byte)((int)(var1.pitch * 256.0F / 360.0F));
 		this.k = (byte)((int)(var1.aK * 256.0F / 360.0F));

@@ -73,7 +73,7 @@ public class EntityArrow extends Entity implements IProjectile {
         double d0 = entityliving1.locX - entityliving.locX;
         double d1 = entityliving1.getBoundingBox().b + (double) (entityliving1.length / 3.0F) - this.locY;
         double d2 = entityliving1.locZ - entityliving.locZ;
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        double d3 = (double) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         if (d3 >= 1.0E-7D) {
             float f2 = (float) (MathHelper.b(d2, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
@@ -99,13 +99,13 @@ public class EntityArrow extends Entity implements IProjectile {
 
         this.setSize(0.5F, 0.5F);
         this.setPositionRotation(entityliving.locX, entityliving.locY + (double) entityliving.getHeadHeight(), entityliving.locZ, entityliving.yaw, entityliving.pitch);
-        this.locX -= (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locX -= (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.locY -= 0.10000000149011612D;
-        this.locZ -= (double) (MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locZ -= (double) (gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.setPosition(this.locX, this.locY, this.locZ);
-        this.motX = (double) (-MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
-        this.motZ = (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
-        this.motY = (double) (-MathHelper.sin(this.pitch / 180.0F * 3.1415927F));
+        this.motX = (double) (-gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
+        this.motZ = (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F));
+        this.motY = (double) (-gg.scala.spigot.util.MathHelper.sin(this.pitch / 180.0F * 3.1415927F));
         this.shoot(this.motX, this.motY, this.motZ, f * 1.5F, 1.0F);
     }
 
@@ -114,7 +114,7 @@ public class EntityArrow extends Entity implements IProjectile {
     }
 
     public void shoot(double d0, double d1, double d2, float f, float f1) {
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
@@ -128,7 +128,7 @@ public class EntityArrow extends Entity implements IProjectile {
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -138,7 +138,7 @@ public class EntityArrow extends Entity implements IProjectile {
     public void t_() {
         super.t_();
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
-            float f = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            float f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
             this.lastYaw = this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
             this.lastPitch = this.pitch = (float) (MathHelper.b(this.motY, (double) f) * 180.0D / 3.1415927410125732D);
@@ -242,8 +242,8 @@ public class EntityArrow extends Entity implements IProjectile {
             if (movingobjectposition != null) {
                 org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this); // CraftBukkit - Call event
                 if (movingobjectposition.entity != null) {
-                    f2 = (float) MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
-                    int k = MathHelper.f((double) f2 * this.damage);
+                    f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
+                    int k = gg.scala.spigot.util.MathHelper.f((double) f2 * this.damage);
 
                     if (this.isCritical()) {
                         k += this.random.nextInt(k / 2 + 2);
@@ -277,7 +277,7 @@ public class EntityArrow extends Entity implements IProjectile {
                             }
 
                             if (this.knockbackStrength > 0) {
-                                f3 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                                f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
                                 if (f3 > 0.0F) {
                                     movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3);
                                 }
@@ -318,7 +318,7 @@ public class EntityArrow extends Entity implements IProjectile {
                     this.motX = (double) ((float) (movingobjectposition.pos.a - this.locX));
                     this.motY = (double) ((float) (movingobjectposition.pos.b - this.locY));
                     this.motZ = (double) ((float) (movingobjectposition.pos.c - this.locZ));
-                    f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
+                    f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motY * this.motY + this.motZ * this.motZ);
                     this.locX -= this.motX / (double) f1 * 0.05000000074505806D;
                     this.locY -= this.motY / (double) f1 * 0.05000000074505806D;
                     this.locZ -= this.motZ / (double) f1 * 0.05000000074505806D;
@@ -341,7 +341,7 @@ public class EntityArrow extends Entity implements IProjectile {
             this.locX += this.motX;
             this.locY += this.motY;
             this.locZ += this.motZ;
-            f2 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
             this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 
             for (this.pitch = (float) (MathHelper.b(this.motY, (double) f2) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) {

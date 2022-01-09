@@ -79,7 +79,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
         if (!worldserver.worldProvider.o() && worldserver.getWorldData().getGameType() != WorldSettings.EnumGamemode.ADVENTURE) {
             int i = Math.max(5, minecraftserver.getSpawnProtection() - 6);
-            int j = MathHelper.floor(worldserver.getWorldBorder().b((double) blockposition.getX(), (double) blockposition.getZ()));
+            int j = (int) gg.scala.spigot.util.MathHelper.floorD(worldserver.getWorldBorder().b((double) blockposition.getX(), (double) blockposition.getZ()));
 
             if (j < i) {
                 i = j;
@@ -350,7 +350,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     }
 
     protected void i_() {
-        BiomeBase biomebase = this.world.getBiome(new BlockPosition(MathHelper.floor(this.locX), 0, MathHelper.floor(this.locZ)));
+        BiomeBase biomebase = this.world.getBiome(new BlockPosition(gg.scala.spigot.util.MathHelper.floorD(this.locX), 0, gg.scala.spigot.util.MathHelper.floorD(this.locZ)));
         String s = biomebase.ah;
         AchievementSet achievementset = (AchievementSet) this.getStatisticManager().b((Statistic) AchievementList.L);
 
@@ -610,9 +610,9 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     protected void a(double d0, boolean flag, Block block, BlockPosition blockposition) {}
 
     public void a(double d0, boolean flag) {
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.locY - 0.20000000298023224D);
-        int k = MathHelper.floor(this.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(this.locY - 0.20000000298023224D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
         BlockPosition blockposition = new BlockPosition(i, j, k);
         Block block = this.world.getType(blockposition).getBlock();
 
@@ -1157,7 +1157,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             pluginRainPosition -= 0.01;
         }
 
-        pluginRainPosition = MathHelper.a(pluginRainPosition, 0.0F, 1.0F);
+        pluginRainPosition = gg.scala.spigot.util.MathHelper.a(pluginRainPosition, 0.0F, 1.0F);
     }
 
     public void resetPlayerWeather() {

@@ -83,9 +83,9 @@ public class VillageSiege {
                         if (i < 10) {
                             float f1 = this.a.random.nextFloat() * 3.1415927F * 2.0F;
 
-                            this.g = blockposition.getX() + (int) ((double) (MathHelper.cos(f1) * f) * 0.9D);
+                            this.g = blockposition.getX() + (int) ((double) (gg.scala.spigot.util.MathHelper.cos(f1) * f) * 0.9D);
                             this.h = blockposition.getY();
-                            this.i = blockposition.getZ() + (int) ((double) (MathHelper.sin(f1) * f) * 0.9D);
+                            this.i = blockposition.getZ() + (int) ((double) (gg.scala.spigot.util.MathHelper.sin(f1) * f) * 0.9D);
                             flag = false;
                             Iterator iterator1 = this.a.ae().getVillages().iterator();
 

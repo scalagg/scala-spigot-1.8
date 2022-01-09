@@ -74,9 +74,9 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimal {
     }
 
     public boolean bR() {
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.getBoundingBox().b);
-        int k = MathHelper.floor(this.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(this.getBoundingBox().b);
+        int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
         BlockPosition blockposition = new BlockPosition(i, j, k);
 
         return this.world.getType(blockposition.down()).getBlock() == this.bn && this.world.k(blockposition) > 8 && super.bR();

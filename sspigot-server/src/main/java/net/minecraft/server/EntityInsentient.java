@@ -519,7 +519,7 @@ public abstract class EntityInsentient extends EntityLiving {
             d2 = (entity.getBoundingBox().b + entity.getBoundingBox().e) / 2.0D - (this.locY + (double) this.getHeadHeight());
         }
 
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1);
+        double d3 = (double) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
         float f2 = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
         float f3 = (float) (-(MathHelper.b(d2, d3) * 180.0D / 3.1415927410125732D));
 
@@ -528,7 +528,7 @@ public abstract class EntityInsentient extends EntityLiving {
     }
 
     private float b(float f, float f1, float f2) {
-        float f3 = MathHelper.g(f1 - f);
+        float f3 = gg.scala.spigot.util.MathHelper.g(f1 - f);
 
         if (f3 > f2) {
             f3 = f2;

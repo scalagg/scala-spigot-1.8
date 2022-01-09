@@ -47,6 +47,12 @@ object MathHelper
     }
 
     @JvmStatic
+    fun floorD(var0: Double): Int
+    {
+        return FastMath.floor(var0).toInt()
+    }
+
+    @JvmStatic
     fun d(var0: Double): Long
     {
         val var2 = var0.toLong()
@@ -128,21 +134,26 @@ object MathHelper
         return FastMath.max(var1, var3)
     }
 
+    @JvmStatic
     fun nextInt(var0: Random, var1: Int, var2: Int): Int
     {
         return if (var1 >= var2) var1 else var0.nextInt(var2 - var1 + 1) + var1
     }
 
+
+    @JvmStatic
     fun a(var0: Random, var1: Float, var2: Float): Float
     {
         return if (var1 >= var2) var1 else var0.nextFloat() * (var2 - var1) + var1
     }
 
+    @JvmStatic
     fun a(var0: Random, var1: Double, var3: Double): Double
     {
         return if (var1 >= var3) var1 else var0.nextDouble() * (var3 - var1) + var1
     }
 
+    @JvmStatic
     fun a(var0: LongArray): Double
     {
         var var1 = 0L
@@ -153,6 +164,7 @@ object MathHelper
         return var1.toDouble() / var0.size.toDouble()
     }
 
+    @JvmStatic
     fun g(var0: Float): Float
     {
         var var0 = var0
@@ -168,6 +180,7 @@ object MathHelper
         return var0
     }
 
+    @JvmStatic
     fun g(var0: Double): Double
     {
         var var0 = var0
@@ -183,6 +196,7 @@ object MathHelper
         return var0
     }
 
+    @JvmStatic
     fun a(var0: String, var1: Int): Int
     {
         var var2 = var1
@@ -195,6 +209,7 @@ object MathHelper
         return var2
     }
 
+    @JvmStatic
     fun a(var0: String, var1: Int, var2: Int): Int
     {
         var var3 = var1
@@ -211,6 +226,7 @@ object MathHelper
         return var3
     }
 
+    @JvmStatic
     fun a(var0: String, var1: Double): Double
     {
         var var3 = var1
@@ -223,6 +239,7 @@ object MathHelper
         return var3
     }
 
+    @JvmStatic
     fun a(var0: String, var1: Double, var3: Double): Double
     {
         var var5 = var1

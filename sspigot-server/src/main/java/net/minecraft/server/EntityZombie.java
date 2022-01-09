@@ -171,15 +171,15 @@ public class EntityZombie extends EntityMonster {
             }
 
             if (entityliving != null && this.world.getDifficulty() == EnumDifficulty.HARD && (double) this.random.nextFloat() < this.getAttributeInstance(a).getValue()) {
-                int i = MathHelper.floor(this.locX);
-                int j = MathHelper.floor(this.locY);
-                int k = MathHelper.floor(this.locZ);
+                int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+                int j = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+                int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
                 net.minecraft.server.EntityZombie entityzombie = new net.minecraft.server.EntityZombie(this.world);
 
                 for (int l = 0; l < 50; ++l) {
-                    int i1 = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
-                    int j1 = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
-                    int k1 = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
+                    int i1 = i + gg.scala.spigot.util.MathHelper.nextInt(this.random, 7, 40) * gg.scala.spigot.util.MathHelper.nextInt(this.random, -1, 1);
+                    int j1 = j + gg.scala.spigot.util.MathHelper.nextInt(this.random, 7, 40) * gg.scala.spigot.util.MathHelper.nextInt(this.random, -1, 1);
+                    int k1 = k + gg.scala.spigot.util.MathHelper.nextInt(this.random, 7, 40) * gg.scala.spigot.util.MathHelper.nextInt(this.random, -1, 1);
 
                     if (World.a((IBlockAccess) this.world, new BlockPosition(i1, j1 - 1, k1)) && this.world.getLightLevel(new BlockPosition(i1, j1, k1)) < 10) {
                         entityzombie.setPosition((double) i1, (double) j1, (double) k1);

@@ -32,7 +32,7 @@ public abstract class EntityFireball extends Entity {
         this.setSize(1.0F, 1.0F);
         this.setPositionRotation(d0, d1, d2, this.yaw, this.pitch);
         this.setPosition(d0, d1, d2);
-        double d6 = (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+        double d6 = (double) gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 
         this.dirX = d3 / d6 * 0.1D;
         this.dirY = d4 / d6 * 0.1D;
@@ -56,7 +56,7 @@ public abstract class EntityFireball extends Entity {
         d0 += this.random.nextGaussian() * 0.4D;
         d1 += this.random.nextGaussian() * 0.4D;
         d2 += this.random.nextGaussian() * 0.4D;
-        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        double d3 = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         this.dirX = d0 / d3 * 0.1D;
         this.dirY = d1 / d3 * 0.1D;
@@ -139,7 +139,7 @@ public abstract class EntityFireball extends Entity {
             this.locX += this.motX;
             this.locY += this.motY;
             this.locZ += this.motZ;
-            float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            float f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
             this.yaw = (float) (MathHelper.b(this.motZ, this.motX) * 180.0D / 3.1415927410125732D) + 90.0F;
 

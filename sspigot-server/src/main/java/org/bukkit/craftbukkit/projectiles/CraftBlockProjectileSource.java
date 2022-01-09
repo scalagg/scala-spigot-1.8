@@ -69,7 +69,7 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
             } else if (WitherSkull.class.isAssignableFrom(projectile)) {
                 launch = new EntityWitherSkull(world);
                 launch.setPosition(d0, d1, d2);
-                double d6 = (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+                double d6 = (double) gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 
                 ((EntityFireball) launch).dirX = d3 / d6 * 0.1D;
                 ((EntityFireball) launch).dirY = d4 / d6 * 0.1D;
@@ -77,7 +77,7 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
             } else {
                 launch = new EntityLargeFireball(world);
                 launch.setPosition(d0, d1, d2);
-                double d6 = (double) MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+                double d6 = (double) gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 
                 ((EntityFireball) launch).dirX = d3 / d6 * 0.1D;
                 ((EntityFireball) launch).dirY = d4 / d6 * 0.1D;

@@ -43,7 +43,7 @@ public class BlockCrops extends BlockPlant implements IBlockFragilePlantElement 
     }
 
     public void g(World world, BlockPosition blockposition, IBlockData iblockdata) {
-        int i = ((Integer) iblockdata.get(AGE)).intValue() + MathHelper.nextInt(world.random, 2, 5);
+        int i = ((Integer) iblockdata.get(AGE)).intValue() + gg.scala.spigot.util.MathHelper.nextInt(world.random, 2, 5);
 
         if (i > 7) {
             i = 7;

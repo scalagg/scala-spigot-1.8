@@ -109,7 +109,7 @@ public class EntityExperienceOrb extends Entity {
         float f = 0.98F;
 
         if (this.onGround) {
-            f = this.world.getType(new BlockPosition(MathHelper.floor(this.locX), MathHelper.floor(this.getBoundingBox().b) - 1, MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.98F;
+            f = this.world.getType(new BlockPosition(gg.scala.spigot.util.MathHelper.floor(this.locX), gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b) - 1, gg.scala.spigot.util.MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.98F;
         }
 
         this.motX *= (double) f;

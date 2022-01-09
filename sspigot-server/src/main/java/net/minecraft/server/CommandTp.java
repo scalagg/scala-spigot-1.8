@@ -70,30 +70,30 @@ public class CommandTp extends CommandAbstract {
 
                         f = (float) commandabstract_commandnumber3.b();
                         if (!commandabstract_commandnumber3.c()) {
-                            f = MathHelper.g(f);
+                            f = gg.scala.spigot.util.MathHelper.g(f);
                         }
 
                         float f1 = (float) commandabstract_commandnumber4.b();
 
                         if (!commandabstract_commandnumber4.c()) {
-                            f1 = MathHelper.g(f1);
+                            f1 = gg.scala.spigot.util.MathHelper.g(f1);
                         }
 
                         if (f1 > 90.0F || f1 < -90.0F) {
-                            f1 = MathHelper.g(180.0F - f1);
-                            f = MathHelper.g(f + 180.0F);
+                            f1 = gg.scala.spigot.util.MathHelper.g(180.0F - f1);
+                            f = gg.scala.spigot.util.MathHelper.g(f + 180.0F);
                         }
 
                         ((Entity) object).mount((Entity) null);
                         ((EntityPlayer) object).playerConnection.a(commandabstract_commandnumber.b(), commandabstract_commandnumber1.b(), commandabstract_commandnumber2.b(), f, f1, enumset);
                         ((Entity) object).f(f);
                     } else {
-                        float f2 = (float) MathHelper.g(commandabstract_commandnumber3.a());
+                        float f2 = (float) gg.scala.spigot.util.MathHelper.g(commandabstract_commandnumber3.a());
 
-                        f = (float) MathHelper.g(commandabstract_commandnumber4.a());
+                        f = (float) gg.scala.spigot.util.MathHelper.g(commandabstract_commandnumber4.a());
                         if (f > 90.0F || f < -90.0F) {
-                            f = MathHelper.g(180.0F - f);
-                            f2 = MathHelper.g(f2 + 180.0F);
+                            f = gg.scala.spigot.util.MathHelper.g(180.0F - f);
+                            f2 = gg.scala.spigot.util.MathHelper.g(f2 + 180.0F);
                         }
 
                         ((Entity) object).setPositionRotation(commandabstract_commandnumber.a(), commandabstract_commandnumber1.a(), commandabstract_commandnumber2.a(), f2, f);

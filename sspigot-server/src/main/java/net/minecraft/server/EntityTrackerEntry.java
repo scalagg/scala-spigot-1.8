@@ -49,12 +49,12 @@ public class EntityTrackerEntry {
         this.b = i;
         this.c = j;
         this.u = flag;
-        this.xLoc = MathHelper.floor(entity.locX * 32.0D);
-        this.yLoc = MathHelper.floor(entity.locY * 32.0D);
-        this.zLoc = MathHelper.floor(entity.locZ * 32.0D);
-        this.yRot = MathHelper.d(entity.yaw * 256.0F / 360.0F);
-        this.xRot = MathHelper.d(entity.pitch * 256.0F / 360.0F);
-        this.i = MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
+        this.xLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locX * 32.0D);
+        this.yLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locY * 32.0D);
+        this.zLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locZ * 32.0D);
+        this.yRot = gg.scala.spigot.util.MathHelper.d(entity.yaw * 256.0F / 360.0F);
+        this.xRot = gg.scala.spigot.util.MathHelper.d(entity.pitch * 256.0F / 360.0F);
+        this.i = gg.scala.spigot.util.MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
         this.y = entity.onGround;
     }
 
@@ -112,11 +112,11 @@ public class EntityTrackerEntry {
 
             if (this.tracker.vehicle == null) {
                 ++this.v;
-                i = MathHelper.floor(this.tracker.locX * 32.0D);
-                j = MathHelper.floor(this.tracker.locY * 32.0D);
-                int k = MathHelper.floor(this.tracker.locZ * 32.0D);
-                int l = MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
-                int i1 = MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
+                i = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locX * 32.0D);
+                j = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locY * 32.0D);
+                int k = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locZ * 32.0D);
+                int l = gg.scala.spigot.util.MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
+                int i1 = gg.scala.spigot.util.MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
                 int j1 = i - this.xLoc;
                 int k1 = j - this.yLoc;
                 int l1 = k - this.zLoc;
@@ -215,8 +215,8 @@ public class EntityTrackerEntry {
 
                 this.x = false;
             } else {
-                i = MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
-                j = MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
+                i = gg.scala.spigot.util.MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
+                j = gg.scala.spigot.util.MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
                 boolean flag2 = Math.abs(i - this.yRot) >= 4 || Math.abs(j - this.xRot) >= 4;
 
                 if (flag2) {
@@ -225,14 +225,14 @@ public class EntityTrackerEntry {
                     this.xRot = j;
                 }
 
-                this.xLoc = MathHelper.floor(this.tracker.locX * 32.0D);
-                this.yLoc = MathHelper.floor(this.tracker.locY * 32.0D);
-                this.zLoc = MathHelper.floor(this.tracker.locZ * 32.0D);
+                this.xLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locX * 32.0D);
+                this.yLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locY * 32.0D);
+                this.zLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locZ * 32.0D);
                 this.b();
                 this.x = true;
             }
 
-            i = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
+            i = gg.scala.spigot.util.MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
             if (Math.abs(i - this.i) >= 4) {
                 this.broadcast(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) i));
                 this.i = i;
@@ -429,7 +429,7 @@ public class EntityTrackerEntry {
                     }
 
                     // CraftBukkit start - Fix for nonsensical head yaw
-                    this.i = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
+                    this.i = gg.scala.spigot.util.MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
                     this.broadcast(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) i));
                     // CraftBukkit end
 
@@ -491,7 +491,7 @@ public class EntityTrackerEntry {
         } else if (this.tracker instanceof EntityBoat) {
             return new PacketPlayOutSpawnEntity(this.tracker, 1);
         } else if (this.tracker instanceof IAnimal) {
-            this.i = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
+            this.i = gg.scala.spigot.util.MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
             return new PacketPlayOutSpawnEntityLiving((EntityLiving) this.tracker);
         } else if (this.tracker instanceof EntityFishingHook) {
             EntityHuman entityhuman = ((EntityFishingHook) this.tracker).owner;
@@ -560,18 +560,18 @@ public class EntityTrackerEntry {
 
                     packetplayoutspawnentity = new PacketPlayOutSpawnEntity(this.tracker, 71, entityitemframe.direction.b());
                     blockposition = entityitemframe.getBlockPosition();
-                    packetplayoutspawnentity.a(MathHelper.d((float) (blockposition.getX() * 32)));
-                    packetplayoutspawnentity.b(MathHelper.d((float) (blockposition.getY() * 32)));
-                    packetplayoutspawnentity.c(MathHelper.d((float) (blockposition.getZ() * 32)));
+                    packetplayoutspawnentity.a(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getX() * 32)));
+                    packetplayoutspawnentity.b(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getY() * 32)));
+                    packetplayoutspawnentity.c(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getZ() * 32)));
                     return packetplayoutspawnentity;
                 } else if (this.tracker instanceof EntityLeash) {
                     EntityLeash entityleash = (EntityLeash) this.tracker;
 
                     packetplayoutspawnentity = new PacketPlayOutSpawnEntity(this.tracker, 77);
                     blockposition = entityleash.getBlockPosition();
-                    packetplayoutspawnentity.a(MathHelper.d((float) (blockposition.getX() * 32)));
-                    packetplayoutspawnentity.b(MathHelper.d((float) (blockposition.getY() * 32)));
-                    packetplayoutspawnentity.c(MathHelper.d((float) (blockposition.getZ() * 32)));
+                    packetplayoutspawnentity.a(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getX() * 32)));
+                    packetplayoutspawnentity.b(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getY() * 32)));
+                    packetplayoutspawnentity.c(gg.scala.spigot.util.MathHelper.d((float) (blockposition.getZ() * 32)));
                     return packetplayoutspawnentity;
                 } else if (this.tracker instanceof EntityExperienceOrb) {
                     return new PacketPlayOutSpawnEntityExperienceOrb((EntityExperienceOrb) this.tracker);

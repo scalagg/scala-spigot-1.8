@@ -125,7 +125,7 @@ public class ItemMonsterEgg extends Item {
                 if (entity instanceof EntityLiving) {
                     EntityInsentient entityinsentient = (EntityInsentient) entity;
 
-                    entity.setPositionRotation(d0, d1, d2, MathHelper.g(world.random.nextFloat() * 360.0F), 0.0F);
+                    entity.setPositionRotation(d0, d1, d2, gg.scala.spigot.util.MathHelper.g(world.random.nextFloat() * 360.0F), 0.0F);
                     entityinsentient.aK = entityinsentient.yaw;
                     entityinsentient.aI = entityinsentient.yaw;
                     entityinsentient.prepare(world.E(new BlockPosition(entityinsentient)), (GroupDataEntity) null);

@@ -29,9 +29,9 @@ public class EntitySnowman extends EntityGolem implements IRangedEntity {
     public void m() {
         super.m();
         if (!this.world.isClientSide) {
-            int i = MathHelper.floor(this.locX);
-            int j = MathHelper.floor(this.locY);
-            int k = MathHelper.floor(this.locZ);
+            int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+            int j = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+            int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 
             if (this.U()) {
                 this.damageEntity(DamageSource.DROWN, 1.0F);
@@ -42,9 +42,9 @@ public class EntitySnowman extends EntityGolem implements IRangedEntity {
             }
 
             for (int l = 0; l < 4; ++l) {
-                i = MathHelper.floor(this.locX + (double) ((float) (l % 2 * 2 - 1) * 0.25F));
-                j = MathHelper.floor(this.locY);
-                k = MathHelper.floor(this.locZ + (double) ((float) (l / 2 % 2 * 2 - 1) * 0.25F));
+                i = gg.scala.spigot.util.MathHelper.floorD(this.locX + (double) ((float) (l % 2 * 2 - 1) * 0.25F));
+                j = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+                k = gg.scala.spigot.util.MathHelper.floorD(this.locZ + (double) ((float) (l / 2 % 2 * 2 - 1) * 0.25F));
                 BlockPosition blockposition = new BlockPosition(i, j, k);
 
                 if (this.world.getType(blockposition).getBlock().getMaterial() == Material.AIR && this.world.getBiome(new BlockPosition(i, 0, k)).a(blockposition) < 0.8F && Blocks.SNOW_LAYER.canPlace(this.world, blockposition)) {
@@ -84,7 +84,7 @@ public class EntitySnowman extends EntityGolem implements IRangedEntity {
         double d1 = entityliving.locX - this.locX;
         double d2 = d0 - entitysnowball.locY;
         double d3 = entityliving.locZ - this.locZ;
-        float f1 = (float) MathHelper.sqrt(d1 * d1 + d3 * d3) * 0.2F;
+        float f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(d1 * d1 + d3 * d3) * 0.2F;
 
         entitysnowball.shoot(d1, d2 + (double) f1, d3, 1.6F, 12.0F);
         this.makeSound("random.bow", 1.0F, 1.0F / (this.bc().nextFloat() * 0.4F + 0.8F));

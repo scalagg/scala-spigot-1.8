@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.util.MathHelper;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
@@ -803,12 +804,12 @@ public abstract class World implements IBlockAccess {
     public MovingObjectPosition rayTrace(Vec3D vec3d, Vec3D vec3d1, boolean flag, boolean flag1, boolean flag2) {
         if (!Double.isNaN(vec3d.a) && !Double.isNaN(vec3d.b) && !Double.isNaN(vec3d.c)) {
             if (!Double.isNaN(vec3d1.a) && !Double.isNaN(vec3d1.b) && !Double.isNaN(vec3d1.c)) {
-                int i = MathHelper.floor(vec3d1.a);
-                int j = MathHelper.floor(vec3d1.b);
-                int k = MathHelper.floor(vec3d1.c);
-                int l = MathHelper.floor(vec3d.a);
-                int i1 = MathHelper.floor(vec3d.b);
-                int j1 = MathHelper.floor(vec3d.c);
+                int i = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d1.a);
+                int j = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d1.b);
+                int k = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d1.c);
+                int l = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d.a);
+                int i1 = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d.b);
+                int j1 = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d.c);
                 BlockPosition blockposition = new BlockPosition(l, i1, j1);
                 IBlockData iblockdata = this.getType(blockposition);
                 Block block = iblockdata.getBlock();
@@ -908,9 +909,9 @@ public abstract class World implements IBlockAccess {
                         vec3d = new Vec3D(vec3d.a + d6 * d5, vec3d.b + d7 * d5, d2);
                     }
 
-                    l = MathHelper.floor(vec3d.a) - (enumdirection == EnumDirection.EAST ? 1 : 0);
-                    i1 = MathHelper.floor(vec3d.b) - (enumdirection == EnumDirection.UP ? 1 : 0);
-                    j1 = MathHelper.floor(vec3d.c) - (enumdirection == EnumDirection.SOUTH ? 1 : 0);
+                    l = (int) (gg.scala.spigot.util.MathHelper.floorD(vec3d.a) - (enumdirection == EnumDirection.EAST ? 1 : 0));
+                    i1 = (int) (gg.scala.spigot.util.MathHelper.floorD(vec3d.b) - (enumdirection == EnumDirection.UP ? 1 : 0));
+                    j1 = (int) gg.scala.spigot.util.MathHelper.floorD(vec3d.c) - (enumdirection == EnumDirection.SOUTH ? 1 : 0);
                     blockposition = new BlockPosition(l, i1, j1);
                     IBlockData iblockdata1 = this.getType(blockposition);
                     Block block1 = iblockdata1.getBlock();
@@ -997,8 +998,8 @@ public abstract class World implements IBlockAccess {
         org.spigotmc.AsyncCatcher.catchOp( "entity add"); // Spigot
         if (entity == null) return false;
         // CraftBukkit end
-        int i = MathHelper.floor(entity.locX / 16.0D);
-        int j = MathHelper.floor(entity.locZ / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(entity.locX / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD(entity.locZ / 16.0D);
         boolean flag = entity.attachedToPlayer;
 
         if (entity instanceof EntityHuman) {
@@ -1153,12 +1154,12 @@ public abstract class World implements IBlockAccess {
 
     public List<AxisAlignedBB> getCubes(Entity entity, AxisAlignedBB axisalignedbb) {
         ArrayList arraylist = Lists.newArrayList();
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
         WorldBorder worldborder = this.getWorldBorder();
         boolean flag = entity.aT();
         boolean flag1 = this.a(worldborder, entity);
@@ -1277,12 +1278,12 @@ public abstract class World implements IBlockAccess {
 
     public List<AxisAlignedBB> a(AxisAlignedBB axisalignedbb) {
         ArrayList arraylist = Lists.newArrayList();
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
         for (int k1 = i; k1 < j; ++k1) {
@@ -1309,8 +1310,8 @@ public abstract class World implements IBlockAccess {
 
     public int a(float f) {
         float f1 = this.c(f);
-        float f2 = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
-        f2 = MathHelper.a(f2, 0.0F, 1.0F);
+        float f2 = (float) (1.0F - (gg.scala.spigot.util.MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F));
+        f2 = gg.scala.spigot.util.MathHelper.a(f2, 0.0F, 1.0F);
         f2 = 1.0F - f2;
         f2 = (float) ((double) f2 * (1.0D - (double) (this.j(f) * 5.0F) / 16.0D));
         f2 = (float) ((double) f2 * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
@@ -1624,8 +1625,8 @@ public abstract class World implements IBlockAccess {
     }
 
     public void entityJoinedWorld(Entity entity, boolean flag) {
-        int i = MathHelper.floor(entity.locX);
-        int j = MathHelper.floor(entity.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(entity.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(entity.locZ);
 
         // Spigot start
         if (ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
@@ -1677,9 +1678,9 @@ public abstract class World implements IBlockAccess {
                 entity.yaw = entity.lastYaw;
             }
 
-            int k = MathHelper.floor(entity.locX / 16.0D);
-            int l = MathHelper.floor(entity.locY / 16.0D);
-            int i1 = MathHelper.floor(entity.locZ / 16.0D);
+            int k = gg.scala.spigot.util.MathHelper.floorD(entity.locX / 16.0D);
+            int l = gg.scala.spigot.util.MathHelper.floorD(entity.locY / 16.0D);
+            int i1 = gg.scala.spigot.util.MathHelper.floorD(entity.locZ / 16.0D);
 
             if (!entity.ad || entity.ae != k || entity.af != l || entity.ag != i1) {
                 if (entity.loadChunks) entity.loadChunks(); // PaperSpigot - Force load chunks
@@ -1734,12 +1735,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean c(AxisAlignedBB axisalignedbb) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
         for (int k1 = i; k1 <= j; ++k1) {
@@ -1758,12 +1759,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean containsLiquid(AxisAlignedBB axisalignedbb) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
         for (int k1 = i; k1 <= j; ++k1) {
@@ -1782,12 +1783,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean e(AxisAlignedBB axisalignedbb) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
 
         if (this.isAreaLoaded(i, k, i1, j, l, j1, true)) {
             BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
@@ -1809,12 +1810,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean a(AxisAlignedBB axisalignedbb, Material material, Entity entity) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
 
         if (!this.isAreaLoaded(i, k, i1, j, l, j1, true)) {
             return false;
@@ -1856,12 +1857,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean a(AxisAlignedBB axisalignedbb, Material material) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
         for (int k1 = i; k1 < j; ++k1) {
@@ -1878,12 +1879,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean b(AxisAlignedBB axisalignedbb, Material material) {
-        int i = MathHelper.floor(axisalignedbb.a);
-        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
-        int k = MathHelper.floor(axisalignedbb.b);
-        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
-        int i1 = MathHelper.floor(axisalignedbb.c);
-        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.d + 1.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.b);
+        int l = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.e + 1.0D);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.c);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(axisalignedbb.f + 1.0D);
         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 
         for (int k1 = i; k1 < j; ++k1) {
@@ -1927,8 +1928,8 @@ public abstract class World implements IBlockAccess {
         double d0 = 1.0D / ((axisalignedbb.d - axisalignedbb.a) * 2.0D + 1.0D);
         double d1 = 1.0D / ((axisalignedbb.e - axisalignedbb.b) * 2.0D + 1.0D);
         double d2 = 1.0D / ((axisalignedbb.f - axisalignedbb.c) * 2.0D + 1.0D);
-        double d3 = (1.0D - Math.floor(1.0D / d0) * d0) / 2.0D;
-        double d4 = (1.0D - Math.floor(1.0D / d2) * d2) / 2.0D;
+        double d3 = (1.0D - MathHelper.floor(1.0D / d0) * d0) / 2.0D;
+        double d4 = (1.0D - MathHelper.floor(1.0D / d2) * d2) / 2.0D;
 
         if (d0 >= 0.0D && d1 >= 0.0D && d2 >= 0.0D) {
             int i = 0;
@@ -2159,7 +2160,7 @@ public abstract class World implements IBlockAccess {
                     this.r = (float) ((double) this.r - 0.01D);
                 }
 
-                this.r = MathHelper.a(this.r, 0.0F, 1.0F);
+                this.r = gg.scala.spigot.util.MathHelper.a(this.r, 0.0F, 1.0F);
                 int k = this.worldData.getWeatherDuration();
 
                 if (k <= 0) {
@@ -2183,7 +2184,7 @@ public abstract class World implements IBlockAccess {
                     this.p = (float) ((double) this.p - 0.01D);
                 }
 
-                this.p = MathHelper.a(this.p, 0.0F, 1.0F);
+                this.p = gg.scala.spigot.util.MathHelper.a(this.p, 0.0F, 1.0F);
 
                 // CraftBukkit start
                 for (int idx = 0; idx < this.players.size(); ++idx) {
@@ -2220,8 +2221,8 @@ public abstract class World implements IBlockAccess {
         // Spigot end
         for (i = 0; i < this.players.size(); ++i) {
             entityhuman = (EntityHuman) this.players.get(i);
-            j = MathHelper.floor(entityhuman.locX / 16.0D);
-            k = MathHelper.floor(entityhuman.locZ / 16.0D);
+            j = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locX / 16.0D);
+            k = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locZ / 16.0D);
             l = this.q();
 
             // Spigot start - Always update the chunk the player is on
@@ -2253,9 +2254,9 @@ public abstract class World implements IBlockAccess {
         if (spigotConfig.randomLightUpdates && !this.players.isEmpty()) { // Spigot
             i = this.random.nextInt(this.players.size());
             entityhuman = (EntityHuman) this.players.get(i);
-            j = MathHelper.floor(entityhuman.locX) + this.random.nextInt(11) - 5;
-            k = MathHelper.floor(entityhuman.locY) + this.random.nextInt(11) - 5;
-            l = MathHelper.floor(entityhuman.locZ) + this.random.nextInt(11) - 5;
+            j = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locX) + this.random.nextInt(11) - 5;
+            k = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locY) + this.random.nextInt(11) - 5;
+            l = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locZ) + this.random.nextInt(11) - 5;
             this.x(new BlockPosition(j, k, l));
         }
 
@@ -2458,9 +2459,9 @@ public abstract class World implements IBlockAccess {
                     if (l2 == l3) {
                         this.a(enumskyblock, blockposition1, 0);
                         if (l3 > 0) {
-                            i3 = MathHelper.a(i2 - i1);
-                            j3 = MathHelper.a(j2 - j1);
-                            k3 = MathHelper.a(k2 - k1);
+                            i3 = gg.scala.spigot.util.MathHelper.a(i2 - i1);
+                            j3 = gg.scala.spigot.util.MathHelper.a(j2 - j1);
+                            k3 = gg.scala.spigot.util.MathHelper.a(k2 - k1);
                             if (i3 + j3 + k3 < 17) {
                                 BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
                                 EnumDirection[] aenumdirection = EnumDirection.values();
@@ -2615,10 +2616,10 @@ public abstract class World implements IBlockAccess {
 
     public List<Entity> a(Entity entity, AxisAlignedBB axisalignedbb, Predicate<? super Entity> predicate) {
         ArrayList arraylist = Lists.newArrayList();
-        int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
-        int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
-        int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
-        int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.a - 2.0D) / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.d + 2.0D) / 16.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.c - 2.0D) / 16.0D);
+        int l = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.f + 2.0D) / 16.0D);
 
         for (int i1 = i; i1 <= j; ++i1) {
             for (int j1 = k; j1 <= l; ++j1) {
@@ -2666,10 +2667,10 @@ public abstract class World implements IBlockAccess {
     }
 
     public <T extends Entity> List<T> a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, Predicate<? super T> predicate) {
-        int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
-        int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
-        int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
-        int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.a - 2.0D) / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.d + 2.0D) / 16.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.c - 2.0D) / 16.0D);
+        int l = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.f + 2.0D) / 16.0D);
         ArrayList arraylist = Lists.newArrayList();
 
         for (int i1 = i; i1 <= j; ++i1) {

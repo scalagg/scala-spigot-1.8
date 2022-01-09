@@ -43,8 +43,8 @@ public class ItemWorldMap extends ItemWorldMapBase {
             int i = 1 << worldmap.scale;
             int j = worldmap.centerX;
             int k = worldmap.centerZ;
-            int l = MathHelper.floor(entity.locX - (double) j) / i + 64;
-            int i1 = MathHelper.floor(entity.locZ - (double) k) / i + 64;
+            int l = gg.scala.spigot.util.MathHelper.floorD(entity.locX - (double) j) / i + 64;
+            int i1 = gg.scala.spigot.util.MathHelper.floorD(entity.locZ - (double) k) / i + 64;
             int j1 = 128 / i;
 
             if (world.worldProvider.o()) {

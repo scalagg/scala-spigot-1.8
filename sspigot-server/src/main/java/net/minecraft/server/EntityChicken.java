@@ -44,7 +44,7 @@ public class EntityChicken extends EntityAnimal {
         this.bq = this.bm;
         this.bp = this.bo;
         this.bo = (float) ((double) this.bo + (double) (this.onGround ? -1 : 4) * 0.3D);
-        this.bo = MathHelper.a(this.bo, 0.0F, 1.0F);
+        this.bo = gg.scala.spigot.util.MathHelper.a(this.bo, 0.0F, 1.0F);
         if (!this.onGround && this.br < 1.0F) {
             this.br = 1.0F;
         }
@@ -133,8 +133,8 @@ public class EntityChicken extends EntityAnimal {
 
     public void al() {
         super.al();
-        float f = (float) MathHelper.sin(this.aI * 3.1415927F / 180.0F);
-        float f1 = MathHelper.cos(this.aI * 3.1415927F / 180.0F);
+        float f = (float) gg.scala.spigot.util.MathHelper.sin(this.aI * 3.1415927F / 180.0F);
+        float f1 = (float) gg.scala.spigot.util.MathHelper.cos(this.aI * 3.1415927F / 180.0F);
         float f2 = 0.1F;
         float f3 = 0.0F;
 

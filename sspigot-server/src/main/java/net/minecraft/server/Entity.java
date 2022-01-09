@@ -105,9 +105,9 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 	// PaperSpigot start - EAR: Fix bug with teleporting entities
 	public boolean isAddedToChunk() {
-		int chunkX = MathHelper.floor(locX / 16.0D);
-		int chunkY = MathHelper.floor(locY / 16.0D);
-		int chunkZ = MathHelper.floor(locZ / 16.0D);
+		int chunkX = gg.scala.spigot.util.MathHelper.floorD(locX / 16.0D);
+		int chunkY = gg.scala.spigot.util.MathHelper.floorD(locY / 16.0D);
+		int chunkZ = gg.scala.spigot.util.MathHelper.floorD(locZ / 16.0D);
 
 		return ad && getChunkX() == chunkX && getChunkY() == chunkY || getChunkZ() == chunkZ;
 	}
@@ -667,9 +667,9 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			this.E = d7 != d1;
 			this.onGround = this.E && d7 < 0.0D;
 			this.F = this.positionChanged || this.E;
-			int i = MathHelper.floor(this.locX);
-			int j = MathHelper.floor(this.locY - 0.20000000298023224D);
-			int k = MathHelper.floor(this.locZ);
+			int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+			int j = gg.scala.spigot.util.MathHelper.floorD(this.locY - 0.20000000298023224D);
+			int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 			BlockPosition blockposition = new BlockPosition(i, j, k);
 			Block block = this.world.getType(blockposition).getBlock();
 
@@ -698,7 +698,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			// CraftBukkit start
 			if (positionChanged && getBukkitEntity() instanceof Vehicle) {
 				Vehicle vehicle = (Vehicle) this.getBukkitEntity();
-				org.bukkit.block.Block bl = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
+				org.bukkit.block.Block bl = this.world.getWorld().getBlockAt(gg.scala.spigot.util.MathHelper.floorD(this.locX), gg.scala.spigot.util.MathHelper.floorD(this.locY), gg.scala.spigot.util.MathHelper.floorD(this.locZ));
 
 				if (d6 > d0) {
 					bl = bl.getRelative(BlockFace.EAST);
@@ -723,13 +723,13 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 					d22 = 0.0D;
 				}
 
-				this.M = (float) ((double) this.M + MathHelper.sqrt(d21 * d21 + d23 * d23) * 0.6D);
-				this.N = (float) ((double) this.N + MathHelper.sqrt(d21 * d21 + d22 * d22 + d23 * d23) * 0.6D);
+				this.M = (float) ((double) this.M + gg.scala.spigot.util.MathHelper.sqrt(d21 * d21 + d23 * d23) * 0.6D);
+				this.N = (float) ((double) this.N + gg.scala.spigot.util.MathHelper.sqrt(d21 * d21 + d22 * d22 + d23 * d23) * 0.6D);
 
 				if (this.N > (float) this.h && block.getMaterial() != Material.AIR) {
 					this.h = (int) this.N + 1;
 					if (this.V()) {
-						float f = (float) MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.35F;
+						float f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.35F;
 
 						if (f > 1.0F) {
 							f = 1.0F;
@@ -904,7 +904,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	}
 
 	protected void X() {
-		float f = (float) MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
+		float f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX * 0.20000000298023224D + this.motY * this.motY + this.motZ * this.motZ * 0.20000000298023224D) * 0.2F;
 
 		if (f > 1.0F) {
 			f = 1.0F;
@@ -912,7 +912,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 		this.makeSound(this.aa(), f, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 
-		float f1 = (float) MathHelper.floor(this.getBoundingBox().b);
+		float f1 = (float) gg.scala.spigot.util.MathHelper.floorD(this.getBoundingBox().b);
 		int i;
 		float f2;
 		float f3;
@@ -937,9 +937,9 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	}
 
 	protected void Z() {
-		int i = MathHelper.floor(this.locX);
-		int j = MathHelper.floor(this.locY - 0.20000000298023224D);
-		int k = MathHelper.floor(this.locZ);
+		int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+		int j = gg.scala.spigot.util.MathHelper.floorD(this.locY - 0.20000000298023224D);
+		int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 		BlockPosition blockposition = new BlockPosition(i, j, k);
 		IBlockData iblockdata = this.world.getType(blockposition);
 		Block block = iblockdata.getBlock();
@@ -978,7 +978,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		float f3 = f * f + f1 * f1;
 
 		if (f3 >= 1.0E-4F) {
-			f3 = MathHelper.c(f3);
+			f3 = (float) MathHelper.c(f3);
 			if (f3 < 1.0F) {
 				f3 = 1.0F;
 			}
@@ -986,8 +986,8 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			f3 = f2 / f3;
 			f *= f3;
 			f1 *= f3;
-			float f4 = (float) MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
-			float f5 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
+			float f4 = (float) gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
+			float f5 = (float) MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
 
 			this.motX += (double) (f * f5 - f1 * f4);
 			this.motZ += (double) (f1 * f5 + f * f4);
@@ -1072,7 +1072,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		double d4 = this.locY - d1;
 		double d5 = this.locZ - d2;
 
-		return MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+		return gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 	}
 
 	public double h(net.minecraft.server.Entity entity) {
@@ -1093,10 +1093,10 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			if (!entity.noclip && !this.noclip) {
 				double d0 = entity.locX - this.locX;
 				double d1 = entity.locZ - this.locZ;
-				double d2 = MathHelper.a(d0, d1);
+				double d2 = gg.scala.spigot.util.MathHelper.a(d0, d1);
 
 				if (d2 >= 0.009999999776482582D) {
-					d2 = MathHelper.sqrt(d2);
+					d2 = gg.scala.spigot.util.MathHelper.sqrt(d2);
 					d0 /= d2;
 					d1 /= d2;
 					double d3 = 1.0D / d2;
@@ -1158,9 +1158,9 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 	protected final Vec3D f(float f, float f1) {
 		float f2 = MathHelper.cos(-f1 * 0.017453292F - 3.1415927F);
-		float f3 = (float) MathHelper.sin(-f1 * 0.017453292F - 3.1415927F);
+		float f3 = (float) gg.scala.spigot.util.MathHelper.sin(-f1 * 0.017453292F - 3.1415927F);
 		float f4 = -MathHelper.cos(-f * 0.017453292F);
-		float f5 = (float) MathHelper.sin(-f * 0.017453292F);
+		float f5 = (float) gg.scala.spigot.util.MathHelper.sin(-f * 0.017453292F);
 
 		return new Vec3D((double) (f3 * f4), (double) f5, (double) (f2 * f4));
 	}
@@ -1439,9 +1439,9 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 
 			for (int i = 0; i < 8; ++i) {
-				int j = MathHelper.floor(this.locY + (double) (((float) ((i >> 0) % 2) - 0.5F) * 0.1F) + (double) this.getHeadHeight());
-				int k = MathHelper.floor(this.locX + (double) (((float) ((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
-				int l = MathHelper.floor(this.locZ + (double) (((float) ((i >> 2) % 2) - 0.5F) * this.width * 0.8F));
+				int j = gg.scala.spigot.util.MathHelper.floorD(this.locY + (double) (((float) ((i >> 0) % 2) - 0.5F) * 0.1F) + (double) this.getHeadHeight());
+				int k = gg.scala.spigot.util.MathHelper.floorD(this.locX + (double) (((float) ((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
+				int l = gg.scala.spigot.util.MathHelper.floorD(this.locZ + (double) (((float) ((i >> 2) % 2) - 0.5F) * this.width * 0.8F));
 
 				if (mutableBlockPosition.getX() != k || mutableBlockPosition.getY() != j || mutableBlockPosition.getZ() != l) {
 					mutableBlockPosition.c(k, j, l);
@@ -2054,7 +2054,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			}
 		});
 		crashreportsystemdetails.a("Entity\'s Exact location", (Object) String.format("%.2f, %.2f, %.2f", new Object[]{Double.valueOf(this.locX), Double.valueOf(this.locY), Double.valueOf(this.locZ)}));
-		crashreportsystemdetails.a("Entity\'s Block location", (Object) CrashReportSystemDetails.a((double) MathHelper.floor(this.locX), (double) MathHelper.floor(this.locY), (double) MathHelper.floor(this.locZ)));
+		crashreportsystemdetails.a("Entity\'s Block location", (Object) CrashReportSystemDetails.a((double) gg.scala.spigot.util.MathHelper.floorD(this.locX), (double) gg.scala.spigot.util.MathHelper.floorD(this.locY), (double) gg.scala.spigot.util.MathHelper.floorD(this.locZ)));
 		crashreportsystemdetails.a("Entity\'s Momentum", (Object) String.format("%.2f, %.2f, %.2f", new Object[]{Double.valueOf(this.motX), Double.valueOf(this.motY), Double.valueOf(this.motZ)}));
 		crashreportsystemdetails.a("Entity\'s Rider", new Callable() {
 			public String a() throws Exception {
@@ -2125,7 +2125,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	}
 
 	public EnumDirection getDirection() {
-		return EnumDirection.fromType2(MathHelper.floor((double) (this.yaw * 4.0F / 360.0F) + 0.5D) & 3);
+		return EnumDirection.fromType2(gg.scala.spigot.util.MathHelper.floorD((double) (this.yaw * 4.0F / 360.0F) + 0.5D) & 3);
 	}
 
 	protected ChatHoverable aQ() {

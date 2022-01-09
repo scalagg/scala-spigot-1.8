@@ -13,22 +13,22 @@ public class NotchUtil {
     public static EnumDirection getDirection(float pitch, float yaw, double x, double y, double z, WorldSettings.EnumGamemode gamemode) {
         Vec3D firstVector = new Vec3D(x, y, z);
 
-        float f3 = MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
-        float f4 = MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
-        float f5 = -MathHelper.cos(-pitch * 0.017453292F);
-        float f6 = MathHelper.sin(-pitch * 0.017453292F);
+        float f3 = (float) gg.scala.spigot.util.MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
+        float f4 = (float) gg.scala.spigot.util.MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
+        float f5 = (float) -gg.scala.spigot.util.MathHelper.cos(-pitch * 0.017453292F);
+        float f6 = (float) gg.scala.spigot.util.MathHelper.sin(-pitch * 0.017453292F);
         float f7 = f4 * f5;
         float f8 = f3 * f5;
         double d3 = gamemode == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
 
         Vec3D secondVector = firstVector.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
 
-        int i = MathHelper.floor(secondVector.a);
-        int j = MathHelper.floor(secondVector.b);
-        int k = MathHelper.floor(secondVector.c);
-        int l = MathHelper.floor(firstVector.a);
-        int i1 = MathHelper.floor(firstVector.b);
-        int j1 = MathHelper.floor(firstVector.c);
+        int i = gg.scala.spigot.util.MathHelper.floorD(secondVector.a);
+        int j = gg.scala.spigot.util.MathHelper.floorD(secondVector.b);
+        int k = gg.scala.spigot.util.MathHelper.floorD(secondVector.c);
+        int l = gg.scala.spigot.util.MathHelper.floorD(firstVector.a);
+        int i1 = gg.scala.spigot.util.MathHelper.floorD(firstVector.b);
+        int j1 = gg.scala.spigot.util.MathHelper.floorD(firstVector.c);
 
         boolean xDivide = true;
         boolean yDivide = true;

@@ -216,7 +216,7 @@ public class EntityBoat extends Entity {
                 d4 = this.locX + (this.d - this.locX) / (double) this.c;
                 d5 = this.locY + (this.e - this.locY) / (double) this.c;
                 d10 = this.locZ + (this.f - this.locZ) / (double) this.c;
-                d11 = MathHelper.g(this.g - (double) this.yaw);
+                d11 = gg.scala.spigot.util.MathHelper.g(this.g - (double) this.yaw);
                 this.yaw = (float) ((double) this.yaw + d11 / (double) this.c);
                 this.pitch = (float) ((double) this.pitch + (this.h - (double) this.pitch) / (double) this.c);
                 --this.c;
@@ -294,12 +294,12 @@ public class EntityBoat extends Entity {
             int k;
 
             for (k = 0; k < 4; ++k) {
-                int l = MathHelper.floor(this.locX + ((double) (k % 2) - 0.5D) * 0.8D);
+                int l = gg.scala.spigot.util.MathHelper.floorD(this.locX + ((double) (k % 2) - 0.5D) * 0.8D);
 
-                j = MathHelper.floor(this.locZ + ((double) (k / 2) - 0.5D) * 0.8D);
+                j = gg.scala.spigot.util.MathHelper.floorD(this.locZ + ((double) (k / 2) - 0.5D) * 0.8D);
 
                 for (int i1 = 0; i1 < 2; ++i1) {
-                    int j1 = MathHelper.floor(this.locY) + i1;
+                    int j1 = gg.scala.spigot.util.MathHelper.floorD(this.locY) + i1;
                     BlockPosition blockposition = new BlockPosition(l, j1, j);
                     Block block = this.world.getType(blockposition).getBlock();
 
@@ -357,7 +357,7 @@ public class EntityBoat extends Entity {
                 d5 = (double) ((float) (MathHelper.b(d11, d10) * 180.0D / 3.141592653589793D));
             }
 
-            double d12 = MathHelper.g(d5 - (double) this.yaw);
+            double d12 = gg.scala.spigot.util.MathHelper.g(d5 - (double) this.yaw);
 
             if (d12 > 20.0D) {
                 d12 = 20.0D;

@@ -20,7 +20,7 @@ public class BaseBlockPosition implements Comparable<net.minecraft.server.BaseBl
     }
 
     public BaseBlockPosition(double d0, double d1, double d2) {
-        this(MathHelper.floor(d0), MathHelper.floor(d1), MathHelper.floor(d2));
+        this((int) gg.scala.spigot.util.MathHelper.floor(d0), (int) gg.scala.spigot.util.MathHelper.floor(d1), (int) gg.scala.spigot.util.MathHelper.floor(d2));
     }
 
     public boolean equals(Object object) {

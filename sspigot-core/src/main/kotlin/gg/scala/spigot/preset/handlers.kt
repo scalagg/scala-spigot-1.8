@@ -2,7 +2,6 @@ package gg.scala.spigot.preset
 
 import gg.scala.spigot.ScalaSpigot
 import gg.scala.spigot.preset.knockback.KnockbackPreset
-import gg.scala.spigot.preset.knockback.impl.MinemenClubPreset
 import gg.scala.spigot.preset.potion.PotionPreset
 
 object KnockbackHandler : PresetHandler<KnockbackPreset>() {

@@ -27,7 +27,7 @@ public class WorldGenLargeFeature extends StructureGenerator {
             Entry entry = (Entry) iterator.next();
 
             if (((String) entry.getKey()).equals("distance")) {
-                this.g = MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
+                this.g = gg.scala.spigot.util.MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
             }
         }
 

@@ -31,15 +31,15 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.projectileSource = (org.bukkit.entity.LivingEntity) entityliving.getBukkitEntity(); // CraftBukkit
         this.setSize(0.25F, 0.25F);
         this.setPositionRotation(entityliving.locX, entityliving.locY + (double) entityliving.getHeadHeight(), entityliving.locZ, entityliving.yaw, entityliving.pitch);
-        this.locX -= (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locX -= (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.locY -= 0.10000000149011612D;
-        this.locZ -= (double) (MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+        this.locZ -= (double) (gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * 0.16F);
         this.setPosition(this.locX, this.locY, this.locZ);
         float f = 0.4F;
 
-        this.motX = (double) (-MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-        this.motZ = (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-        this.motY = (double) (-MathHelper.sin((this.pitch + this.l()) / 180.0F * 3.1415927F) * f);
+        this.motX = (double) (-gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+        this.motZ = (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+        this.motY = (double) (-gg.scala.spigot.util.MathHelper.sin((this.pitch + this.l()) / 180.0F * 3.1415927F) * f);
         this.shoot(this.motX, this.motY, this.motZ, this.j(), 1.0F);
     }
 
@@ -68,7 +68,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                 }
             }
         } */
-        float f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        float f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
         d1 /= (double) f2;
@@ -83,7 +83,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.motX = d0;
         this.motY = d1;
         this.motZ = d2;
-        float f3 = (float) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2);
 
         this.lastYaw = this.yaw = (float) (MathHelper.b(d0, d2) * 180.0D / 3.1415927410125732D);
         this.lastPitch = this.pitch = (float) (MathHelper.b(d1, (double) f3) * 180.0D / 3.1415927410125732D);
@@ -183,7 +183,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.locX += this.motX;
         this.locY += this.motY;
         this.locZ += this.motZ;
-        float f1 = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+        float f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
         this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 

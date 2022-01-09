@@ -29,9 +29,9 @@ public class WorldGenVillage extends StructureGenerator {
             Entry entry = (Entry) iterator.next();
 
             if (((String) entry.getKey()).equals("size")) {
-                this.f = MathHelper.a((String) entry.getValue(), this.f, 0);
+                this.f = gg.scala.spigot.util.MathHelper.a((String) entry.getValue(), this.f, 0);
             } else if (((String) entry.getKey()).equals("distance")) {
-                this.g = MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
+                this.g = gg.scala.spigot.util.MathHelper.a((String) entry.getValue(), this.g, this.h + 1);
             }
         }
 

@@ -144,7 +144,7 @@ public abstract class EntityLiving extends Entity {
         if (!this.world.isClientSide && this.fallDistance > 3.0F && flag) {
             IBlockData iblockdata = this.world.getType(blockposition);
             Block block1 = iblockdata.getBlock();
-            float f = (float) MathHelper.f(this.fallDistance - 3.0F);
+            float f = (float) gg.scala.spigot.util.MathHelper.f(this.fallDistance - 3.0F);
 
             if (block1.getMaterial() != Material.AIR) {
                 double d1 = (double) Math.min(0.2F + f / 15.0F, 10.0F);
@@ -183,7 +183,7 @@ public abstract class EntityLiving extends Entity {
                 double d0 = this.world.getWorldBorder().a(this) + this.world.getWorldBorder().getDamageBuffer();
 
                 if (d0 < 0.0D) {
-                    this.damageEntity(DamageSource.STUCK, (float) Math.max(1, MathHelper.floor(-d0 * this.world.getWorldBorder().getDamageAmount())));
+                    this.damageEntity(DamageSource.STUCK, (float) Math.max(1, gg.scala.spigot.util.MathHelper.floor(-d0 * this.world.getWorldBorder().getDamageAmount())));
                 }
             }
         }
@@ -714,7 +714,7 @@ public abstract class EntityLiving extends Entity {
             return;
         }
         // CraftBukkit end
-        this.datawatcher.watch(6, Float.valueOf(MathHelper.a(f, 0.0F, this.getMaxHealth())));
+        this.datawatcher.watch(6, Float.valueOf(gg.scala.spigot.util.MathHelper.a(f, 0.0F, this.getMaxHealth())));
     }
 
     public boolean damageEntity(DamageSource damagesource, float f) {
@@ -904,7 +904,7 @@ public abstract class EntityLiving extends Entity {
                preset = KnockbackHandler.INSTANCE.getActivePreset();
             }
 
-            double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
+            double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
 
             this.motX /= preset.getFriction();
             this.motY /= preset.getFriction();
@@ -933,9 +933,9 @@ public abstract class EntityLiving extends Entity {
     protected void dropDeathLoot(boolean flag, int i) {}
 
     public boolean k_() {
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.getBoundingBox().b);
-        int k = MathHelper.floor(this.locZ);
+        int i = (int) gg.scala.spigot.util.MathHelper.floor(this.locX);
+        int j = (int) gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b);
+        int k = (int) gg.scala.spigot.util.MathHelper.floor(this.locZ);
         Block block = this.world.getType(new BlockPosition(i, j, k)).getBlock();
 
         return (block == Blocks.LADDER || block == Blocks.VINE) && (!(this instanceof EntityHuman) || !((EntityHuman) this).isSpectator());
@@ -949,7 +949,7 @@ public abstract class EntityLiving extends Entity {
         super.e(f, f1);
         MobEffect mobeffect = this.getEffect(MobEffectList.JUMP);
         float f2 = mobeffect != null ? (float) (mobeffect.getAmplifier() + 1) : 0.0F;
-        int i = MathHelper.f((f - 3.0F - f2) * f1);
+        int i = gg.scala.spigot.util.MathHelper.f((f - 3.0F - f2) * f1);
 
         if (i > 0) {
             // CraftBukkit start
@@ -959,9 +959,9 @@ public abstract class EntityLiving extends Entity {
             // CraftBukkit end
             this.makeSound(this.n(i), 1.0F, 1.0F);
             // this.damageEntity(DamageSource.FALL, (float) i); // CraftBukkit - moved up
-            int j = MathHelper.floor(this.locX);
-            int k = MathHelper.floor(this.locY - 0.20000000298023224D);
-            int l = MathHelper.floor(this.locZ);
+            int j = (int) gg.scala.spigot.util.MathHelper.floor(this.locX);
+            int k = (int) gg.scala.spigot.util.MathHelper.floor(this.locY - 0.20000000298023224D);
+            int l = (int) gg.scala.spigot.util.MathHelper.floor(this.locZ);
             Block block = this.world.getType(new BlockPosition(j, k, l)).getBlock();
 
             if (block.getMaterial() != Material.AIR) {
@@ -1312,8 +1312,8 @@ public abstract class EntityLiving extends Entity {
         if (this.isSprinting()) {
             float f = this.yaw * 0.017453292F;
 
-            this.motX -= (double) (MathHelper.sin(f) * 0.2F);
-            this.motZ += (double) (MathHelper.cos(f) * 0.2F);
+            this.motX -= (double) (gg.scala.spigot.util.MathHelper.sin(f) * 0.2F);
+            this.motZ += (double) (gg.scala.spigot.util.MathHelper.cos(f) * 0.2F);
         }
 
         this.ai = true;
@@ -1377,7 +1377,7 @@ public abstract class EntityLiving extends Entity {
                 float f5 = 0.91F;
 
                 if (this.onGround) {
-                    f5 = this.world.getType(new BlockPosition(MathHelper.floor(this.locX), MathHelper.floor(this.getBoundingBox().b) - 1, MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.91F;
+                    f5 = this.world.getType(new BlockPosition(gg.scala.spigot.util.MathHelper.floor(this.locX), gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b) - 1, gg.scala.spigot.util.MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.91F;
                 }
 
                 float f6 = 0.16277136F / (f5 * f5 * f5);
@@ -1391,13 +1391,13 @@ public abstract class EntityLiving extends Entity {
                 this.a(f, f1, f3);
                 f5 = 0.91F;
                 if (this.onGround) {
-                    f5 = this.world.getType(new BlockPosition(MathHelper.floor(this.locX), MathHelper.floor(this.getBoundingBox().b) - 1, MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.91F;
+                    f5 = this.world.getType(new BlockPosition(gg.scala.spigot.util.MathHelper.floor(this.locX), gg.scala.spigot.util.MathHelper.floor(this.getBoundingBox().b) - 1, gg.scala.spigot.util.MathHelper.floor(this.locZ))).getBlock().frictionFactor * 0.91F;
                 }
 
                 if (this.k_()) {
                     f4 = 0.15F;
-                    this.motX = MathHelper.a(this.motX, (double) (-f4), (double) f4);
-                    this.motZ = MathHelper.a(this.motZ, (double) (-f4), (double) f4);
+                    this.motX = gg.scala.spigot.util.MathHelper.a(this.motX, (double) (-f4), (double) f4);
+                    this.motZ = gg.scala.spigot.util.MathHelper.a(this.motZ, (double) (-f4), (double) f4);
                     this.fallDistance = 0.0F;
                     if (this.motY < -0.15D) {
                         this.motY = -0.15D;
@@ -1435,7 +1435,7 @@ public abstract class EntityLiving extends Entity {
         d0 = this.locX - this.lastX;
         double d1 = this.locZ - this.lastZ;
 
-        f2 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
+        f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
         if (f2 > 1.0F) {
             f2 = 1.0F;
         }
@@ -1568,10 +1568,10 @@ public abstract class EntityLiving extends Entity {
     }
 
     protected float h(float f, float f1) {
-        float f2 = MathHelper.g(f - this.aI);
+        float f2 = gg.scala.spigot.util.MathHelper.g(f - this.aI);
 
         this.aI += f2 * 0.3F;
-        float f3 = MathHelper.g(this.yaw - this.aI);
+        float f3 = gg.scala.spigot.util.MathHelper.g(this.yaw - this.aI);
         boolean flag = f3 < -90.0F || f3 >= 90.0F;
 
         if (f3 < -75.0F) {
@@ -1603,7 +1603,7 @@ public abstract class EntityLiving extends Entity {
             double d0 = this.locX + (this.bd - this.locX) / (double) this.bc;
             double d1 = this.locY + (this.be - this.locY) / (double) this.bc;
             double d2 = this.locZ + (this.bf - this.locZ) / (double) this.bc;
-            double d3 = MathHelper.g(this.bg - (double) this.yaw);
+            double d3 = gg.scala.spigot.util.MathHelper.g(this.bg - (double) this.yaw);
 
             this.yaw = (float) ((double) this.yaw + d3 / (double) this.bc);
             this.pitch = (float) ((double) this.pitch + (this.bh - (double) this.pitch) / (double) this.bc);

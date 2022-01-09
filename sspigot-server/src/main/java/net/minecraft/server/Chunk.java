@@ -725,8 +725,8 @@ public class Chunk {
 
     public void a(Entity entity) {
         this.r = true;
-        int i = MathHelper.floor(entity.locX / 16.0D);
-        int j = MathHelper.floor(entity.locZ / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD(entity.locX / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD(entity.locZ / 16.0D);
 
         if (i != this.locX || j != this.locZ) {
             // CraftBukkit start
@@ -737,7 +737,7 @@ public class Chunk {
             entity.die();
         }
 
-        int k = MathHelper.floor(entity.locY / 16.0D);
+        int k = gg.scala.spigot.util.MathHelper.floorD(entity.locY / 16.0D);
 
         if (k < 0) {
             k = 0;
@@ -982,8 +982,8 @@ public class Chunk {
     }
 
     public void a(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
-        int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.b - 2.0D) / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.e + 2.0D) / 16.0D);
 
         i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
@@ -1026,8 +1026,8 @@ public class Chunk {
     }
 
     public <T extends Entity> void a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, List<T> list, Predicate<? super T> predicate) {
-        int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
-        int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
+        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.b - 2.0D) / 16.0D);
+        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.e + 2.0D) / 16.0D);
 
         i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);

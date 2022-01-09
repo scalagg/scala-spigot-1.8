@@ -344,9 +344,9 @@ public class EntityEnderman extends EntityMonster {
         public void e() {
             Random random = this.enderman.bc();
             World world = this.enderman.world;
-            int i = MathHelper.floor(this.enderman.locX - 2.0D + random.nextDouble() * 4.0D);
-            int j = MathHelper.floor(this.enderman.locY + random.nextDouble() * 3.0D);
-            int k = MathHelper.floor(this.enderman.locZ - 2.0D + random.nextDouble() * 4.0D);
+            int i = gg.scala.spigot.util.MathHelper.floorD(this.enderman.locX - 2.0D + random.nextDouble() * 4.0D);
+            int j = gg.scala.spigot.util.MathHelper.floorD(this.enderman.locY + random.nextDouble() * 3.0D);
+            int k = gg.scala.spigot.util.MathHelper.floorD(this.enderman.locZ - 2.0D + random.nextDouble() * 4.0D);
             BlockPosition blockposition = new BlockPosition(i, j, k);
             IBlockData iblockdata = world.getType(blockposition);
             Block block = iblockdata.getBlock();
@@ -378,9 +378,9 @@ public class EntityEnderman extends EntityMonster {
         public void e() {
             Random random = this.a.bc();
             World world = this.a.world;
-            int i = MathHelper.floor(this.a.locX - 1.0D + random.nextDouble() * 2.0D);
-            int j = MathHelper.floor(this.a.locY + random.nextDouble() * 2.0D);
-            int k = MathHelper.floor(this.a.locZ - 1.0D + random.nextDouble() * 2.0D);
+            int i = gg.scala.spigot.util.MathHelper.floorD(this.a.locX - 1.0D + random.nextDouble() * 2.0D);
+            int j = gg.scala.spigot.util.MathHelper.floorD(this.a.locY + random.nextDouble() * 2.0D);
+            int k = gg.scala.spigot.util.MathHelper.floorD(this.a.locZ - 1.0D + random.nextDouble() * 2.0D);
             BlockPosition blockposition = new BlockPosition(i, j, k);
             Block block = world.getType(blockposition).getBlock();
             Block block1 = world.getType(blockposition.down()).getBlock();

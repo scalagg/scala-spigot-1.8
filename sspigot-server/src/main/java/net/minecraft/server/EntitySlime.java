@@ -82,8 +82,8 @@ public class EntitySlime extends EntityInsentient implements IMonster {
             for (int j = 0; j < i * 8; ++j) {
                 float f = this.random.nextFloat() * 3.1415927F * 2.0F;
                 float f1 = this.random.nextFloat() * 0.5F + 0.5F;
-                float f2 = (float) MathHelper.sin(f) * (float) i * 0.5F * f1;
-                float f3 = MathHelper.cos(f) * (float) i * 0.5F * f1;
+                float f2 = (float) gg.scala.spigot.util.MathHelper.sin(f) * (float) i * 0.5F * f1;
+                float f3 = (float) (gg.scala.spigot.util.MathHelper.cos(f) * (float) i * 0.5F * f1);
                 World world = this.world;
                 EnumParticle enumparticle = this.n();
                 double d0 = this.locX + (double) f2;
@@ -222,7 +222,7 @@ public class EntitySlime extends EntityInsentient implements IMonster {
     }
 
     public boolean bR() {
-        BlockPosition blockposition = new BlockPosition(MathHelper.floor(this.locX), 0, MathHelper.floor(this.locZ));
+        BlockPosition blockposition = new BlockPosition(gg.scala.spigot.util.MathHelper.floor(this.locX), 0, gg.scala.spigot.util.MathHelper.floor(this.locZ));
         Chunk chunk = this.world.getChunkAtWorldCoords(blockposition);
 
         if (this.world.getWorldData().getType() == WorldType.FLAT && this.random.nextInt(4) != 1) {

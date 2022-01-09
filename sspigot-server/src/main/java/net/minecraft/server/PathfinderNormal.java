@@ -25,23 +25,23 @@ public class PathfinderNormal extends PathfinderAbstract {
 
         if (this.i && entity.V()) {
             i = (int) entity.getBoundingBox().b;
-            BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition(MathHelper.floor(entity.locX), i, MathHelper.floor(entity.locZ));
+            BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition(gg.scala.spigot.util.MathHelper.floorD(entity.locX), i, gg.scala.spigot.util.MathHelper.floorD(entity.locZ));
 
             for (Block block = this.a.getType(blockposition_mutableblockposition).getBlock(); block == Blocks.FLOWING_WATER || block == Blocks.WATER; block = this.a.getType(blockposition_mutableblockposition).getBlock()) {
                 ++i;
-                blockposition_mutableblockposition.c(MathHelper.floor(entity.locX), i, MathHelper.floor(entity.locZ));
+                blockposition_mutableblockposition.c(gg.scala.spigot.util.MathHelper.floorD(entity.locX), i, gg.scala.spigot.util.MathHelper.floorD(entity.locZ));
             }
 
             this.h = false;
         } else {
-            i = MathHelper.floor(entity.getBoundingBox().b + 0.5D);
+            i = gg.scala.spigot.util.MathHelper.floorD(entity.getBoundingBox().b + 0.5D);
         }
 
-        return this.a(MathHelper.floor(entity.getBoundingBox().a), i, MathHelper.floor(entity.getBoundingBox().c));
+        return this.a(gg.scala.spigot.util.MathHelper.floorD(entity.getBoundingBox().a), i, gg.scala.spigot.util.MathHelper.floorD(entity.getBoundingBox().c));
     }
 
     public PathPoint a(Entity entity, double d0, double d1, double d2) {
-        return this.a(MathHelper.floor(d0 - (double) (entity.width / 2.0F)), MathHelper.floor(d1), MathHelper.floor(d2 - (double) (entity.width / 2.0F)));
+        return this.a(gg.scala.spigot.util.MathHelper.floorD(d0 - (double) (entity.width / 2.0F)), gg.scala.spigot.util.MathHelper.floorD(d1), gg.scala.spigot.util.MathHelper.floorD(d2 - (double) (entity.width / 2.0F)));
     }
 
     public int a(PathPoint[] apathpoint, Entity entity, PathPoint pathpoint, PathPoint pathpoint1, float f) {

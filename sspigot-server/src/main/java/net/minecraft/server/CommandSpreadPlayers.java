@@ -198,7 +198,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
                 commandspreadplayers_location2d = acommandspreadplayers_location2d[i++];
             }
 
-            entity.enderTeleportTo((double) ((float) MathHelper.floor(commandspreadplayers_location2d.a) + 0.5F), (double) commandspreadplayers_location2d.a(world), (double) MathHelper.floor(commandspreadplayers_location2d.b) + 0.5D);
+            entity.enderTeleportTo((double) ((float) gg.scala.spigot.util.MathHelper.floor(commandspreadplayers_location2d.a) + 0.5F), (double) commandspreadplayers_location2d.a(world), (double) gg.scala.spigot.util.MathHelper.floor(commandspreadplayers_location2d.b) + 0.5D);
             double d1 = Double.MAX_VALUE;
 
             for (int k = 0; k < acommandspreadplayers_location2d.length; ++k) {
@@ -267,7 +267,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
         }
 
         float b() {
-            return MathHelper.sqrt(this.a * this.a + this.b * this.b);
+            return (float) gg.scala.spigot.util.MathHelper.sqrt(this.a * this.a + this.b * this.b);
         }
 
         public void b(net.minecraft.server.CommandSpreadPlayers.Location2D commandspreadplayers_location2d) {
@@ -329,8 +329,8 @@ public class CommandSpreadPlayers extends CommandAbstract {
         }
 
         public void a(Random random, double d0, double d1, double d2, double d3) {
-            this.a = MathHelper.a(random, d0, d2);
-            this.b = MathHelper.a(random, d1, d3);
+            this.a = gg.scala.spigot.util.MathHelper.a(random, d0, d2);
+            this.b = gg.scala.spigot.util.MathHelper.a(random, d1, d3);
         }
 
         // CraftBukkit start - add a version of getType which force loads chunks

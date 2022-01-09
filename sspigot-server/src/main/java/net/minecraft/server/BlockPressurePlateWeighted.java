@@ -48,7 +48,7 @@ public class BlockPressurePlateWeighted extends BlockPressurePlateAbstract {
         if (i > 0) {
             float f = (float) Math.min(this.weight, i) / (float) this.weight;
 
-            return MathHelper.f(f * 15.0F);
+            return gg.scala.spigot.util.MathHelper.f(f * 15.0F);
         } else {
             return 0;
         }

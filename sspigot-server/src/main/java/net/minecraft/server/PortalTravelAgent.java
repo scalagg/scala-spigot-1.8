@@ -29,9 +29,9 @@ public class PortalTravelAgent {
                 this.b(entity, f);
             }
         } else {
-            int i = MathHelper.floor(entity.locX);
-            int j = MathHelper.floor(entity.locY) - 1;
-            int k = MathHelper.floor(entity.locZ);
+            int i = gg.scala.spigot.util.MathHelper.floorD(entity.locX);
+            int j = gg.scala.spigot.util.MathHelper.floorD(entity.locY) - 1;
+            int k = gg.scala.spigot.util.MathHelper.floorD(entity.locZ);
             // CraftBukkit start - Modularize end portal creation
             BlockPosition created = this.createEndPortal(entity.locX, entity.locY, entity.locZ);
             entity.setPositionRotation((double) created.getX(), (double) created.getY(), (double) created.getZ(), entity.yaw, 0.0F);
@@ -41,9 +41,9 @@ public class PortalTravelAgent {
 
     // Split out from original a(Entity, double, double, double, float) method in order to enable being called from createPortal
     private BlockPosition createEndPortal(double x, double y, double z) {
-            int i = MathHelper.floor(x);
-            int j = MathHelper.floor(y) - 1;
-            int k = MathHelper.floor(z);
+            int i = gg.scala.spigot.util.MathHelper.floorD(x);
+            int j = gg.scala.spigot.util.MathHelper.floorD(y) - 1;
+            int k = gg.scala.spigot.util.MathHelper.floorD(z);
             // CraftBukkit end
             byte b0 = 1;
             byte b1 = 0;
@@ -115,8 +115,8 @@ public class PortalTravelAgent {
         // CraftBukkit end
         double d0 = -1.0D;
         // CraftBukkit start
-        int i = MathHelper.floor(x);
-        int j = MathHelper.floor(z);
+        int i = gg.scala.spigot.util.MathHelper.floorD(x);
+        int j = gg.scala.spigot.util.MathHelper.floorD(z);
         // CraftBukkit end
         boolean flag1 = true;
         Object object = BlockPosition.ZERO;
@@ -270,9 +270,9 @@ public class PortalTravelAgent {
         // CraftBukkit end
         double d0 = -1.0D;
         // CraftBukkit start
-        int i = MathHelper.floor(x);
-        int j = MathHelper.floor(y);
-        int k = MathHelper.floor(z);
+        int i = gg.scala.spigot.util.MathHelper.floorD(x);
+        int j = gg.scala.spigot.util.MathHelper.floorD(y);
+        int k = gg.scala.spigot.util.MathHelper.floorD(z);
         // CraftBukkit end
         int l = i;
         int i1 = j;

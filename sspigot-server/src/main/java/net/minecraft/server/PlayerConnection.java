@@ -1138,10 +1138,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			double locY = this.player.locY + (double) this.player.getHeadHeight();
 			double locZ = this.player.locZ;
 			Vec3D vec3d = new Vec3D(locX, locY, locZ);
-			float f3 = MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
-			float f4 = (float) MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
-			float f5 = -MathHelper.cos(-pitch * 0.017453292F);
-			float f6 = (float) MathHelper.sin(-pitch * 0.017453292F);
+			float f3 = (float) gg.scala.spigot.util.MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
+			float f4 = (float) gg.scala.spigot.util.MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
+			float f5 = (float) -gg.scala.spigot.util.MathHelper.cos(-pitch * 0.017453292F);
+			float f6 = (float) gg.scala.spigot.util.MathHelper.sin(-pitch * 0.017453292F);
 			float f7 = f4 * f5;
 			float f8 = f3 * f5;
 			double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;

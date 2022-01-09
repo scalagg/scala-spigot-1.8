@@ -28,15 +28,15 @@ public class WorldGenVillagePieces {
     public static List<net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight> a(Random random, int i) {
         ArrayList arraylist = Lists.newArrayList();
 
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHouse.class, 4, MathHelper.nextInt(random, 2 + i, 4 + i * 2)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageTemple.class, 20, MathHelper.nextInt(random, 0 + i, 1 + i)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageLibrary.class, 20, MathHelper.nextInt(random, 0 + i, 2 + i)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHut.class, 3, MathHelper.nextInt(random, 2 + i, 5 + i * 3)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageButcher.class, 15, MathHelper.nextInt(random, 0 + i, 2 + i)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageFarm2.class, 3, MathHelper.nextInt(random, 1 + i, 4 + i)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageFarm.class, 3, MathHelper.nextInt(random, 2 + i, 4 + i * 2)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageBlacksmith.class, 15, MathHelper.nextInt(random, 0, 1 + i)));
-        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHouse2.class, 8, MathHelper.nextInt(random, 0 + i, 3 + i * 2)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHouse.class, 4, gg.scala.spigot.util.MathHelper.nextInt(random, 2 + i, 4 + i * 2)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageTemple.class, 20, gg.scala.spigot.util.MathHelper.nextInt(random, 0 + i, 1 + i)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageLibrary.class, 20, gg.scala.spigot.util.MathHelper.nextInt(random, 0 + i, 2 + i)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHut.class, 3, gg.scala.spigot.util.MathHelper.nextInt(random, 2 + i, 5 + i * 3)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageButcher.class, 15, gg.scala.spigot.util.MathHelper.nextInt(random, 0 + i, 2 + i)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageFarm2.class, 3, gg.scala.spigot.util.MathHelper.nextInt(random, 1 + i, 4 + i)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageFarm.class, 3, gg.scala.spigot.util.MathHelper.nextInt(random, 2 + i, 4 + i * 2)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageBlacksmith.class, 15, gg.scala.spigot.util.MathHelper.nextInt(random, 0, 1 + i)));
+        arraylist.add(new net.minecraft.server.WorldGenVillagePieces.WorldGenVillagePieceWeight(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageHouse2.class, 8, gg.scala.spigot.util.MathHelper.nextInt(random, 0 + i, 3 + i * 2)));
         Iterator iterator = arraylist.iterator();
 
         while (iterator.hasNext()) {
@@ -344,14 +344,14 @@ public class WorldGenVillagePieces {
             int i;
 
             for (i = 1; i <= 7; ++i) {
-                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 1, 1, i, structureboundingbox);
-                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 2, 1, i, structureboundingbox);
-                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 4, 1, i, structureboundingbox);
-                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 5, 1, i, structureboundingbox);
-                this.a(world, this.c.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 7, 1, i, structureboundingbox);
-                this.a(world, this.c.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 8, 1, i, structureboundingbox);
-                this.a(world, this.d.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 10, 1, i, structureboundingbox);
-                this.a(world, this.d.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 11, 1, i, structureboundingbox);
+                this.a(world, this.a.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 1, 1, i, structureboundingbox);
+                this.a(world, this.a.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 2, 1, i, structureboundingbox);
+                this.a(world, this.b.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 4, 1, i, structureboundingbox);
+                this.a(world, this.b.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 5, 1, i, structureboundingbox);
+                this.a(world, this.c.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 7, 1, i, structureboundingbox);
+                this.a(world, this.c.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 8, 1, i, structureboundingbox);
+                this.a(world, this.d.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 10, 1, i, structureboundingbox);
+                this.a(world, this.d.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 11, 1, i, structureboundingbox);
             }
 
             for (i = 0; i < 9; ++i) {
@@ -433,10 +433,10 @@ public class WorldGenVillagePieces {
             int i;
 
             for (i = 1; i <= 7; ++i) {
-                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 1, 1, i, structureboundingbox);
-                this.a(world, this.a.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 2, 1, i, structureboundingbox);
-                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 4, 1, i, structureboundingbox);
-                this.a(world, this.b.fromLegacyData(MathHelper.nextInt(random, 2, 7)), 5, 1, i, structureboundingbox);
+                this.a(world, this.a.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 1, 1, i, structureboundingbox);
+                this.a(world, this.a.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 2, 1, i, structureboundingbox);
+                this.a(world, this.b.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 4, 1, i, structureboundingbox);
+                this.a(world, this.b.fromLegacyData(gg.scala.spigot.util.MathHelper.nextInt(random, 2, 7)), 5, 1, i, structureboundingbox);
             }
 
             for (i = 0; i < 9; ++i) {
@@ -1317,7 +1317,7 @@ public class WorldGenVillagePieces {
         }
 
         public static StructureBoundingBox a(net.minecraft.server.WorldGenVillagePieces.WorldGenVillageStartPiece worldgenvillagepieces_worldgenvillagestartpiece, List<StructurePiece> list, Random random, int i, int j, int k, EnumDirection enumdirection) {
-            for (int l = 7 * MathHelper.nextInt(random, 3, 5); l >= 7; l -= 7) {
+            for (int l = 7 * gg.scala.spigot.util.MathHelper.nextInt(random, 3, 5); l >= 7; l -= 7) {
                 StructureBoundingBox structureboundingbox = StructureBoundingBox.a(i, j, k, 0, 0, 0, 3, 3, l, enumdirection);
 
                 if (StructurePiece.a(list, structureboundingbox) == null) {

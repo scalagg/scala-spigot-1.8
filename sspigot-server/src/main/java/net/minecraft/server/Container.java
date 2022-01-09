@@ -575,7 +575,7 @@ public abstract class Container {
     public static void a(Set<Slot> set, int i, ItemStack itemstack, int j) {
         switch (i) {
         case 0:
-            itemstack.count = MathHelper.d((float) itemstack.count / (float) set.size());
+            itemstack.count = gg.scala.spigot.util.MathHelper.d((float) itemstack.count / (float) set.size());
             break;
 
         case 1:
@@ -614,7 +614,7 @@ public abstract class Container {
             }
 
             f /= (float) iinventory.getSize();
-            return MathHelper.d(f * 14.0F) + (i > 0 ? 1 : 0);
+            return gg.scala.spigot.util.MathHelper.d(f * 14.0F) + (i > 0 ? 1 : 0);
         }
     }
 }

@@ -98,7 +98,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                 d0 = entity.locZ - this.locZ;
                 d1 = d3 * d3 + d0 * d0;
                 if (d1 > 9.0D) {
-                    d2 = (double) MathHelper.sqrt(d1);
+                    d2 = (double) gg.scala.spigot.util.MathHelper.sqrt(d1);
                     this.motX += (d3 / d2 * 0.5D - this.motX) * 0.6000000238418579D;
                     this.motZ += (d0 / d2 * 0.5D - this.motZ) * 0.6000000238418579D;
                 }
@@ -135,7 +135,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                 double d4 = entity1.locX - d0;
                 double d5 = entity1.locY + (double) entity1.getHeadHeight() - d1;
                 double d6 = entity1.locZ - d2;
-                double d7 = (double) MathHelper.sqrt(d4 * d4 + d6 * d6);
+                double d7 = (double) gg.scala.spigot.util.MathHelper.sqrt(d4 * d4 + d6 * d6);
                 float f = (float) (MathHelper.b(d6, d4) * 180.0D / 3.1415927410125732D) - 90.0F;
                 float f1 = (float) (-(MathHelper.b(d5, d7) * 180.0D / 3.1415927410125732D));
 
@@ -224,9 +224,9 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                         if (l > 15) {
                             float f = 10.0F;
                             float f1 = 5.0F;
-                            double d0 = MathHelper.a(this.random, this.locX - (double) f, this.locX + (double) f);
-                            double d1 = MathHelper.a(this.random, this.locY - (double) f1, this.locY + (double) f1);
-                            double d2 = MathHelper.a(this.random, this.locZ - (double) f, this.locZ + (double) f);
+                            double d0 = gg.scala.spigot.util.MathHelper.a(this.random, this.locX - (double) f, this.locX + (double) f);
+                            double d1 = gg.scala.spigot.util.MathHelper.a(this.random, this.locY - (double) f1, this.locY + (double) f1);
+                            double d2 = gg.scala.spigot.util.MathHelper.a(this.random, this.locZ - (double) f, this.locZ + (double) f);
 
                             this.a(i + 1, d0, d1, d2, true);
                             this.bo[i - 1] = 0;
@@ -280,9 +280,9 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             if (this.bp > 0) {
                 --this.bp;
                 if (this.bp == 0 && this.world.getGameRules().getBoolean("mobGriefing")) {
-                    i = MathHelper.floor(this.locY);
-                    j = MathHelper.floor(this.locX);
-                    int j1 = MathHelper.floor(this.locZ);
+                    i = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+                    j = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+                    int j1 = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
                     boolean flag = false;
 
                     for (int k1 = -1; k1 <= 1; ++k1) {
@@ -339,7 +339,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             return this.locX;
         } else {
             float f = (this.aI + (float) (180 * (i - 1))) / 180.0F * 3.1415927F;
-            float f1 = MathHelper.cos(f);
+            float f1 = (float) gg.scala.spigot.util.MathHelper.cos(f);
 
             return this.locX + (double) f1 * 1.3D;
         }
@@ -354,14 +354,14 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             return this.locZ;
         } else {
             float f = (this.aI + (float) (180 * (i - 1))) / 180.0F * 3.1415927F;
-            float f1 = (float) MathHelper.sin(f);
+            float f1 = (float) gg.scala.spigot.util.MathHelper.sin(f);
 
             return this.locZ + (double) f1 * 1.3D;
         }
     }
 
     private float b(float f, float f1, float f2) {
-        float f3 = MathHelper.g(f1 - f);
+        float f3 = gg.scala.spigot.util.MathHelper.g(f1 - f);
 
         if (f3 > f2) {
             f3 = f2;

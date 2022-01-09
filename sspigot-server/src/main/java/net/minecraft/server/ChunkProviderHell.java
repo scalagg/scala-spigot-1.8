@@ -279,7 +279,7 @@ public class ChunkProviderHell implements IChunkProvider {
 
                     if ((double) j2 < d3) {
                         d9 = (d3 - (double) j2) / 4.0D;
-                        d9 = MathHelper.a(d9, 0.0D, 1.0D);
+                        d9 = gg.scala.spigot.util.MathHelper.a(d9, 0.0D, 1.0D);
                         d4 = d4 * (1.0D - d9) + -10.0D * d9;
                     }
 

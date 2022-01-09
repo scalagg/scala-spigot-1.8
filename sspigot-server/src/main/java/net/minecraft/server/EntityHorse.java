@@ -279,8 +279,8 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
     }
 
     public boolean cD() {
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 
         this.world.getBiome(new BlockPosition(i, 0, j));
         return true;
@@ -306,7 +306,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
             this.makeSound("mob.horse.land", 0.4F, 1.0F);
         }
 
-        int i = MathHelper.f((f * 0.5F - 3.0F) * f1);
+        int i = gg.scala.spigot.util.MathHelper.f((f * 0.5F - 3.0F) * f1);
 
         if (i > 0) {
             this.damageEntity(DamageSource.FALL, (float) i);
@@ -736,7 +736,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
                 this.heal(1.0F, RegainReason.REGEN); // CraftBukkit
             }
 
-            if (!this.cy() && this.passenger == null && this.random.nextInt(300) == 0 && this.world.getType(new BlockPosition(MathHelper.floor(this.locX), MathHelper.floor(this.locY) - 1, MathHelper.floor(this.locZ))).getBlock() == Blocks.GRASS) {
+            if (!this.cy() && this.passenger == null && this.random.nextInt(300) == 0 && this.world.getType(new BlockPosition(gg.scala.spigot.util.MathHelper.floorD(this.locX), gg.scala.spigot.util.MathHelper.floorD(this.locY) - 1, gg.scala.spigot.util.MathHelper.floorD(this.locZ))).getBlock() == Blocks.GRASS) {
                 this.r(true);
             }
 
@@ -924,8 +924,8 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
                 this.m(true);
                 this.ai = true;
                 if (f1 > 0.0F) {
-                    float f2 = (float) MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
-                    float f3 = MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
+                    float f2 = (float) gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F);
+                    float f3 = (float) gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F);
 
                     this.motX += (double) (-0.4F * f2 * this.br);
                     this.motZ += (double) (0.4F * f3 * this.br);
@@ -950,7 +950,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
             this.aA = this.aB;
             double d0 = this.locX - this.lastX;
             double d1 = this.locZ - this.lastZ;
-            float f4 = (float) MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
+            float f4 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
 
             if (f4 > 1.0F) {
                 f4 = 1.0F;
@@ -1237,8 +1237,8 @@ public class EntityHorse extends EntityAnimal implements IInventoryListener {
     public void al() {
         super.al();
         if (this.bK > 0.0F) {
-            float f = (float) MathHelper.sin(this.aI * 3.1415927F / 180.0F);
-            float f1 = MathHelper.cos(this.aI * 3.1415927F / 180.0F);
+            float f = (float) gg.scala.spigot.util.MathHelper.sin(this.aI * 3.1415927F / 180.0F);
+            float f1 = (float) gg.scala.spigot.util.MathHelper.cos(this.aI * 3.1415927F / 180.0F);
             float f2 = 0.7F * this.bK;
             float f3 = 0.15F * this.bK;
 

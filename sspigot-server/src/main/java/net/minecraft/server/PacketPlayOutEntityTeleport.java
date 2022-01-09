@@ -16,9 +16,9 @@ public class PacketPlayOutEntityTeleport implements Packet<PacketListenerPlayOut
 
     public PacketPlayOutEntityTeleport(Entity var1) {
         this.a = var1.getId();
-        this.b = MathHelper.floor(var1.locX * 32.0D);
-        this.c = MathHelper.floor(var1.locY * 32.0D);
-        this.d = MathHelper.floor(var1.locZ * 32.0D);
+        this.b = gg.scala.spigot.util.MathHelper.floorD(var1.locX * 32.0D);
+        this.c = gg.scala.spigot.util.MathHelper.floorD(var1.locY * 32.0D);
+        this.d = gg.scala.spigot.util.MathHelper.floorD(var1.locZ * 32.0D);
         this.e = (byte) ((int) (var1.yaw * 256.0F / 360.0F));
         this.f = (byte) ((int) (var1.pitch * 256.0F / 360.0F));
         this.g = var1.onGround;

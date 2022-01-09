@@ -32,9 +32,9 @@ public class EntityEnderCrystal extends Entity {
         this.lastZ = this.locZ;
         ++this.a;
         this.datawatcher.watch(8, Integer.valueOf(this.b));
-        int i = MathHelper.floor(this.locX);
-        int j = MathHelper.floor(this.locY);
-        int k = MathHelper.floor(this.locZ);
+        int i = gg.scala.spigot.util.MathHelper.floorD(this.locX);
+        int j = gg.scala.spigot.util.MathHelper.floorD(this.locY);
+        int k = gg.scala.spigot.util.MathHelper.floorD(this.locZ);
 
         if (this.world.worldProvider instanceof WorldProviderTheEnd && this.world.getType(new BlockPosition(i, j, k)).getBlock() != Blocks.FIRE) {
             // CraftBukkit start

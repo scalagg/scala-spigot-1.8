@@ -549,9 +549,9 @@ public class TileEntityHopper extends TileEntityContainer implements IHopper, IU
 
     public static IInventory b(World world, double d0, double d1, double d2) {
         Object object = null;
-        int i = MathHelper.floor(d0);
-        int j = MathHelper.floor(d1);
-        int k = MathHelper.floor(d2);
+        int i = gg.scala.spigot.util.MathHelper.floorD(d0);
+        int j = gg.scala.spigot.util.MathHelper.floorD(d1);
+        int k = gg.scala.spigot.util.MathHelper.floorD(d2);
         BlockPosition blockposition = new BlockPosition(i, j, k);
         if ( !world.isLoaded( blockposition ) ) return null; // Spigot
         Block block = world.getType(blockposition).getBlock();

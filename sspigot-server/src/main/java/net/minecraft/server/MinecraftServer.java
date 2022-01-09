@@ -639,7 +639,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.X = i;
             this.r.setPlayerSample(new ServerPing.ServerPingPlayerSample(this.J(), this.I()));
             GameProfile[] gameProfile = new GameProfile[Math.min(this.I(), 12)];
-            int j = MathHelper.nextInt(this.s, 0, this.I() - gameProfile.length);
+            int j = gg.scala.spigot.util.MathHelper.nextInt(this.s, 0, this.I() - gameProfile.length);
 
             for (int k = 0; k < gameProfile.length; ++k) {
                 gameProfile[k] = (this.playerList.v().get(j + k)).getProfile();
@@ -1091,7 +1091,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         mojangstatisticsgenerator.a("uses_auth", this.onlineMode);
         mojangstatisticsgenerator.a("gui_state", this.as() ? "enabled" : "disabled");
         mojangstatisticsgenerator.a("run_time", (az() - mojangstatisticsgenerator.g()) / 60L * 1000L);
-        mojangstatisticsgenerator.a("avg_tick_ms", (int) (MathHelper.a(this.h) * 1.0E-6D));
+        mojangstatisticsgenerator.a("avg_tick_ms", (int) (gg.scala.spigot.util.MathHelper.a(this.h) * 1.0E-6D));
 
         int i = 0;
 

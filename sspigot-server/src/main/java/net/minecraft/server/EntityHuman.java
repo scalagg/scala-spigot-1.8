@@ -225,8 +225,8 @@ public abstract class EntityHuman extends EntityLiving {
             }
         }
 
-        double d4 = MathHelper.a(this.locX, -2.9999999E7D, 2.9999999E7D);
-        double d5 = MathHelper.a(this.locZ, -2.9999999E7D, 2.9999999E7D);
+        double d4 = gg.scala.spigot.util.MathHelper.a(this.locX, -2.9999999E7D, 2.9999999E7D);
+        double d5 = gg.scala.spigot.util.MathHelper.a(this.locZ, -2.9999999E7D, 2.9999999E7D);
 
         if (d4 != this.locX || d5 != this.locZ) {
             this.setPosition(d4, this.locY, d5);
@@ -402,7 +402,7 @@ public abstract class EntityHuman extends EntityLiving {
         }
 
         this.k((float) attributeinstance.getValue());
-        float f = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+        float f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
         float f1 = (float) (FastMath.atan(-this.motY * 0.20000000298023224D) * 15.0D); // CraftBukkit
 
         if (f > 0.1F) {
@@ -475,8 +475,8 @@ public abstract class EntityHuman extends EntityLiving {
         }
 
         if (damagesource != null) {
-            this.motX = (double) (-MathHelper.cos((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
-            this.motZ = (-MathHelper.sin((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
+            this.motX = (double) (-gg.scala.spigot.util.MathHelper.cos((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
+            this.motZ = (-gg.scala.spigot.util.MathHelper.sin((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
         } else {
             this.motX = this.motZ = 0.0D;
         }
@@ -578,14 +578,14 @@ public abstract class EntityHuman extends EntityLiving {
             if (flag) {
                 f = this.random.nextFloat() * 0.5F;
                 f1 = this.random.nextFloat() * 3.1415927F * 2.0F;
-                entityitem.motX = (-MathHelper.sin(f1) * f);
-                entityitem.motZ = (double) (MathHelper.cos(f1) * f);
+                entityitem.motX = (-gg.scala.spigot.util.MathHelper.sin(f1) * f);
+                entityitem.motZ = (double) (gg.scala.spigot.util.MathHelper.cos(f1) * f);
                 entityitem.motY = 0.20000000298023224D;
             } else {
                 f = 0.3F;
-                entityitem.motX = (double) (-MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-                entityitem.motZ = (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
-                entityitem.motY = (double) (-MathHelper.sin(this.pitch / 180.0F * 3.1415927F) * f + 0.1F);
+                entityitem.motX = (double) (-gg.scala.spigot.util.MathHelper.sin(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+                entityitem.motZ = (double) (gg.scala.spigot.util.MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * gg.scala.spigot.util.MathHelper.cos(this.pitch / 180.0F * 3.1415927F) * f);
+                entityitem.motY = (double) (-gg.scala.spigot.util.MathHelper.sin(this.pitch / 180.0F * 3.1415927F) * f + 0.1F);
                 f1 = this.random.nextFloat() * 3.1415927F * 2.0F;
                 f = 0.02F * this.random.nextFloat();
                 entityitem.motX += Math.cos((double) f1) * (double) f;
@@ -1015,8 +1015,8 @@ public abstract class EntityHuman extends EntityLiving {
                         final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
                         entity.g(
-                                (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()), knockbackPreset.getExtraVertical(),
-                                (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
+                                (-gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()), knockbackPreset.getExtraVertical(),
+                                (gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
                         );
 
                         this.motX *= 0.6D;
@@ -1392,13 +1392,13 @@ public abstract class EntityHuman extends EntityLiving {
             int i;
 
             if (this.a(Material.WATER)) {
-                i = (int) Math.round(MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
+                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
                 if (i > 0) {
                     this.a(StatisticList.p, i);
                     this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F); // PaperSpigot - Configurable swimming exhaustion
                 }
             } else if (this.V()) {
-                i = (int) Math.round(MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
+                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
                 if (i > 0) {
                     this.a(StatisticList.l, i);
                     this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F); // PaperSpigot - Configurable swimming (diving) exhaustion
@@ -1408,7 +1408,7 @@ public abstract class EntityHuman extends EntityLiving {
                     this.a(StatisticList.n, (int) Math.round(d1 * 100.0D));
                 }
             } else if (this.onGround) {
-                i = (int) Math.round(MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
+                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
                 if (i > 0) {
                     this.a(StatisticList.i, i);
                     if (this.isSprinting()) {
@@ -1423,7 +1423,7 @@ public abstract class EntityHuman extends EntityLiving {
                     }
                 }
             } else {
-                i = (int) Math.round(MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
+                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
                 if (i > 25) {
                     this.a(StatisticList.o, i);
                 }
@@ -1434,14 +1434,14 @@ public abstract class EntityHuman extends EntityLiving {
 
     private void l(double d0, double d1, double d2) {
         if (this.vehicle != null) {
-            int i = (int) Math.round(MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
+            int i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
 
             if (i > 0) {
                 if (this.vehicle instanceof EntityMinecartAbstract) {
                     this.a(StatisticList.q, i);
                     if (this.e == null) {
                         this.e = new BlockPosition(this);
-                    } else if (this.e.c((double) MathHelper.floor(this.locX), (double) MathHelper.floor(this.locY), (double) MathHelper.floor(this.locZ)) >= 1000000.0D) {
+                    } else if (this.e.c((double) gg.scala.spigot.util.MathHelper.floor(this.locX), (double) gg.scala.spigot.util.MathHelper.floor(this.locY), (double) gg.scala.spigot.util.MathHelper.floor(this.locZ)) >= 1000000.0D) {
                         this.b((Statistic) AchievementList.q);
                     }
                 } else if (this.vehicle instanceof EntityBoat) {

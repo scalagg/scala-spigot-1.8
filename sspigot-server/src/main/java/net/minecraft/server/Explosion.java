@@ -88,12 +88,12 @@ public class Explosion {
         this.blocks.addAll(hashSet);
         float f3 = this.size * 2.0F;
 
-        i = MathHelper.floor(this.posX - (double) f3 - 1.0D);
-        j = MathHelper.floor(this.posX + (double) f3 + 1.0D);
-        int l = MathHelper.floor(this.posY - (double) f3 - 1.0D);
-        int i1 = MathHelper.floor(this.posY + (double) f3 + 1.0D);
-        int j1 = MathHelper.floor(this.posZ - (double) f3 - 1.0D);
-        int k1 = MathHelper.floor(this.posZ + (double) f3 + 1.0D);
+        i = (int) gg.scala.spigot.util.MathHelper.floor(this.posX - (double) f3 - 1.0D);
+        j = (int) gg.scala.spigot.util.MathHelper.floor(this.posX + (double) f3 + 1.0D);
+        int l = (int) gg.scala.spigot.util.MathHelper.floor(this.posY - (double) f3 - 1.0D);
+        int i1 = (int) gg.scala.spigot.util.MathHelper.floor(this.posY + (double) f3 + 1.0D);
+        int j1 = (int) gg.scala.spigot.util.MathHelper.floor(this.posZ - (double) f3 - 1.0D);
+        int k1 = (int) gg.scala.spigot.util.MathHelper.floor(this.posZ + (double) f3 + 1.0D);
 
         List list = this.world.a(this.source, new AxisAlignedBB((double) i, (double) l, (double) j1, (double) j, (double) i1, (double) k1), new com.google.common.base.Predicate<Entity>() {
             @Override
@@ -114,7 +114,7 @@ public class Explosion {
                     double d8 = entity.locX - this.posX;
                     double d9 = entity.locY + (double) entity.getHeadHeight() - this.posY;
                     double d10 = entity.locZ - this.posZ;
-                    double d11 = MathHelper.sqrt(d8 * d8 + d9 * d9 + d10 * d10);
+                    double d11 = gg.scala.spigot.util.MathHelper.sqrt(d8 * d8 + d9 * d9 + d10 * d10);
 
                     if (d11 != 0.0D) {
                         d8 /= d11;
@@ -221,7 +221,7 @@ public class Explosion {
                     double d3 = d0 - this.posX;
                     double d4 = d1 - this.posY;
                     double d5 = d2 - this.posZ;
-                    double d6 = MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+                    double d6 = gg.scala.spigot.util.MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 
                     d3 /= d6;
                     d4 /= d6;

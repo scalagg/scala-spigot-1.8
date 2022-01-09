@@ -98,7 +98,7 @@ public class EntitySquid extends EntityWaterAnimal {
 
             if (this.bl < 3.1415927F) {
                 f = this.bl / 3.1415927F;
-                this.bn = (float) MathHelper.sin(f * f * 3.1415927F) * 3.1415927F * 0.25F;
+                this.bn = (float) gg.scala.spigot.util.MathHelper.sin(f * f * 3.1415927F) * 3.1415927F * 0.25F;
                 if ((double) f > 0.75D) {
                     this.bp = 1.0F;
                     this.br = 1.0F;
@@ -117,13 +117,13 @@ public class EntitySquid extends EntityWaterAnimal {
                 this.motZ = (double) (this.bu * this.bp);
             }
 
-            f = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+            f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
             this.aI += (-((float) MathHelper.b(this.motX, this.motZ)) * 180.0F / 3.1415927F - this.aI) * 0.1F;
             this.yaw = this.aI;
             this.c = (float) ((double) this.c + 3.141592653589793D * (double) this.br * 1.5D);
             this.a += (-((float) MathHelper.b((double) f, this.motY)) * 180.0F / 3.1415927F - this.a) * 0.1F;
         } else {
-            this.bn = MathHelper.e((float) MathHelper.sin(this.bl)) * 3.1415927F * 0.25F;
+            this.bn = MathHelper.e((float) gg.scala.spigot.util.MathHelper.sin(this.bl)) * 3.1415927F * 0.25F;
             if (!this.world.isClientSide) {
                 this.motX = 0.0D;
                 this.motY -= 0.08D;
@@ -174,9 +174,9 @@ public class EntitySquid extends EntityWaterAnimal {
                 this.a.b(0.0F, 0.0F, 0.0F);
             } else if (this.a.bc().nextInt(50) == 0 || !this.a.inWater || !this.a.n()) {
                 float f = this.a.bc().nextFloat() * 3.1415927F * 2.0F;
-                float f1 = (float) MathHelper.cos(f) * 0.2F;
+                float f1 = (float) gg.scala.spigot.util.MathHelper.cos(f) * 0.2F;
                 float f2 = -0.1F + this.a.bc().nextFloat() * 0.2F;
-                float f3 = (float) MathHelper.sin(f) * 0.2F;
+                float f3 = (float) gg.scala.spigot.util.MathHelper.sin(f) * 0.2F;
 
                 this.a.b(f1, f2, f3);
             }

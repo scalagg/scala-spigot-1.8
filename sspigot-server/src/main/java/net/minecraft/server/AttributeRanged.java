@@ -33,7 +33,7 @@ public class AttributeRanged extends AttributeBase {
     }
 
     public double a(double d0) {
-        d0 = MathHelper.a(d0, this.a, this.b);
+        d0 = gg.scala.spigot.util.MathHelper.a(d0, this.a, this.b);
         return d0;
     }
 }

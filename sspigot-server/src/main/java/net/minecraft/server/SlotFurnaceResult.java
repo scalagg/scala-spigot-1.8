@@ -48,8 +48,8 @@ public class SlotFurnaceResult extends Slot {
             if (f == 0.0F) {
                 i = 0;
             } else if (f < 1.0F) {
-                j = MathHelper.d((float) i * f);
-                if (j < MathHelper.f((float) i * f) && Math.random() < (double) ((float) i * f - (float) j)) {
+                j = gg.scala.spigot.util.MathHelper.d((float) i * f);
+                if (j < gg.scala.spigot.util.MathHelper.f((float) i * f) && Math.random() < (double) ((float) i * f - (float) j)) {
                     ++j;
                 }
 

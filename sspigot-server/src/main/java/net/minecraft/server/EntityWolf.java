@@ -175,7 +175,7 @@ public class EntityWolf extends EntityTameableAnimal {
 
             if (this.bs > 0.4F) {
                 float f = (float) this.getBoundingBox().b;
-                int i = (int) (MathHelper.sin((this.bs - 0.4F) * 3.1415927F) * 7.0F);
+                int i = (int) (gg.scala.spigot.util.MathHelper.sin((this.bs - 0.4F) * 3.1415927F) * 7.0F);
 
                 for (int j = 0; j < i; ++j) {
                     float f1 = (this.random.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;

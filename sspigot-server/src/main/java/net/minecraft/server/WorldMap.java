@@ -40,8 +40,8 @@ public class WorldMap extends PersistentBase {
 
     public void a(double d0, double d1, int i) {
         int j = 128 * (1 << i);
-        int k = MathHelper.floor((d0 + 64.0D) / (double) j);
-        int l = MathHelper.floor((d1 + 64.0D) / (double) j);
+        int k = gg.scala.spigot.util.MathHelper.floorD((d0 + 64.0D) / (double) j);
+        int l = gg.scala.spigot.util.MathHelper.floorD((d1 + 64.0D) / (double) j);
 
         this.centerX = k * j + j / 2 - 64;
         this.centerZ = l * j + j / 2 - 64;

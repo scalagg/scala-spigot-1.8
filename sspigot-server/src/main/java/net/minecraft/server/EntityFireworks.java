@@ -60,7 +60,7 @@ public class EntityFireworks extends Entity {
         this.motZ *= 1.15D;
         this.motY += 0.04D;
         this.move(this.motX, this.motY, this.motZ);
-        float f = (float) MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+        float f = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
         this.yaw = (float) (MathHelper.b(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
 

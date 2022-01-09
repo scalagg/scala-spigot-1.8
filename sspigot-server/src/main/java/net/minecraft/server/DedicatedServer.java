@@ -440,8 +440,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             return false;
         } else {
             BlockPosition blockposition1 = world.getSpawn();
-            int i = MathHelper.a(blockposition.getX() - blockposition1.getX());
-            int j = MathHelper.a(blockposition.getZ() - blockposition1.getZ());
+            int i = gg.scala.spigot.util.MathHelper.a(blockposition.getX() - blockposition1.getX());
+            int j = gg.scala.spigot.util.MathHelper.a(blockposition.getZ() - blockposition1.getZ());
             int k = Math.max(i, j);
 
             return k <= this.getSpawnProtection();

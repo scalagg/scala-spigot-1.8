@@ -42,7 +42,7 @@ public abstract class NavigationAbstract {
     }
 
     public final PathEntity a(double d0, double d1, double d2) {
-        return this.a(new BlockPosition(MathHelper.floor(d0), (int) d1, MathHelper.floor(d2)));
+        return this.a(new BlockPosition(gg.scala.spigot.util.MathHelper.floor(d0), (int) d1, gg.scala.spigot.util.MathHelper.floor(d2)));
     }
 
     public PathEntity a(BlockPosition blockposition) {
@@ -63,7 +63,7 @@ public abstract class NavigationAbstract {
     }
 
     public boolean a(double d0, double d1, double d2, double d3) {
-        PathEntity pathentity = this.a((double) MathHelper.floor(d0), (double) ((int) d1), (double) MathHelper.floor(d2));
+        PathEntity pathentity = this.a((double) gg.scala.spigot.util.MathHelper.floor(d0), (double) ((int) d1), (double) gg.scala.spigot.util.MathHelper.floor(d2));
 
         return this.a(pathentity, d3);
     }
@@ -148,7 +148,7 @@ public abstract class NavigationAbstract {
                 vec3d = this.c();
                 Vec3D vec3d1 = this.d.a(this.b, this.d.e());
 
-                if (vec3d.b > vec3d1.b && !this.b.onGround && MathHelper.floor(vec3d.a) == MathHelper.floor(vec3d1.a) && MathHelper.floor(vec3d.c) == MathHelper.floor(vec3d1.c)) {
+                if (vec3d.b > vec3d1.b && !this.b.onGround && gg.scala.spigot.util.MathHelper.floor(vec3d.a) == gg.scala.spigot.util.MathHelper.floor(vec3d1.a) && gg.scala.spigot.util.MathHelper.floor(vec3d.c) == gg.scala.spigot.util.MathHelper.floor(vec3d1.c)) {
                     this.d.c(this.d.e() + 1);
                 }
             }
@@ -197,7 +197,7 @@ public abstract class NavigationAbstract {
             }
         }
 
-        k = MathHelper.f(this.b.width);
+        k = gg.scala.spigot.util.MathHelper.f(this.b.width);
         int l = (int) this.b.length + 1;
         int i1 = k;
 

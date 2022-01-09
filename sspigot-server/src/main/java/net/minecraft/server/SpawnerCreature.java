@@ -51,9 +51,9 @@ public final class SpawnerCreature {
                 EntityHuman entityhuman = (EntityHuman) iterator.next();
 
                 if (!entityhuman.isSpectator() || !entityhuman.affectsSpawning) { // PaperSpigot
-                    int l = MathHelper.floor(entityhuman.locX / 16.0D);
+                    int l = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locX / 16.0D);
 
-                    j = MathHelper.floor(entityhuman.locZ / 16.0D);
+                    j = gg.scala.spigot.util.MathHelper.floorD(entityhuman.locZ / 16.0D);
                     byte b0 = 8;
                     // Spigot Start
                     b0 = worldserver.spigotConfig.mobSpawnRange;
@@ -220,7 +220,7 @@ public final class SpawnerCreature {
         Chunk chunk = world.getChunkAt(i, j);
         int k = i * 16 + world.random.nextInt(16);
         int l = j * 16 + world.random.nextInt(16);
-        int i1 = MathHelper.c(chunk.f(new BlockPosition(k, 0, l)) + 1, 16);
+        int i1 = (int) MathHelper.c(chunk.f(new BlockPosition(k, 0, l)) + 1, 16);
         int j1 = world.random.nextInt(i1 > 0 ? i1 : chunk.g() + 16 - 1);
 
         return new BlockPosition(k, j1, l);

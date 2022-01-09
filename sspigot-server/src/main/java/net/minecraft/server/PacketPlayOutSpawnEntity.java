@@ -24,11 +24,11 @@ public class PacketPlayOutSpawnEntity implements Packet<PacketListenerPlayOut> {
 
 	public PacketPlayOutSpawnEntity(Entity var1, int var2, int var3) {
 		this.a = var1.getId();
-		this.b = MathHelper.floor(var1.locX * 32.0D);
-		this.c = MathHelper.floor(var1.locY * 32.0D);
-		this.d = MathHelper.floor(var1.locZ * 32.0D);
-		this.h = MathHelper.d(var1.pitch * 256.0F / 360.0F);
-		this.i = MathHelper.d(var1.yaw * 256.0F / 360.0F);
+		this.b = gg.scala.spigot.util.MathHelper.floorD(var1.locX * 32.0D);
+		this.c = gg.scala.spigot.util.MathHelper.floorD(var1.locY * 32.0D);
+		this.d = gg.scala.spigot.util.MathHelper.floorD(var1.locZ * 32.0D);
+		this.h = gg.scala.spigot.util.MathHelper.d(var1.pitch * 256.0F / 360.0F);
+		this.i = gg.scala.spigot.util.MathHelper.d(var1.yaw * 256.0F / 360.0F);
 		this.j = var2;
 		this.k = var3;
 		if (var3 > 0) {
