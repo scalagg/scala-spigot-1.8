@@ -16,6 +16,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
+import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -58,7 +59,9 @@ public abstract class PlayerList {
     // ScalaSpigot start
     public void sortPlayerList(Comparator<EntityPlayer> comparator)
     {
-        players.sort(comparator);
+        server.processQueue.add(() -> {
+            players.sort(comparator);
+        });
     }
     // ScalaSpigot end
 
