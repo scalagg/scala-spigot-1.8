@@ -38,7 +38,7 @@ dependencies {
     implementation 'org.jline:jline-reader:3.20.0'
     implementation 'org.jline:jline-terminal:3.20.0'
 
-    implementation 'org.jline:jline-terminal-jna:3.20.0'
+    runtimeOnly 'org.jline:jline-terminal-jna:3.20.0'
     // ScalaSpigot end
 
     implementation "org.xerial:sqlite-jdbc:3.36.0.2"

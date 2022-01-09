@@ -19,6 +19,7 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 // CraftBukkit end
@@ -162,18 +163,17 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
         } else {
             // Spigot start
             initUUID();
-            new Thread(new Runnable() {
 
-                @Override
-                public void run() {
-                    try{
-                        new LoginHandler().fireEvents();
-                    } catch (Exception ex) {
-                        disconnect("Failed to verify username!");
-                        server.server.getLogger().log(Level.WARNING, "Exception verifying " + i.getName(), ex);
-                    }
+            // ScalaSpigot start - Use the ForkJoinPool commonPool instead of new thread
+            ForkJoinPool.commonPool().execute(() -> {
+                try {
+                    new LoginHandler().fireEvents();
+                } catch (Exception ex) {
+                    disconnect("Failed to verify username!");
+                    server.server.getLogger().log(Level.WARNING, "Exception verifying " + i.getName(), ex);
                 }
-            }).start();
+            });
+            // ScalaSpigot end
             // Spigot end
         }
 
@@ -271,7 +271,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                                 }
                             }
                             // CraftBukkit end
-                            c.info("UUID of player " + net.minecraft.server.LoginListener.this.i.getName() + " is " + net.minecraft.server.LoginListener.this.i.getId());
+                            c.info("Attempting login handle for " + net.minecraft.server.LoginListener.this.i.getName() + "...");
                             net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
         }
     }
