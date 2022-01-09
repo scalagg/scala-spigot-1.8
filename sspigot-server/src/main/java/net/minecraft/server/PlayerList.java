@@ -195,9 +195,9 @@ public abstract class PlayerList {
                 entity.attachedToPlayer = false;
             }
         }
-
-        // CraftBukkit - Moved from above, added world
-        f.info(entityplayer.getName() + "[" + s1 + "] logged in with entity id " + entityplayer.getId() + " at ([" + entityplayer.world.worldData.getName() + "]" + entityplayer.locX + ", " + entityplayer.locY + ", " + entityplayer.locZ + ")");
+        // ScalaSpigot start - simplifying the join message a lot
+        f.info(entityplayer.getName() + " (" + players.size() + "/" + maxPlayers + ")" + " logged onto the server with entity id " + entityplayer.getId() + ".");
+        // ScalaSpigot end
     }
 
     public void sendScoreboard(ScoreboardServer scoreboardserver, EntityPlayer entityplayer) {
