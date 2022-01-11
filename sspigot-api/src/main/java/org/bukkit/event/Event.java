@@ -1,5 +1,6 @@
 package org.bukkit.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -73,6 +74,13 @@ public abstract class Event {
      */
     public final boolean isAsynchronous() {
         return async;
+    }
+
+    public void callEvent()
+    {
+        Bukkit.getServer()
+                .getPluginManager()
+                .callEvent(this);
     }
 
     public enum Result {

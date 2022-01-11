@@ -41,27 +41,54 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final File a = new File("usercache.json");
+    public static final long SEC_IN_NANO = 1000000000;
     public static long LAST_TICK_TIME;
+    public static int currentTick = 0;
+    public static int TPS = 20;
+    private static final int SAMPLE_INTERVAL = TPS;
+    public static long TICK_TIME = SEC_IN_NANO / TPS;
+    public static long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * (TPS * 3);
+    public static long NORMAL_TICK_TIME = TPS / 20;
     private static net.minecraft.server.MinecraftServer l;
-    public Convertable convertable;
-    private final MojangStatisticsGenerator n = new MojangStatisticsGenerator("net/minecraft/server", this, az());
-    public File universe;
-    private final List<IUpdatePlayerListBox> p = Lists.newArrayList();
-    protected final ICommandHandler b;
     public final MethodProfiler methodProfiler = new MethodProfiler();
-    private ServerConnection serverConnection;
+    public final long[] h = new long[100];
+    public final Thread primaryThread;
+    public final RollingAverage tps1 = new RollingAverage(60);
+    public final RollingAverage tps5 = new RollingAverage(60 * 5);
+    public final RollingAverage tps15 = new RollingAverage(60 * 15);
+    protected final ICommandHandler b;
+    protected final Proxy e;
+    protected final Queue<FutureTask<?>> j = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    private final MojangStatisticsGenerator n = new MojangStatisticsGenerator("net/minecraft/server", this, az());
+    private final List<IUpdatePlayerListBox> p = Lists.newArrayList();
     private final ServerPing r = new ServerPing();
     private final Random s = new Random();
+    private final YggdrasilAuthenticationService V;
+    private final MinecraftSessionService W;
+    private final GameProfileRepository Y;
+    private final UserCache Z;
+    private final Object stopLock = new Object();
+    private final Thread serverThread;
+    public Convertable convertable;
+    public File universe;
+    public WorldServer[] worldServer;
+    public String f;
+    public int g;
+    public long[][] i;
+    public List<WorldServer> worlds = new ArrayList<>();
+    public org.bukkit.craftbukkit.CraftServer server;
+    public OptionSet options;
+    public org.bukkit.command.ConsoleCommandSender console;
+    public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
+    public Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    public int autoSavePeriod;
+    private ServerConnection serverConnection;
     private String serverIp;
     private int u = -1;
-    public WorldServer[] worldServer;
     private PlayerList playerList;
     private boolean isRunning = true;
     private boolean isStopped;
     private int ticks;
-    protected final Proxy e;
-    public String f;
-    public int g;
     private boolean onlineMode;
     private boolean spawnAnimals;
     private boolean spawnNPCs;
@@ -70,8 +97,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private String motd;
     private int maxBuildHeight;
     private int G = 0;
-    public final long[] h = new long[100];
-    public long[][] i;
     private KeyPair H;
     private String I;
     private String worldName;
@@ -85,24 +110,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private String S;
     private boolean T;
     private boolean U;
-    private final YggdrasilAuthenticationService V;
-    private final MinecraftSessionService W;
     private long X = 0L;
-    private final GameProfileRepository Y;
-    private final UserCache Z;
-    protected final Queue<FutureTask<?>> j = new java.util.concurrent.ConcurrentLinkedQueue<>();
-    private Thread serverThread;
     private long ab = az();
-
-    public List<WorldServer> worlds = new ArrayList<>();
-    public org.bukkit.craftbukkit.CraftServer server;
-    public OptionSet options;
-    public org.bukkit.command.ConsoleCommandSender console;
-    public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
-    public static int currentTick = 0;
-    public final Thread primaryThread;
-    public Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<>();
-    public int autoSavePeriod;
+    private boolean hasStopped = false;
 
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
         io.netty.util.ResourceLeakDetector.setEnabled(false);
@@ -122,6 +132,42 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.serverThread = primaryThread = new Thread(this, "Server thread");
     }
 
+    public static void main(final OptionSet options) {
+        DispenserRegistry.c();
+
+        try {
+            DedicatedServer dedicatedserver = new DedicatedServer(options);
+
+            if (options.has("port")) {
+                int port = (Integer) options.valueOf("port");
+
+                if (port > 0) {
+                    dedicatedserver.setPort(port);
+                }
+            }
+
+            if (options.has("universe")) {
+                dedicatedserver.universe = (File) options.valueOf("universe");
+            }
+
+            if (options.has("world")) {
+                dedicatedserver.setWorld((String) options.valueOf("world"));
+            }
+
+            dedicatedserver.primaryThread.start();
+        } catch (Exception exception) {
+            LOGGER.fatal("Failed to start the minecraft server", exception);
+        }
+    }
+
+    public static net.minecraft.server.MinecraftServer getServer() {
+        return l;
+    }
+
+    public static long az() {
+        return System.currentTimeMillis();
+    }
+
     public abstract PropertyManager getPropertyManager();
 
     protected CommandDispatcher h() {
@@ -138,7 +184,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.getConvertable().convert(s, new IProgressUpdate() {
                 private long b = System.currentTimeMillis();
 
-                public void a(String s) {}
+                public void a(String s) {
+                }
 
                 public void a(int i) {
                     if (System.currentTimeMillis() - this.b >= 1000L) {
@@ -148,7 +195,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 }
 
-                public void c(String s) {}
+                public void c(String s) {
+                }
             });
         }
 
@@ -325,6 +373,14 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public abstract WorldSettings.EnumGamemode getGamemode();
 
+    public void setGamemode(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
+        // CraftBukkit start
+        for (int i = 0; i < this.worlds.size(); ++i) {
+            getServer().worlds.get(i).getWorldData().setGameType(worldsettings_enumgamemode);
+        }
+
+    }
+
     public abstract EnumDifficulty getDifficulty();
 
     public abstract boolean isHardcore();
@@ -355,7 +411,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 if (worldserver != null) {
                     if (!flag) {
-                        LOGGER.info("Saving chunks for level \'" + worldserver.getWorldData().getName() + "\'/" + worldserver.worldProvider.getName());
+                        LOGGER.info("Saving chunks for level '" + worldserver.getWorldData().getName() + "'/" + worldserver.worldProvider.getName());
                     }
 
                     try {
@@ -370,11 +426,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         }
     }
 
-    private boolean hasStopped = false;
-    private final Object stopLock = new Object();
-
     public void stop() throws ExceptionWorldConflict {
-        synchronized(stopLock) {
+        synchronized (stopLock) {
             if (hasStopped) {
                 return;
             }
@@ -401,7 +454,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException ex) {}
+                } catch (InterruptedException ex) {
+                }
             }
 
             if (this.worldServer != null) {
@@ -436,57 +490,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.isRunning = false;
     }
 
-    public static int TPS = 20;
-    public static final long SEC_IN_NANO = 1000000000;
-    public static long TICK_TIME = SEC_IN_NANO / TPS;
-    public static long NORMAL_TICK_TIME = TPS / 20;
-    public static long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * (TPS * 3);
-    private static final int SAMPLE_INTERVAL = TPS;
-    public final RollingAverage tps1 = new RollingAverage(60);
-    public final RollingAverage tps5 = new RollingAverage(60 * 5);
-    public final RollingAverage tps15 = new RollingAverage(60 * 15);
-
-    public static class RollingAverage {
-
-        private final int size;
-        private long time;
-        private double total;
-        private int index = 0;
-        private final double[] samples;
-        private final long[] times;
-
-        RollingAverage(int size) {
-            this.size = size;
-            this.time = size * SEC_IN_NANO;
-            this.total = TPS * SEC_IN_NANO * size;
-            this.samples = new double[size];
-            this.times = new long[size];
-
-            for (int i = 0; i < size; i++) {
-                this.samples[i] = TPS;
-                this.times[i] = SEC_IN_NANO;
-            }
-        }
-
-        public void add(double x, long t) {
-            time -= times[index];
-            total -= samples[index] * times[index];
-            samples[index] = x;
-            times[index] = t;
-            time += t;
-            total += x * t;
-
-            if (++index == size) {
-                index = 0;
-            }
-        }
-
-        public double getAverage() {
-            return total / time;
-        }
-
-    }
-
     public void run() {
         try {
             if (this.init()) {
@@ -496,27 +499,24 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 this.r.setServerInfo(new ServerPing.ServerData("1.8.8", 47));
                 this.a(this.r);
 
-                final long start = System.nanoTime();
-                long lastTick = start - TICK_TIME, catchupTime = 0, curTime, wait, tickSection = start;
+                // Spigot start
+                long start = System.nanoTime(), lastTick = start - TICK_TIME, catchupTime = 0, curTime, wait, tickSection = start; // Paper - Further improve server tick loop
 
                 while (this.isRunning) {
                     curTime = System.nanoTime();
+                    // Paper start - Further improve server tick loop
                     wait = TICK_TIME - (curTime - lastTick);
-
                     if (wait > 0) {
                         if (catchupTime < 2E6) {
                             wait += Math.abs(catchupTime);
-                        }
-
-                        if (wait < catchupTime) {
+                        } else if (wait < catchupTime) {
                             catchupTime -= wait;
                             wait = 0;
-                        } else if (catchupTime > 2E6) {
+                        } else {
                             wait -= catchupTime;
                             catchupTime = 0;
                         }
                     }
-
                     if (wait > 0) {
                         Thread.sleep(wait / 1000000);
                         curTime = System.nanoTime();
@@ -524,20 +524,25 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                     }
 
                     catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
-
-                    if ( ++currentTick % SAMPLE_INTERVAL == 0) {
+                    if (++MinecraftServer.currentTick % SAMPLE_INTERVAL == 0) {
                         final long diff = curTime - tickSection;
                         double currentTps = 1E9 / diff * SAMPLE_INTERVAL;
-
                         tps1.add(currentTps, diff);
                         tps5.add(currentTps, diff);
                         tps15.add(currentTps, diff);
-
+                        // Paper end
                         tickSection = curTime;
                     }
-
                     lastTick = curTime;
-	                LAST_TICK_TIME = System.currentTimeMillis();
+
+                    // Imagine Start - backport tick events from Paper
+                    new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent();
+                    this.C();
+                    long endTime = System.nanoTime();
+                    long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
+                    new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent(); // Imagine+                    // Imagine End
+
+                    LAST_TICK_TIME = System.currentTimeMillis();
 
                     this.A();
                     this.Q = true;
@@ -548,8 +553,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         } catch (Throwable throwable) {
             LOGGER.error("Encountered an unexpected exception", throwable);
 
-            if ( throwable.getCause() != null ) {
-                LOGGER.error( "\tCause of unexpected exception was", throwable.getCause() );
+            if (throwable.getCause() != null) {
+                LOGGER.error("\tCause of unexpected exception was", throwable.getCause());
             }
 
             CrashReport crashreport;
@@ -597,15 +602,15 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             try {
                 BufferedImage bufferedimage = ImageIO.read(file);
 
-                Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
-                Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
+                Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide");
+                Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high");
                 ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
 
                 ByteBuf buffer = Base64.encode(bytebuf);
 
                 serverping.setFavicon("data:image/png;base64," + buffer.toString(Charsets.UTF_8));
             } catch (Exception exception) {
-                LOGGER.error("Couldn\'t load server icon", exception);
+                LOGGER.error("Couldn't load server icon", exception);
             } finally {
                 bytebuf.release();
             }
@@ -616,9 +621,11 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return new File(".");
     }
 
-    protected void a(CrashReport crashreport) {}
+    protected void a(CrashReport crashreport) {
+    }
 
-    protected void z() {}
+    protected void z() {
+    }
 
     protected void A() throws ExceptionWorldConflict { // CraftBukkit - added throws
         co.aikar.timings.TimingsManager.FULL_SERVER_TICK.startTiming(); // Spigot
@@ -747,7 +754,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             } catch (Throwable throwable) {
                 try {
                     crashreport = CrashReport.a(throwable, "Exception ticking world");
-                } catch (Throwable t){
+                } catch (Throwable t) {
                     throw new RuntimeException("Error generating crash report", t);
                 }
 
@@ -765,7 +772,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             } catch (Throwable throwable1) {
                 try {
                     crashreport = CrashReport.a(throwable1, "Exception ticking world entities");
-                } catch (Throwable t){
+                } catch (Throwable t) {
                     throw new RuntimeException("Error generating crash report", t);
                 }
 
@@ -820,35 +827,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.p.add(iupdateplayerlistbox);
     }
 
-    public static void main(final OptionSet options) {
-        DispenserRegistry.c();
-
-        try {
-            DedicatedServer dedicatedserver = new DedicatedServer(options);
-
-            if (options.has("port")) {
-                int port = (Integer) options.valueOf("port");
-
-                if (port > 0) {
-                    dedicatedserver.setPort(port);
-                }
-            }
-
-            if (options.has("universe")) {
-                dedicatedserver.universe = (File) options.valueOf("universe");
-            }
-
-            if (options.has("world")) {
-                dedicatedserver.setWorld((String) options.valueOf("world"));
-            }
-
-            dedicatedserver.primaryThread.start();
-        } catch (Exception exception) {
-            LOGGER.fatal("Failed to start the minecraft server", exception);
-        }
+    public void C() {
     }
-
-    public void C() {}
 
     public File d(String s) {
         return new File(this.y(), s);
@@ -952,10 +932,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return server.tabComplete(icommandlistener, s, blockposition);
     }
 
-    public static net.minecraft.server.MinecraftServer getServer() {
-        return l;
-    }
-
     public boolean O() {
         return true;
     }
@@ -1002,10 +978,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public String U() {
         return this.worldName;
-    }
-
-    public void setWorld(String worldName) {
-        this.worldName = worldName;
     }
 
     public void a(KeyPair keypair) {
@@ -1152,11 +1124,11 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return this.spawnNPCs;
     }
 
-    public abstract boolean ai();
-
     public void setSpawnNPCs(boolean flag) {
         this.spawnNPCs = flag;
     }
+
+    public abstract boolean ai();
 
     public boolean getPVP() {
         return this.pvpMode;
@@ -1204,14 +1176,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.playerList = playerlist;
     }
 
-    public void setGamemode(WorldSettings.EnumGamemode worldsettings_enumgamemode) {
-        // CraftBukkit start
-        for (int i = 0; i < this.worlds.size(); ++i) {
-            getServer().worlds.get(i).getWorldData().setGameType(worldsettings_enumgamemode);
-        }
-
-    }
-
     public ServerConnection getServerConnection() {
         return this.serverConnection;
     }
@@ -1246,6 +1210,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return this.worlds.get(0);
     }
 
+    public void setWorld(String worldName) {
+        this.worldName = worldName;
+    }
+
     public Entity f() {
         return null;
     }
@@ -1258,20 +1226,16 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return false;
     }
 
-    public void setForceGamemode(boolean flag) {
-        this.U = flag;
-    }
-
     public boolean getForceGamemode() {
         return this.U;
     }
 
-    public Proxy ay() {
-        return this.e;
+    public void setForceGamemode(boolean flag) {
+        this.U = flag;
     }
 
-    public static long az() {
-        return System.currentTimeMillis();
+    public Proxy ay() {
+        return this.e;
     }
 
     public int getIdleTimeout() {
@@ -1330,7 +1294,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         return getServer().worlds.get(0).getGameRules().getBoolean("sendCommandFeedback");
     }
 
-    public void a(CommandObjectiveExecutor.EnumCommandResult result, int i) {}
+    public void a(CommandObjectiveExecutor.EnumCommandResult result, int i) {
+    }
 
     public int aI() {
         return 29999984;
@@ -1373,5 +1338,46 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public Thread aM() {
         return this.serverThread;
+    }
+
+    public static class RollingAverage {
+
+        private final int size;
+        private final double[] samples;
+        private final long[] times;
+        private long time;
+        private double total;
+        private int index = 0;
+
+        RollingAverage(int size) {
+            this.size = size;
+            this.time = size * SEC_IN_NANO;
+            this.total = TPS * SEC_IN_NANO * size;
+            this.samples = new double[size];
+            this.times = new long[size];
+
+            for (int i = 0; i < size; i++) {
+                this.samples[i] = TPS;
+                this.times[i] = SEC_IN_NANO;
+            }
+        }
+
+        public void add(double x, long t) {
+            time -= times[index];
+            total -= samples[index] * times[index];
+            samples[index] = x;
+            times[index] = t;
+            time += t;
+            total += x * t;
+
+            if (++index == size) {
+                index = 0;
+            }
+        }
+
+        public double getAverage() {
+            return total / time;
+        }
+
     }
 }
