@@ -30,4 +30,11 @@ public interface UnsafeValues {
     Achievement getAchievementFromInternalName(String name);
 
     List<String> tabCompleteInternalStatisticOrAchievementName(String token, List<String> completions);
+
+    /**
+     * Called once by the version command on first use, then cached.
+     */
+    default com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
+        return new com.destroystokyo.paper.util.VersionFetcher.DummyVersionFetcher();
+    }
 }

@@ -3,6 +3,7 @@ package net.minecraft.server;
 // CraftBukkit start
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.player.PlayerTeleportEvent;
 // CraftBukkit end
@@ -94,9 +95,26 @@ public class EntityEnderPearl extends EntityProjectile {
     public void t_() {
         EntityLiving entityliving = this.getShooter();
 
-        if (entityliving != null && entityliving instanceof EntityHuman && !entityliving.isAlive()) {
+        if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
+            // ScalaSpigot - enderpearl fix
+            final AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(
+                    this.locX - 0.3D, this.locY - 0.05D, this.locZ - 0.3D,
+                    this.locX + 0.3D, this.locY + 1.62D, this.locZ + 0.3D
+            );
+
+            if (world.getCubes(this, clearTeleportBoundingBox).isEmpty())
+            {
+                final Location location = getBukkitEntity().getLocation();
+                lastX = location.getX();
+                lastY = location.getY();
+                lastZ = location.getZ();
+                lastPitch = location.getPitch();
+                lastYaw = location.getYaw();
+            }
+            // ScalaSpigot end
+
             super.t_();
         }
 

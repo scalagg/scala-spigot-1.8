@@ -1,6 +1,11 @@
 package org.bukkit.command.defaults;
 
+import com.destroystokyo.paper.util.VersionFetcher;
 import com.google.common.collect.ImmutableList;
+import net.kyori.adventure.Adventure;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,129 +19,166 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VersionCommand extends BukkitCommand {
+    private VersionFetcher versionFetcher;
+    private Component versionMessage;
 
-	public VersionCommand(String name) {
-		super(name);
+    public void setVersion() {
+        final Component message = Component.text("This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")", net.kyori.adventure.text.format.NamedTextColor.WHITE);
 
-		this.description = "Gets the version of this server including any plugins in use";
-		this.usageMessage = "/version [plugin name]";
-		this.setPermission("bukkit.command.version");
-		this.setAliases(Arrays.asList("ver", "about"));
-	}
+        this.versionMessage = Component.text()
+                .append(message)
+                .hoverEvent(Component.text("Author: Scala", net.kyori.adventure.text.format.NamedTextColor.WHITE)).build();
+    }
 
-	@Override
-	public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-		if (!testPermission(sender)) {
-			return true;
-		}
+    public VersionCommand(String name) {
+        super(name);
 
-		if (args.length == 0) {
-			sender.sendMessage("This server is running " +
-			                   Bukkit.getName() +
-			                   " version " +
-			                   Bukkit.getVersion() +
-			                   " (Implementing API version " +
-			                   Bukkit.getBukkitVersion() + ")");
-		} else {
-			StringBuilder name = new StringBuilder();
+        this.description = "Gets the version of this server including any plugins in use";
+        this.usageMessage = "/version [plugin name]";
+        this.setPermission("bukkit.command.version");
+        this.setAliases(Arrays.asList("ver", "about"));
+    }
 
-			for (String arg : args) {
-				if (name.length() > 0) {
-					name.append(' ');
-				}
+    public void setVersionMessage(Component versionMessage) {
+        this.versionMessage = versionMessage;
+    }
 
-				name.append(arg);
-			}
+    private VersionFetcher getVersionFetcher() { // lazy load because unsafe isn't available at command registration
+        if (versionFetcher == null) {
+            versionFetcher = Bukkit.getUnsafe().getVersionFetcher();
+        }
 
-			String pluginName = name.toString();
-			Plugin exactPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
-			if (exactPlugin != null) {
-				describeToSender(exactPlugin, sender);
-				return true;
-			}
+        return versionFetcher;
+    }
 
-			boolean found = false;
-			pluginName = pluginName.toLowerCase();
-			for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-				if (plugin.getName().toLowerCase().contains(pluginName)) {
-					describeToSender(plugin, sender);
-					found = true;
-				}
-			}
+    @Override
+    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
+        if (!testPermission(sender)) {
+            return true;
+        }
 
-			if (!found) {
-				sender.sendMessage("This server is not running any plugin by that name.");
-				sender.sendMessage("Use /plugins to get a list of plugins.");
-			}
-		}
+        setVersion();
 
-		return true;
-	}
+        sender.sendMessage(
+                LegacyComponentSerializer.legacyAmpersand()
+                        .serialize(Component.text("Checking version, please wait...", net.kyori.adventure.text.format.NamedTextColor.WHITE, net.kyori.adventure.text.format.TextDecoration.ITALIC))
+        ); // Paper
 
-	private void describeToSender(Plugin plugin, CommandSender sender) {
-		PluginDescriptionFile desc = plugin.getDescription();
-		sender.sendMessage(ChatColor.GOLD + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
+        if (args.length == 0) {
+            // Paper start
+            if (Bukkit.getVersion().startsWith("null") || versionMessage == null) { // running from ide?
+                setVersionMessage(Component.text("Unknown version, custom build?", net.kyori.adventure.text.format.NamedTextColor.YELLOW));
 
-		if (desc.getDescription() != null) {
-			sender.sendMessage(desc.getDescription());
-		}
+                sender.sendMessage(
+                        LegacyComponentSerializer.legacySection()
+                                .serialize(versionMessage)
+                );
+                return true;
+            }
 
-		if (desc.getWebsite() != null) {
-			sender.sendMessage("Website: " + ChatColor.GREEN + desc.getWebsite());
-		}
+            sender.sendMessage(
+                    LegacyComponentSerializer.legacySection()
+                            .serialize(versionMessage)
+            );
+        } else {
+            StringBuilder name = new StringBuilder();
 
-		if (!desc.getAuthors().isEmpty()) {
-			if (desc.getAuthors().size() == 1) {
-				sender.sendMessage("Author: " + ChatColor.GREEN + getAuthors(desc));
-			} else {
-				sender.sendMessage("Authors: " + ChatColor.GREEN + getAuthors(desc));
-			}
-		}
-	}
+            for (String arg : args) {
+                if (name.length() > 0) {
+                    name.append(' ');
+                }
 
-	private String getAuthors(final PluginDescriptionFile desc) {
-		StringBuilder result = new StringBuilder();
-		List<String> authors = desc.getAuthors();
+                name.append(arg);
+            }
 
-		for (int i = 0; i < authors.size(); i++) {
-			if (result.length() > 0) {
-				if (i < authors.size() - 1) {
-					result.append(", ");
-				} else {
-					result.append(" and ");
-				}
-			}
+            String pluginName = name.toString();
+            Plugin exactPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
+            if (exactPlugin != null) {
+                describeToSender(exactPlugin, sender);
+                return true;
+            }
 
-			result.append(authors.get(i));
-		}
+            boolean found = false;
+            pluginName = pluginName.toLowerCase();
+            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (plugin.getName().toLowerCase().contains(pluginName)) {
+                    describeToSender(plugin, sender);
+                    found = true;
+                }
+            }
 
-		return result.toString();
-	}
+            if (!found) {
+                sender.sendMessage("This server is not running any plugin by that name.");
+                sender.sendMessage("Use /plugins to get a list of plugins.");
+            }
+        }
 
-	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-		Validate.notNull(sender, "Sender cannot be null");
-		Validate.notNull(args, "Arguments cannot be null");
-		Validate.notNull(alias, "Alias cannot be null");
+        return true;
+    }
 
-		if (args.length == 1) {
-			// ScalaSpigot start
-			if (!sender.hasPermission("scalaspigot.tab-complete"))
-			{
-				return ImmutableList.of();
-			}
-			// ScalaSpigot end
+    private void describeToSender(Plugin plugin, CommandSender sender) {
+        PluginDescriptionFile desc = plugin.getDescription();
+        sender.sendMessage(ChatColor.GOLD + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
 
-			List<String> completions = new ArrayList<String>();
-			String toComplete = args[0].toLowerCase();
-			for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-				if (StringUtil.startsWithIgnoreCase(plugin.getName(), toComplete)) {
-					completions.add(plugin.getName());
-				}
-			}
-			return completions;
-		}
-		return ImmutableList.of();
-	}
+        if (desc.getDescription() != null) {
+            sender.sendMessage(desc.getDescription());
+        }
+
+        if (desc.getWebsite() != null) {
+            sender.sendMessage("Website: " + ChatColor.GREEN + desc.getWebsite());
+        }
+
+        if (!desc.getAuthors().isEmpty()) {
+            if (desc.getAuthors().size() == 1) {
+                sender.sendMessage("Author: " + ChatColor.GREEN + getAuthors(desc));
+            } else {
+                sender.sendMessage("Authors: " + ChatColor.GREEN + getAuthors(desc));
+            }
+        }
+    }
+
+    private String getAuthors(final PluginDescriptionFile desc) {
+        StringBuilder result = new StringBuilder();
+        List<String> authors = desc.getAuthors();
+
+        for (int i = 0; i < authors.size(); i++) {
+            if (result.length() > 0) {
+                if (i < authors.size() - 1) {
+                    result.append(", ");
+                } else {
+                    result.append(" and ");
+                }
+            }
+
+            result.append(authors.get(i));
+        }
+
+        return result.toString();
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+        Validate.notNull(sender, "Sender cannot be null");
+        Validate.notNull(args, "Arguments cannot be null");
+        Validate.notNull(alias, "Alias cannot be null");
+
+        if (args.length == 1) {
+            // ScalaSpigot start
+            if (!sender.hasPermission("scalaspigot.tab-complete")) {
+                return ImmutableList.of();
+            }
+            // ScalaSpigot end
+
+            List<String> completions = new ArrayList<String>();
+            String toComplete = args[0].toLowerCase();
+            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (StringUtil.startsWithIgnoreCase(plugin.getName(), toComplete)) {
+                    completions.add(plugin.getName());
+                }
+            }
+            return completions;
+        }
+        return ImmutableList.of();
+    }
 
 }
