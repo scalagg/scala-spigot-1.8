@@ -347,7 +347,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     protected void channelRead0(ChannelHandlerContext channelhandlercontext, Packet object) throws Exception {
-        // FlamePaper - Check if channel is opened before reading packet
         if (g())
         {
             this.a(channelhandlercontext, object);

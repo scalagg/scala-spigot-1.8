@@ -13,6 +13,7 @@ import java.util.List;
 public class EntityPotion extends EntityProjectile {
 
     public ItemStack item;
+    public boolean compensated = false; // IonSpigot - Lag Compensated Potions
 
     public EntityPotion(World world) {
         super(world);
@@ -25,7 +26,26 @@ public class EntityPotion extends EntityProjectile {
     public EntityPotion(World world, EntityLiving entityliving, ItemStack itemstack) {
         super(world, entityliving);
         this.item = itemstack;
+
+        // IonSpigot start - Lag Compensated Potions
+        if (entityliving instanceof EntityPlayer) {
+            ((EntityPlayer) entityliving).potions.add(this);
+            compensated = true;
+        }
+        // IonSpigot end
     }
+
+    // IonSpigot start - Lag Compensated Potions
+    @Override
+    public void t_() {
+        if (!compensated) {
+            tick();
+        }
+    }
+    public void tick() {
+        super.t_();
+    }
+    // IonSpigot end
 
     public EntityPotion(World world, double d0, double d1, double d2, ItemStack itemstack) {
         super(world, d0, d1, d2);

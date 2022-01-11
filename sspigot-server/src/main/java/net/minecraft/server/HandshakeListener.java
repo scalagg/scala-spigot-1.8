@@ -2,6 +2,8 @@ package net.minecraft.server;
 
 // CraftBukkit start
 
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 // CraftBukkit end
@@ -10,7 +12,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
 
     private static final com.google.gson.Gson gson = new com.google.gson.Gson(); // Spigot
     // CraftBukkit start - add fields
-    private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
+    private static final Object2LongOpenHashMap<InetAddress> throttleTracker = new Object2LongOpenHashMap<InetAddress>();
     private static int throttleCounter = 0;
     // CraftBukkit end
 
