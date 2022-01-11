@@ -29,16 +29,16 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     private static final AtomicInteger b = new AtomicInteger(0);
     private static final Logger c = LogManager.getLogger();
     private static final Random random = new Random();
+    public final NetworkManager networkManager;
     private final byte[] e = new byte[4];
     private final MinecraftServer server;
-    public final NetworkManager networkManager;
+    public String hostname = ""; // CraftBukkit - add field
     private net.minecraft.server.LoginListener.EnumProtocolState g;
     private int h;
     private GameProfile i;
-    private String j;
+    private final String j;
     private SecretKey loginKey;
     private EntityPlayer l;
-    public String hostname = ""; // CraftBukkit - add field
 
     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {
         this.g = net.minecraft.server.LoginListener.EnumProtocolState.HELLO;
@@ -81,24 +81,19 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     }
 
     // Spigot start
-    public void initUUID()
-    {
+    public void initUUID() {
         UUID uuid;
-        if ( networkManager.spoofedUUID != null )
-        {
+        if (networkManager.spoofedUUID != null) {
             uuid = networkManager.spoofedUUID;
-        } else
-        {
-            uuid = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + this.i.getName() ).getBytes( Charsets.UTF_8 ) );
+        } else {
+            uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
         }
 
-        this.i = new GameProfile( uuid, this.i.getName() );
+        this.i = new GameProfile(uuid, this.i.getName());
 
-        if (networkManager.spoofedProfile != null)
-        {
-            for ( com.mojang.authlib.properties.Property property : networkManager.spoofedProfile )
-            {
-                this.i.getProperties().put( property.getName(), property );
+        if (networkManager.spoofedProfile != null) {
+            for (com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
+                this.i.getProperties().put(property.getName(), property);
             }
         }
     }
@@ -128,9 +123,9 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     }
 
                     public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error
-                        this.a((ChannelFuture) future);
+                        this.a(future);
                     }
-                }, new GenericFutureListener[0]);
+                });
             }
 
             this.networkManager.handle(new PacketLoginOutSuccess(this.i));
@@ -151,11 +146,12 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     }
 
     public String d() {
-        return this.i != null ? this.i.getName() + "(" + this.i.getId().toString() + ") (" + this.networkManager.getSocketAddress().toString() + ")" : String.valueOf(this.networkManager.getSocketAddress());
+        String socketAddress = networkManager == null ? null : (networkManager.getSocketAddress() == null ? null : networkManager.getSocketAddress().toString());
+        return this.i != null ? this.i + " (" + socketAddress + ")" : socketAddress;
     }
 
     public void a(PacketLoginInStart packetlogininstart) {
-        Validate.validState(this.g == net.minecraft.server.LoginListener.EnumProtocolState.HELLO, "Unexpected hello packet", new Object[0]);
+        Validate.validState(this.g == net.minecraft.server.LoginListener.EnumProtocolState.HELLO, "Unexpected hello packet");
         this.i = packetlogininstart.a();
         if (this.server.getOnlineMode() && !this.networkManager.c()) {
             this.g = net.minecraft.server.LoginListener.EnumProtocolState.KEY;
@@ -180,7 +176,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     }
 
     public void a(PacketLoginInEncryptionBegin packetlogininencryptionbegin) {
-        Validate.validState(this.g == net.minecraft.server.LoginListener.EnumProtocolState.KEY, "Unexpected key packet", new Object[0]);
+        Validate.validState(this.g == net.minecraft.server.LoginListener.EnumProtocolState.KEY, "Unexpected key packet");
         PrivateKey privatekey = this.server.Q().getPrivate();
 
         if (!Arrays.equals(this.e, packetlogininencryptionbegin.b(privatekey))) {
@@ -196,7 +192,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     try {
                         String s = (new BigInteger(MinecraftEncryption.a(net.minecraft.server.LoginListener.this.j, net.minecraft.server.LoginListener.this.server.Q().getPublic(), net.minecraft.server.LoginListener.this.loginKey))).toString(16);
 
-                        net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.server.aD().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
+                        net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.server.aD().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
                         if (net.minecraft.server.LoginListener.this.i != null) {
                             // CraftBukkit start - fire PlayerPreLoginEvent
                             if (!networkManager.g()) {
@@ -210,7 +206,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                             net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                         } else {
                             net.minecraft.server.LoginListener.this.disconnect("Failed to verify username!");
-                            c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+                            c.error("Username '" + gameprofile.getName() + "' tried to join with an invalid session"); // CraftBukkit - fix null pointer
                         }
                     } catch (AuthenticationUnavailableException authenticationunavailableexception) {
                         if (net.minecraft.server.LoginListener.this.server.T()) {
@@ -219,7 +215,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                             net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                         } else {
                             net.minecraft.server.LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
-                            c.error("Couldn\'t verify username because servers are unavailable");
+                            c.error("Couldn't verify username because servers are unavailable");
                         }
                         // CraftBukkit start - catch all exceptions
                     } catch (Exception exception) {
@@ -233,60 +229,62 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
         }
     }
 
-    // Spigot start
-    public class LoginHandler {
-
-        public void fireEvents() throws Exception {
-                            String playerName = i.getName();
-                            java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress();
-                            UUID uniqueId = i.getId();
-                            final org.bukkit.craftbukkit.CraftServer server = net.minecraft.server.LoginListener.this.server.server;
-
-                            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
-                            server.getPluginManager().callEvent(asyncEvent);
-
-                            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
-                                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
-
-                                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
-                                    event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
-                                }
-
-                                Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
-                                    @Override
-                                    protected PlayerPreLoginEvent.Result evaluate() {
-                                        server.getPluginManager().callEvent(event);
-                                        return event.getResult();
-                                    }};
-
-                                net.minecraft.server.LoginListener.this.server.processQueue.add(waitable);
-                                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
-                                    disconnect(event.getKickMessage());
-                                    return;
-                                }
-                            } else {
-                                if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-                                    disconnect(asyncEvent.getKickMessage());
-                                    return;
-                                }
-                            }
-                            // CraftBukkit end
-                            c.info("Attempting login handle for " + net.minecraft.server.LoginListener.this.i.getName() + "...");
-                            net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
-        }
-    }
-    // Spigot end
-
     protected GameProfile a(GameProfile gameprofile) {
         UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
 
         return new GameProfile(uuid, gameprofile.getName());
     }
+    // Spigot end
 
-    static enum EnumProtocolState {
+    enum EnumProtocolState {
 
         HELLO, KEY, AUTHENTICATING, READY_TO_ACCEPT, e, ACCEPTED;
 
-        private EnumProtocolState() {}
+        EnumProtocolState() {
+        }
+    }
+
+    // Spigot start
+    public class LoginHandler {
+
+        public void fireEvents() throws Exception {
+            String playerName = i.getName();
+            java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress();
+            UUID uniqueId = i.getId();
+            final org.bukkit.craftbukkit.CraftServer server = net.minecraft.server.LoginListener.this.server.server;
+
+            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
+            server.getPluginManager().callEvent(asyncEvent);
+
+            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
+                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
+
+                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
+                }
+
+                Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
+                    @Override
+                    protected PlayerPreLoginEvent.Result evaluate() {
+                        server.getPluginManager().callEvent(event);
+                        return event.getResult();
+                    }
+                };
+
+                net.minecraft.server.LoginListener.this.server.processQueue.add(waitable);
+                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    disconnect(event.getKickMessage());
+                    return;
+                }
+            } else {
+                if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+                    disconnect(asyncEvent.getKickMessage());
+                    return;
+                }
+            }
+            // CraftBukkit end
+            c.info("Attempting login handle for " + net.minecraft.server.LoginListener.this.i.getName() + "...");
+            net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+        }
     }
 }

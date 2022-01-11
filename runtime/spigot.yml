@@ -1,0 +1,149 @@
+# This is the main configuration file for PaperSpigot.
+# As you can see, there's tons to configure. Some options may impact gameplay, so use
+# with caution, and make sure you know what each option does before configuring.
+# 
+# If you need help with the configuration or have any questions related to PaperSpigot,
+# join us at the IRC.
+# 
+# IRC: #paperspigot @ irc.spi.gt ( http://irc.spi.gt/iris/?channels=PaperSpigot )
+
+config-version: 9
+data-value-allowed-items: []
+settings:
+  baby-zombie-movement-speed: 0.5
+  limit-player-interactions: true
+  debug: false
+  filter-creative-items: true
+  moved-wrongly-threshold: 0.0625
+  moved-too-quickly-threshold: 100.0
+  save-user-cache-on-stop-only: false
+  user-cache-size: 1000
+  sample-count: 12
+  int-cache-limit: 1024
+  bungeecord: false
+  attribute:
+    maxHealth:
+      max: 2048.0
+    movementSpeed:
+      max: 2048.0
+    attackDamage:
+      max: 2048.0
+  player-shuffle: 0
+  timeout-time: 60
+  restart-on-crash: true
+  restart-script: ./start.sh
+  late-bind: false
+  netty-threads: 5
+warnWhenSettingExcessiveVelocity: true
+effect-modifiers:
+  strength: 1.3
+  weakness: -0.5
+stackable-buckets:
+  lava: false
+  water: false
+  milk: false
+world-settings:
+  default:
+    verbose: true
+    all-chunks-are-slime-chunks: false
+    allow-undead-horse-leashing: false
+    generator-settings:
+      canyon: true
+      caves: true
+      dungeon: true
+      fortress: true
+      mineshaft: true
+      monument: true
+      stronghold: true
+      temple: true
+      village: true
+      flat-bedrock: false
+    container-update-tick-rate: 1
+    game-mechanics:
+      disable-end-credits: false
+      boats-drop-boats: false
+      disable-player-crits: false
+      disable-chest-cat-detection: false
+    keep-spawn-loaded: true
+    disable-mood-sounds: false
+    falling-blocks-collide-with-signs: false
+    disable-ice-and-snow: true
+    portal-search-radius: 128
+    mob-spawner-tick-rate: 1
+    nether-ceiling-void-damage: false
+    falling-block-height-nerf: 0
+    player-blocking-damage-multiplier: 0.5
+    max-growth-height:
+      cactus: 3
+      reeds: 3
+    optimize-explosions: true
+    tnt-explosion-volume: 4.0
+    remove-invalid-mob-spawner-tile-entities: true
+    water-over-lava-flow-speed: 5
+    tnt-entity-height-nerf: 0
+    disable-explosion-knockback: false
+    fix-cannons: false
+    use-hopper-check: false
+    disable-teleportation-suffocation-check: false
+    allow-block-location-tab-completion: true
+    use-async-lighting: true
+    disable-thunder: true
+    tick-next-tick-list-cap: 10000
+    tick-next-tick-list-cap-ignores-redstone: false
+    squid-spawn-height:
+      minimum: 45.0
+      maximum: 63.0
+    load-chunks:
+      enderpearls: false
+      tnt-entities: false
+      falling-blocks: false
+    lava-flow-speed:
+      normal: 30
+      nether: 10
+    cache-chunk-maps: false
+    player-exhaustion:
+      block-break: 0.02500000037252903
+      swimming: 0.014999999664723873
+    fishing-time-range:
+      MinimumTicks: 100
+      MaximumTicks: 900
+    fast-drain:
+      lava: false
+      water: false
+    despawn-ranges:
+      soft: 32
+      hard: 128
+    remove-unloaded:
+      enderpearls: true
+      tnt-entities: true
+      falling-blocks: true
+commands:
+  silent-commandblock-console: false
+  tab-complete: 0
+  replace-commands:
+  - setblock
+  - summon
+  - testforblock
+  - tellraw
+  log: true
+  spam-exclusions:
+  - /skill
+messages:
+  whitelist: You are not whitelisted.
+  unknown-command: Unknown command.
+  server-full: The server is full.
+  outdated-client: Outdated client! Please use {0}
+  outdated-server: Outdated server! I'm still on {0}
+  restart: Server is restarting
+timings:
+  enabled: true
+  verbose: true
+  server-name-privacy: false
+  hidden-config-entries:
+  - database
+  - settings.bungeecord-addresses
+  history-interval: 300
+  history-length: 3600
+stats:
+  disable-saving: false
+  forced-stats: {}

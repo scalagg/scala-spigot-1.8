@@ -1,0 +1,13 @@
+{
+  "kickForInvalidArmAnimation": true,
+  "hidePlayersFromTabList": false,
+  "automaticChunkUnload": true,
+  "handleBlockOperations": false,
+  "handleEntityActivation": false,
+  "handleMobIntelligence": false,
+  "knockbackConfigs": [],
+  "potionConfigs": [],
+  "disabledEvents": [
+    "AirClickEvent"
+  ]
+}
