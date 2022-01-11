@@ -162,7 +162,7 @@ public class PacketDataSerializer extends ByteBuf {
             return null;
         } else {
             this.readerIndex(i);
-            return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(2097152L));
+            return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(64000L));
         }
     }
 
