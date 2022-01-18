@@ -358,8 +358,10 @@ public class EntityTrackerEntry {
     public void updatePlayer(EntityPlayer entityplayer) {
         org.spigotmc.AsyncCatcher.catchOp( "player tracker update"); // Spigot
         if (entityplayer != this.tracker) {
+            boolean isPlayerEntityTracked = this.trackedPlayers.contains(entityplayer);
+
             if (this.c(entityplayer)) {
-                if (!this.trackedPlayers.contains(entityplayer) && (this.e(entityplayer) || this.tracker.attachedToPlayer)) {
+                if (!isPlayerEntityTracked && (this.e(entityplayer) || this.tracker.attachedToPlayer)) {
                     if (!entityplayer.getBukkitEntity().canSeeEntity(this.tracker.getBukkitEntity())) {
                         return;
                     }
@@ -444,7 +446,7 @@ public class EntityTrackerEntry {
                         }
                     }
                 }
-            } else if (this.trackedPlayers.contains(entityplayer)) {
+            } else if (isPlayerEntityTracked) {
                 this.trackedPlayers.remove(entityplayer);
                 entityplayer.d(this.tracker);
             }
