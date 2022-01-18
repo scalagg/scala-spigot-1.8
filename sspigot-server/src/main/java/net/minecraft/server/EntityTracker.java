@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import io.papermc.paper.util.maplist.ObjectMapList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,8 +15,13 @@ public class EntityTracker {
 
     private static final Logger a = LogManager.getLogger();
     private final WorldServer world;
-    private Set<EntityTrackerEntry> c = Sets.newHashSet();
-    public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap();
+
+    public Set<EntityTrackerEntry> c = new ObjectMapList<>(); // IonSpigot - HashSet -> ObjectMapList
+    public Set<EntityTrackerEntry> getTrackedEntities() { return c; }
+
+    public IntHashMap<EntityTrackerEntry> trackedEntities = new IntHashMap<>();
+    public IntHashMap<EntityTrackerEntry> getTrackedEntityHashTable() { return trackedEntities; }
+
     private int e;
 
     public EntityTracker(WorldServer worldserver) {
@@ -95,7 +101,7 @@ public class EntityTracker {
     }
 
     public void addEntity(Entity entity, int i, final int j, boolean flag) {
-        org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
+//        org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
         i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
         if (i > this.e) {
             i = this.e;
@@ -147,7 +153,7 @@ public class EntityTracker {
     }
 
     public void untrackEntity(Entity entity) {
-        org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
+//        org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
         if (entity instanceof EntityPlayer) {
             EntityPlayer entityplayer = (EntityPlayer) entity;
             Iterator iterator = this.c.iterator();
@@ -169,31 +175,24 @@ public class EntityTracker {
     }
 
     public void updatePlayers() {
-        ArrayList arraylist = Lists.newArrayList();
-        Iterator iterator = this.c.iterator();
+        // Nacho start - [Nacho-0048]
+        final ArrayList<EntityPlayer> entities = Lists.newArrayList();
 
-        while (iterator.hasNext()) {
-            EntityTrackerEntry entitytrackerentry = (EntityTrackerEntry) iterator.next();
-
-            entitytrackerentry.track(this.world.players);
-            if (entitytrackerentry.n && entitytrackerentry.tracker instanceof EntityPlayer) {
-                arraylist.add((EntityPlayer) entitytrackerentry.tracker);
+        for (EntityTrackerEntry entry : this.getTrackedEntities()) {
+            entry.track(this.world.players);
+            if (entry.playerEntitiesUpdated() && entry.getTracker() instanceof EntityPlayer) {
+                entities.add((EntityPlayer) entry.getTracker());
             }
         }
 
-        for (int i = 0; i < arraylist.size(); ++i) {
-            EntityPlayer entityplayer = (EntityPlayer) arraylist.get(i);
-            Iterator iterator1 = this.c.iterator();
-
-            while (iterator1.hasNext()) {
-                EntityTrackerEntry entitytrackerentry1 = (EntityTrackerEntry) iterator1.next();
-
-                if (entitytrackerentry1.tracker != entityplayer) {
-                    entitytrackerentry1.updatePlayer(entityplayer);
+        for (EntityPlayer entity : entities) {
+            for (EntityTrackerEntry entry : this.getTrackedEntities()) {
+                if (entry.getTracker() != entity) {
+                    entry.updatePlayer(entity);
                 }
             }
         }
-
+        // Nacho end
     }
 
     public void a(EntityPlayer entityplayer) {

@@ -789,7 +789,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
             // Tick trackers
             worldserver.timings.tracker.startTiming();
-            worldserver.getTracker().updatePlayers();
+            if(this.getPlayerList().getPlayerCount() != 0) // Tuinity
+                worldserver.getTracker().updatePlayers();
             worldserver.timings.tracker.stopTiming();
 
             this.methodProfiler.b();

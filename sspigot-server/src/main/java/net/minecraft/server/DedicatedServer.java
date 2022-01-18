@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class DedicatedServer extends MinecraftServer implements IMinecraftServer {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final List<ServerCommand> l = Collections.synchronizedList(Lists.<ServerCommand>newArrayList());
+    private final java.util.Queue<ServerCommand> l = new java.util.concurrent.ConcurrentLinkedQueue<>(); // Paper - use a proper queue
     private RemoteStatusListener m;
     private RemoteControlListener n;
     public PropertyManager propertyManager;
@@ -353,8 +353,10 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public void aO() {
-        while (!this.l.isEmpty()) {
-            ServerCommand servercommand = this.l.remove(0);
+        // [Paper-0350] start - use a Queue for Queueing Commands
+        ServerCommand servercommand;
+        while ((servercommand = this.l.poll()) != null) {
+            // [Paper-0350] end - use a Queue for Queueing Commands
 
             ServerCommandEvent event = new ServerCommandEvent(console, servercommand.command);
 

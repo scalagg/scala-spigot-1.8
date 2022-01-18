@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,9 +15,9 @@ import java.util.Set;
 public class EntityTrackerEntry {
 
     private static final Logger p = LogManager.getLogger();
-    public Entity tracker;
-    public int b;
-    public int c;
+    public Entity tracker; public Entity getTracker() { return tracker; }
+    public int b; public int maxTrackingDistance() { return b; }
+    public int c; public int updateInterval() { return c; }
     public int xLoc;
     public int yLoc;
     public int zLoc;
@@ -31,16 +32,16 @@ public class EntityTrackerEntry {
     private double r;
     private double s;
     private boolean isMoving;
-    private boolean u;
+    private boolean u; public boolean sendVelocityUpdates() { return u; }
     private int v;
     private Entity w;
     private boolean x;
     private boolean y;
-    public boolean n;
+    public boolean n; public boolean playerEntitiesUpdated() { return n; }
     // PaperSpigot start
     // Replace trackedPlayers Set with a Map. The value is true until the player receives
     // their first update (which is forced to have absolute coordinates), false afterward.
-    public java.util.Map<EntityPlayer, Boolean> trackedPlayerMap = new java.util.HashMap<EntityPlayer, Boolean>();
+    public java.util.Map<EntityPlayer, Boolean> trackedPlayerMap = new Reference2BooleanOpenHashMap<>();
     public Set<EntityPlayer> trackedPlayers = trackedPlayerMap.keySet();
     // PaperSpigot end
 
