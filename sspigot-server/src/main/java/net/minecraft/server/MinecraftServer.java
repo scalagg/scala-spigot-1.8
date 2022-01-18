@@ -10,6 +10,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -134,6 +135,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public static void main(final OptionSet options) {
         DispenserRegistry.c();
+
+        LogCleanup.cleanup();
 
         try {
             DedicatedServer dedicatedserver = new DedicatedServer(options);

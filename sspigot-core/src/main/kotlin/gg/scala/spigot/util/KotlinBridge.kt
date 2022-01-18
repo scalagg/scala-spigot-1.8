@@ -7,5 +7,5 @@ package gg.scala.spigot.util
 object KotlinBridge
 {
     @JvmStatic
-    fun isBlank(string: String): Boolean = string.isBlank()
+    fun isBlank(string: String) = string.isBlank()
 }

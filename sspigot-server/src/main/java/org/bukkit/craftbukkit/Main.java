@@ -154,8 +154,6 @@ public class Main {
         } else if (options.has("v")) {
             System.out.println(CraftServer.class.getPackage().getImplementationVersion());
         } else {
-
-
             try {
                 if (options.has("nojline")) {
                     System.setProperty(TerminalConsoleAppender.JLINE_OVERRIDE_PROPERTY, "false");
