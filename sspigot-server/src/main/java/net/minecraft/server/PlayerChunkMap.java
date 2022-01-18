@@ -32,24 +32,23 @@ public class PlayerChunkMap {
 
     public void flush() {
         long i = this.world.getTime();
-        int j;
-        net.minecraft.server.PlayerChunkMap.PlayerChunk playerchunkmap_playerchunk;
+        net.minecraft.server.PlayerChunkMap.PlayerChunk chunk;
 
         if (i - this.h > 8000L) {
             this.h = i;
 
+            // Nacho - or just use an enhanced for loop here :shrug:
             // CraftBukkit start - Use iterator
-            Iterator iterator = this.f.iterator();
-            while (iterator.hasNext()) {
-                playerchunkmap_playerchunk = (PlayerChunk) iterator.next();
-                playerchunkmap_playerchunk.b();
-                playerchunkmap_playerchunk.a();
+            for (PlayerChunk playerChunk : this.f) {
+                chunk = playerChunk;
+                chunk.b();
+                chunk.a();
             }
         } else {
-            Iterator iterator = this.e.iterator();
+            java.util.Iterator<PlayerChunkMap.PlayerChunk> iterator = this.e.iterator();
             while (iterator.hasNext()) {
-                playerchunkmap_playerchunk = (PlayerChunk) iterator.next();
-                playerchunkmap_playerchunk.b();
+                chunk = iterator.next();
+                chunk.b();
                 iterator.remove();
                 // CraftBukkit end
             }

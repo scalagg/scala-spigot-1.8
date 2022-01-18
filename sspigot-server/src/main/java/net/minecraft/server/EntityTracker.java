@@ -101,7 +101,7 @@ public class EntityTracker {
     }
 
     public void addEntity(Entity entity, int i, final int j, boolean flag) {
-//        org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp( "entity track"); // Spigot
         i = org.spigotmc.TrackingRange.getEntityTrackingRange(entity, i); // Spigot
         if (i > this.e) {
             i = this.e;
@@ -141,7 +141,7 @@ public class EntityTracker {
             entity.appendEntityCrashDetails(crashreportsystemdetails);
             CrashReportSystemDetails crashreportsystemdetails1 = crashreport.a("Entity That Is Already Tracked");
 
-            ((EntityTrackerEntry) this.trackedEntities.get(entity.getId())).tracker.appendEntityCrashDetails(crashreportsystemdetails1);
+            this.trackedEntities.get(entity.getId()).tracker.appendEntityCrashDetails(crashreportsystemdetails1);
 
             try {
                 throw new ReportedException(crashreport);
@@ -153,7 +153,7 @@ public class EntityTracker {
     }
 
     public void untrackEntity(Entity entity) {
-//        org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp( "entity untrack"); // Spigot
         if (entity instanceof EntityPlayer) {
             EntityPlayer entityplayer = (EntityPlayer) entity;
             Iterator iterator = this.c.iterator();

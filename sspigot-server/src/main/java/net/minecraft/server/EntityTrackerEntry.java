@@ -155,7 +155,13 @@ public class EntityTrackerEntry {
                         this.v = 0;
                         // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
                         if (this.tracker instanceof EntityPlayer) {
-                            this.scanPlayers(new java.util.ArrayList(this.trackedPlayers));
+                            // No need to create a whole new list every teleport
+                            Iterator<EntityPlayer> iterator = trackedPlayers.iterator();
+                            while (iterator.hasNext()) {
+                                EntityPlayer next = iterator.next();
+                                this.updatePlayer(next);
+                            }
+//                            this.scanPlayers(new java.util.ArrayList(this.trackedPlayers));
                         }
                         // CraftBukkit end
                         object = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
@@ -431,19 +437,24 @@ public class EntityTrackerEntry {
                         }
                     }
 
-                    // CraftBukkit start - Fix for nonsensical head yaw
-                    this.i = gg.scala.spigot.util.MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
-                    this.broadcast(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) i));
-                    // CraftBukkit end
+                    if(this.tracker instanceof EntityLiving) { // SportPaper - avoid processing entities that can't change head rotation
+                        this.i = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
+                        // SportPaper start
+                        // This was originally introduced by CraftBukkit, though the implementation is wrong since it's broadcasting
+                        // the packet again in a method that is already called for each player. This would create a very serious performance issue
+                        // with high player and entity counts (each sendPacket call involves waking up the event loop and flushing the network stream).
+                        // this.broadcast(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) lastHeadYaw));
+                        entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) i));
+                        // SportPaper end
+                    }
 
                     if (this.tracker instanceof EntityLiving) {
                         EntityLiving entityliving = (EntityLiving) this.tracker;
-                        Iterator iterator = entityliving.getEffects().iterator();
 
-                        while (iterator.hasNext()) {
-                            MobEffect mobeffect = (MobEffect) iterator.next();
-
-                            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect));
+                        for (MobEffect mobeffect : entityliving.getEffects()) {
+                            entityplayer.playerConnection.sendPacket(
+                                    new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect)
+                            );
                         }
                     }
                 }
@@ -469,10 +480,7 @@ public class EntityTrackerEntry {
     }
 
     public void scanPlayers(List<EntityHuman> list) {
-        for (int i = 0; i < list.size(); ++i) {
-            this.updatePlayer((EntityPlayer) list.get(i));
-        }
-
+        list.parallelStream().forEach(entity -> this.updatePlayer((EntityPlayer) entity));
     }
 
     private Packet c() {
