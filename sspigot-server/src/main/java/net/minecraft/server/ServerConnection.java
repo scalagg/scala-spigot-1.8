@@ -84,10 +84,16 @@ public class ServerConnection {
 	        this.g.add(((new ServerBootstrap().channel(oclass)).childHandler(new ChannelInitializer() {
 		        protected void initChannel(Channel channel) throws Exception {
 			        try {
-				        channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
+				        channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
 			        } catch (ChannelException channelexception) {
-				        ;
-			        }
+                        // Ignore
+                    }
+
+                    try {
+                        channel.config().setOption(ChannelOption.IP_TOS, 0x18);
+                    } catch (ChannelException e) {
+                        // Ignore
+                    }
 
 			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 
