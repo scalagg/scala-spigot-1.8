@@ -20,14 +20,12 @@ public class ServerStatisticManager extends StatisticManager {
 
     private static final Logger b = LogManager.getLogger();
     private final MinecraftServer c;
-    private final File d;
     private final Set<Statistic> e = Sets.newHashSet();
     private int f = -300;
     private boolean g = false;
 
-    public ServerStatisticManager(MinecraftServer minecraftserver, File file) {
+    public ServerStatisticManager(MinecraftServer minecraftserver) {
         this.c = minecraftserver;
-        this.d = file;
         // Spigot start
         for ( String name : org.spigotmc.SpigotConfig.forcedStats.keySet() )
         {
@@ -39,27 +37,9 @@ public class ServerStatisticManager extends StatisticManager {
     }
 
     public void a() {
-        if (this.d.isFile()) {
-            try {
-                this.a.clear();
-                this.a.putAll(this.a(FileUtils.readFileToString(this.d)));
-            } catch (IOException ioexception) {
-                b.error("Couldn\'t read statistics file " + this.d, ioexception);
-            } catch (JsonParseException jsonparseexception) {
-                b.error("Couldn\'t parse statistics file " + this.d, jsonparseexception);
-            }
-        }
-
     }
 
     public void b() {
-        if ( org.spigotmc.SpigotConfig.disableStatSaving ) return; // Spigot
-        try {
-            FileUtils.writeStringToFile(this.d, a(this.a));
-        } catch (IOException ioexception) {
-            b.error("Couldn\'t save stats", ioexception);
-        }
-
     }
 
     public void setStatistic(EntityHuman entityhuman, Statistic statistic, int i) {
@@ -126,14 +106,12 @@ public class ServerStatisticManager extends StatisticManager {
                                 ijsonstatistic.a(jsonobject1.get("progress"));
                                 statisticwrapper.a(ijsonstatistic);
                             } catch (Throwable throwable) {
-                                b.warn("Invalid statistic progress in " + this.d, throwable);
+                                b.warn("Invalid statistic progress in ", throwable);
                             }
                         }
                     }
 
                     hashmap.put(statistic, statisticwrapper);
-                } else {
-                    b.warn("Invalid statistic in " + this.d + ": Don\'t know what " + (String) entry.getKey() + " is");
                 }
             }
 

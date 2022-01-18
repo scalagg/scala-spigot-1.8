@@ -1177,19 +1177,9 @@ public abstract class PlayerList {
         ServerStatisticManager serverstatisticmanager = uuid == null ? null : this.o.get(uuid);
 
         if (serverstatisticmanager == null) {
-            File file = new File(this.server.getWorldServer(0).getDataManager().getDirectory(), "stats");
-            File file1 = new File(file, uuid.toString() + ".json");
-
-            if (!file1.exists()) {
-                File file2 = new File(file, entityhuman.getName() + ".json");
-
-                if (file2.exists() && file2.isFile()) {
-                    file2.renameTo(file1);
-                }
-            }
-
-            serverstatisticmanager = new ServerStatisticManager(this.server, file1);
+            serverstatisticmanager = new ServerStatisticManager(this.server);
             serverstatisticmanager.a();
+
             this.o.put(uuid, serverstatisticmanager);
         }
 
