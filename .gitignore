@@ -3,6 +3,8 @@
 *.iml
 *.iws
 
+gradle.properties
+
 # Mac
 .DS_Store
 
@@ -20,7 +22,6 @@ rebel.xml
 # Keep libs
 #!lib/*.jar
 
-gradle
 .gradle
 **/build/
 !src/**/build/
