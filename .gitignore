@@ -7,8 +7,6 @@ gradle.properties
 
 # Mac
 .DS_Store
-
-gradle.properties
 runtime/
 
 # Maven
