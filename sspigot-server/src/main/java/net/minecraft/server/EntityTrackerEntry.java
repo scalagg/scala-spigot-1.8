@@ -363,7 +363,6 @@ public class EntityTrackerEntry {
     }
 
     public void updatePlayer(EntityPlayer entityplayer) {
-        org.spigotmc.AsyncCatcher.catchOp( "player tracker update"); // Spigot
         if (entityplayer != this.tracker) {
             boolean isPlayerEntityTracked = this.trackedPlayers.contains(entityplayer);
 
@@ -480,7 +479,9 @@ public class EntityTrackerEntry {
     }
 
     public void scanPlayers(List<EntityHuman> list) {
-        list.parallelStream().forEach(entity -> this.updatePlayer((EntityPlayer) entity));
+        for (EntityHuman entityHuman : list) {
+            this.updatePlayer((EntityPlayer) entityHuman);
+        }
     }
 
     private Packet c() {

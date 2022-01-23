@@ -1,7 +1,5 @@
 plugins {
     id 'java'
-    id "maven-publish"
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 description = "An enhanced plugin API for Minecraft servers."
@@ -15,7 +13,6 @@ repositories {
 dependencies {
     compileOnly "net.sf.trove4j:trove4j:3.0.3"
 
-    // do not change AT ALL PLEASE or BAD
     implementation 'commons-lang:commons-lang:2.6'
     implementation "com.googlecode.json-simple:json-simple:1.1.1"
 
@@ -30,23 +27,6 @@ dependencies {
     implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
 
     compileOnly project(":sspigot-core")
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-}
-
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        }
-    }
-}
-
-tasks.build.dependsOn(shadowJar, publishing)
-
-test {
-    useJUnitPlatform()
 }
 
 def targetJavaVersion = 8

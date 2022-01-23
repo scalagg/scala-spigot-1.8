@@ -393,7 +393,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 					if (d15 > org.spigotmc.SpigotConfig.movedWronglyThreshold && !this.player.isSleeping() && !this.player.playerInteractManager.isCreative()) {
 						flag1 = true;
-						c.warn(this.player.getName() + " moved wrongly!");
 					}
 
 					this.player.setLocation(d7, d8, d9, f2, f3);

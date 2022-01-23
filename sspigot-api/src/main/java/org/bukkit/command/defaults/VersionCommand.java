@@ -59,11 +59,6 @@ public class VersionCommand extends BukkitCommand {
 
         setVersion();
 
-        sender.sendMessage(
-                LegacyComponentSerializer.legacyAmpersand()
-                        .serialize(Component.text("Checking version, please wait...", net.kyori.adventure.text.format.NamedTextColor.WHITE, net.kyori.adventure.text.format.TextDecoration.ITALIC))
-        ); // Paper
-
         if (args.length == 0) {
             // Paper start
             if (Bukkit.getVersion().startsWith("null") || versionMessage == null) { // running from ide?
@@ -82,33 +77,50 @@ public class VersionCommand extends BukkitCommand {
             );
         } else {
             StringBuilder name = new StringBuilder();
+            boolean found = false;
 
             for (String arg : args) {
                 if (name.length() > 0) {
                     name.append(' ');
                 }
 
-                name.append(arg);
+                if (!arg.equalsIgnoreCase("author"))
+                {
+                    name.append(arg);
+                }
             }
 
-            String pluginName = name.toString();
-            Plugin exactPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
-            if (exactPlugin != null) {
-                describeToSender(exactPlugin, sender);
-                return true;
-            }
+            String pluginName = name.toString().toLowerCase();
 
-            boolean found = false;
-            pluginName = pluginName.toLowerCase();
-            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                if (plugin.getName().toLowerCase().contains(pluginName)) {
-                    describeToSender(plugin, sender);
-                    found = true;
+            if (args.length == 1)
+            {
+                Plugin exactPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
+                if (exactPlugin != null) {
+                    describeToSender(exactPlugin, sender);
+                    return true;
+                }
+
+                for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                    if (plugin.getName().toLowerCase().contains(pluginName)) {
+                        describeToSender(plugin, sender);
+                        found = true;
+                    }
+                }
+            } else
+            {
+                for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                    if (!plugin.getDescription().getAuthors().isEmpty())
+                    {
+                        if (plugin.getDescription().getAuthors().get(0).toLowerCase().contains(pluginName)) {
+                            describeToSender(plugin, sender);
+                            found = true;
+                        }
+                    }
                 }
             }
 
             if (!found) {
-                sender.sendMessage("This server is not running any plugin by that name.");
+                sender.sendMessage(ChatColor.RED + "This server is not running any plugin by that name.");
                 sender.sendMessage("Use /plugins to get a list of plugins.");
             }
         }
@@ -118,21 +130,21 @@ public class VersionCommand extends BukkitCommand {
 
     private void describeToSender(Plugin plugin, CommandSender sender) {
         PluginDescriptionFile desc = plugin.getDescription();
-        sender.sendMessage(ChatColor.GOLD + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
+        sender.sendMessage(ChatColor.AQUA + desc.getName() + ChatColor.YELLOW + " version " + ChatColor.AQUA + desc.getVersion() + ChatColor.YELLOW + ".");
 
         if (desc.getDescription() != null) {
-            sender.sendMessage(desc.getDescription());
+            sender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + desc.getDescription());
         }
 
         if (desc.getWebsite() != null) {
-            sender.sendMessage("Website: " + ChatColor.GREEN + desc.getWebsite());
+            sender.sendMessage(ChatColor.YELLOW + "Website: " + ChatColor.AQUA + desc.getWebsite());
         }
 
         if (!desc.getAuthors().isEmpty()) {
             if (desc.getAuthors().size() == 1) {
-                sender.sendMessage("Author: " + ChatColor.GREEN + getAuthors(desc));
+                sender.sendMessage(ChatColor.YELLOW + "Author: " + ChatColor.AQUA + getAuthors(desc));
             } else {
-                sender.sendMessage("Authors: " + ChatColor.GREEN + getAuthors(desc));
+                sender.sendMessage(ChatColor.YELLOW + "Authors: " + ChatColor.AQUA + getAuthors(desc));
             }
         }
     }
@@ -150,7 +162,10 @@ public class VersionCommand extends BukkitCommand {
                 }
             }
 
-            result.append(authors.get(i));
+            result
+                    .append(ChatColor.AQUA)
+                    .append(authors.get(i))
+                    .append(ChatColor.YELLOW);
         }
 
         return result.toString();
