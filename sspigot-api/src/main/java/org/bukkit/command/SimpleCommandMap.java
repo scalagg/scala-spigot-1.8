@@ -238,45 +238,4 @@ SimpleCommandMap implements CommandMap {
     public Collection<Command> getCommands() {
         return Collections.unmodifiableCollection(knownCommands.values());
     }
-
-    public void registerServerAliases() {
-        Map<String, String[]> values = server.getCommandAliases();
-
-        for (String alias : values.keySet()) {
-            if (alias.contains(":") || alias.contains(" ")) {
-                server.getLogger().warning("Could not register alias " + alias + " because it contains illegal characters");
-                continue;
-            }
-
-            String[] commandStrings = values.get(alias);
-            List<String> targets = new ArrayList<String>();
-            StringBuilder bad = new StringBuilder();
-
-            for (String commandString : commandStrings) {
-                String[] commandArgs = commandString.split(" ");
-                Command command = getCommand(commandArgs[0]);
-
-                if (command == null) {
-                    if (bad.length() > 0) {
-                        bad.append(", ");
-                    }
-                    bad.append(commandString);
-                } else {
-                    targets.add(commandString);
-                }
-            }
-
-            if (bad.length() > 0) {
-                server.getLogger().warning("Could not register alias " + alias + " because it contains commands that do not exist: " + bad);
-                continue;
-            }
-
-            // We register these as commands so they have absolute priority.
-            if (targets.size() > 0) {
-                knownCommands.put(alias.toLowerCase(), new FormattedCommandAlias(alias.toLowerCase(), targets.toArray(new String[targets.size()])));
-            } else {
-                knownCommands.remove(alias.toLowerCase());
-            }
-        }
-    }
 }

@@ -9,6 +9,8 @@ gradle.properties
 .DS_Store
 runtime/
 
+sspigot-server/runtime
+
 # Maven
 log/
 /target/

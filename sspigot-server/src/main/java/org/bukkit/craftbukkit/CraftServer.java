@@ -102,7 +102,6 @@ public final class CraftServer implements Server {
     protected final DedicatedPlayerList playerList;
     private final Map<String, World> worlds = new LinkedHashMap<>();
     private YamlConfiguration configuration;
-    private YamlConfiguration commandsConfiguration;
     private final Yaml yaml = new Yaml(new SafeConstructor());
     private final Map<UUID, OfflinePlayer> offlinePlayers = new MapMaker().makeMap();
     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
@@ -121,7 +120,6 @@ public final class CraftServer implements Server {
     public boolean playerCommandState;
     private boolean printSaveWarning;
     private CraftIconCache icon;
-    private boolean overrideAllCommandBlockCommands = false;
     private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
     private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
     private final List<CraftPlayer> playerView;
@@ -174,31 +172,7 @@ public final class CraftServer implements Server {
         if (getCommandsConfigFile().isFile()) {
             legacyAlias = null;
         }
-        commandsConfiguration = YamlConfiguration.loadConfiguration(getCommandsConfigFile());
-        commandsConfiguration.options().copyDefaults(true);
-        commandsConfiguration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/commands.yml"), Charsets.UTF_8)));
-        saveCommandsConfig();
 
-        // Migrate aliases from old file and add previously implicit $1- to pass all arguments
-        if (legacyAlias != null) {
-            ConfigurationSection aliases = commandsConfiguration.createSection("aliases");
-            for (String key : legacyAlias.getKeys(false)) {
-                ArrayList<String> commands = new ArrayList<String>();
-
-                if (legacyAlias.isList(key)) {
-                    for (String command : legacyAlias.getStringList(key)) {
-                        commands.add(command + " $1-");
-                    }
-                } else {
-                    commands.add(legacyAlias.getString(key) + " $1-");
-                }
-
-                aliases.set(key, commands);
-            }
-        }
-
-        saveCommandsConfig();
-        overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
         ((SimplePluginManager) pluginManager).useTimings(configuration.getBoolean("settings.plugin-profiling"));
         monsterSpawn = configuration.getInt("spawn-limits.monsters");
         animalSpawn = configuration.getInt("spawn-limits.animals");
@@ -220,10 +194,6 @@ public final class CraftServer implements Server {
         this.playerList.setMaxPlayers(players);
     }
 
-    public boolean getCommandBlockOverride(String command) {
-        return overrideAllCommandBlockCommands || commandsConfiguration.getStringList("command-block-overrides").contains(command);
-    }
-
     private File getConfigFile() {
         return (File) console.options.valueOf("bukkit-settings");
     }
@@ -237,14 +207,6 @@ public final class CraftServer implements Server {
             configuration.save(getConfigFile());
         } catch (IOException ex) {
             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getConfigFile(), ex);
-        }
-    }
-
-    private void saveCommandsConfig() {
-        try {
-            commandsConfiguration.save(getCommandsConfigFile());
-        } catch (IOException ex) {
-            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getCommandsConfigFile(), ex);
         }
     }
 
@@ -289,7 +251,6 @@ public final class CraftServer implements Server {
             commandMap.setFallbackCommands();
             setVanillaCommands(false);
             // Spigot end
-            commandMap.registerServerAliases();
             loadCustomPermissions();
             DefaultPermissions.registerCorePermissions();
             CraftDefaultPermissions.registerCorePermissions();
@@ -647,7 +608,6 @@ public final class CraftServer implements Server {
     public void reload() {
         reloadCount++;
         configuration = YamlConfiguration.loadConfiguration(getConfigFile());
-        commandsConfiguration = YamlConfiguration.loadConfiguration(getCommandsConfigFile());
         PropertyManager config = new PropertyManager(console.options);
 
         ((DedicatedServer) console).propertyManager = config;
@@ -713,8 +673,6 @@ public final class CraftServer implements Server {
         resetRecipes();
         org.spigotmc.SpigotConfig.registerCommands(); // Spigot
         org.github.paperspigot.PaperSpigotConfig.registerCommands(); // PaperSpigot
-
-        overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
 
         int pollCount = 0;
 
@@ -1139,28 +1097,6 @@ public final class CraftServer implements Server {
         CraftingManager.getInstance().recipes = new CraftingManager().recipes;
         RecipesFurnace.getInstance().recipes = new RecipesFurnace().recipes;
         RecipesFurnace.getInstance().customRecipes.clear();
-    }
-
-    @Override
-    public Map<String, String[]> getCommandAliases() {
-        ConfigurationSection section = commandsConfiguration.getConfigurationSection("aliases");
-        Map<String, String[]> result = new LinkedHashMap<String, String[]>();
-
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                List<String> commands;
-
-                if (section.isList(key)) {
-                    commands = section.getStringList(key);
-                } else {
-                    commands = ImmutableList.of(section.getString(key));
-                }
-
-                result.put(key, commands.toArray(new String[commands.size()]));
-            }
-        }
-
-        return result;
     }
 
     public void removeBukkitSpawnRadius() {

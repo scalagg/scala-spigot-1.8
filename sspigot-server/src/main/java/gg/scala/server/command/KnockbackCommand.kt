@@ -41,7 +41,7 @@ class KnockbackCommand : BukkitCommand("knockback")
                 {
                     if (KnockbackHandler.findPreset(args[1]) != null)
                     {
-                        sender.sendMessage("alr exits")
+                        sender.sendMessage("${ChatColor.RED}This knockback preset already exists!")
                         return true
                     }
 
@@ -58,7 +58,7 @@ class KnockbackCommand : BukkitCommand("knockback")
 
                     KnockbackHandler.presets.add(preset)
 
-                    sender.sendMessage("created new kb")
+                    sender.sendMessage("${ChatColor.GREEN}Created knockback preset: ${ChatColor.YELLOW}${args[1]}${ChatColor.GREEN}.")
 
                     ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                 } else
@@ -77,10 +77,10 @@ class KnockbackCommand : BukkitCommand("knockback")
                         KnockbackHandler.presets.remove(existing)
 
                         ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
-                        sender.sendMessage("delet")
+                        sender.sendMessage("${ChatColor.RED}Deleted knockback preset: ${ChatColor.YELLOW}${args[1]}${ChatColor.RED}.")
                     } else
                     {
-                        sender.sendMessage("not exist")
+                        sender.sendMessage("${ChatColor.RED}This preset does not exist.")
                     }
                 } else
                 {
@@ -89,10 +89,10 @@ class KnockbackCommand : BukkitCommand("knockback")
             }
             "list" ->
             {
-                sender.sendMessage("${ChatColor.GOLD}Knockback presets")
+                sender.sendMessage("${ChatColor.AQUA}Knockback Presets:")
 
                 KnockbackHandler.presets.forEach {
-                    sender.sendMessage(it.id)
+                    sender.sendMessage(" ${it.id}")
                 }
             }
             "view" ->
@@ -106,7 +106,7 @@ class KnockbackCommand : BukkitCommand("knockback")
                         sender.sendMessage(ScalaSpigot.GSON.toJson(existing))
                     } else
                     {
-                        sender.sendMessage("not exist")
+                        sender.sendMessage("${ChatColor.RED}This preset does not exist.")
                     }
                 } else
                 {
@@ -122,10 +122,10 @@ class KnockbackCommand : BukkitCommand("knockback")
                     if (existing != null)
                     {
                         KnockbackHandler.activePreset = existing
-                        sender.sendMessage("set ok")
+                        sender.sendMessage("${ChatColor.GREEN}Updated active preset to: ${ChatColor.YELLOW}${args[1]}${ChatColor.GREEN}.")
                     } else
                     {
-                        sender.sendMessage("not exist")
+                        sender.sendMessage("${ChatColor.RED}This preset does not exist.")
                     }
                 } else
                 {
@@ -140,19 +140,21 @@ class KnockbackCommand : BukkitCommand("knockback")
 
                     if (existing == null)
                     {
-                        sender.sendMessage("not exist")
+                        sender.sendMessage("${ChatColor.RED}This preset does not exist.")
                         return true
                     }
 
                     val type = args[2]
-                    val field = KnockbackPreset::class.java.declaredFields.firstOrNull {
-                        it.name == type
-                    }
+
+                    val field = KnockbackPreset::class.java
+                        .declaredFields.firstOrNull {
+                            it.name == type
+                        }
 
                     if (field == null)
                     {
-                        sender.sendMessage("invailid fucker")
-                        sender.sendMessage("valid: ")
+                        sender.sendMessage("${ChatColor.RED}Sorry, that's an invalid field.")
+                        sender.sendMessage("${ChatColor.RED}The valid fields are shown below: ")
                         sender.sendMessage(KnockbackPreset::class.java.declaredFields.joinToString(separator = ", ") {it.name}
                         )
                         return true
@@ -164,12 +166,12 @@ class KnockbackCommand : BukkitCommand("knockback")
                         field.isAccessible = true
                         field.set(existing, value.toDouble())
 
-                        sender.sendMessage("set to $value")
+                        sender.sendMessage("${ChatColor.GREEN}Updated field ${ChatColor.WHITE}${field.name}${ChatColor.GREEN} to ${ChatColor.WHITE}${value}${ChatColor.GREEN} for preset ${ChatColor.YELLOW}${args[1]}${ChatColor.GREEN}.")
 
                         ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                     } catch (exception: Exception)
                     {
-                        sender.sendMessage("sorry was invalid type or something: ${exception.message}")
+                        sender.sendMessage("${ChatColor.RED}${exception.message}")
                     }
                 } else
                 {

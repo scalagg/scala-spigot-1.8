@@ -35,7 +35,7 @@ public class SimpleHelpMap implements HelpMap {
             indexFilter = Predicates.and(indexFilter, Predicates.not(new IsCommandTopicPredicate()));
         }
 
-        this.defaultTopic = new IndexHelpTopic("Index", null, null, Collections2.filter(helpTopics.values(), indexFilter), "Use /help [n] to get page n of help.");
+        this.defaultTopic = new IndexHelpTopic("Index", null, null, Collections2.filter(helpTopics.values(), indexFilter), "Use /help <page> to get a page of help.");
 
         registerHelpTopicFactory(MultipleCommandAlias.class, new MultipleCommandAliasHelpTopicFactory());
     }

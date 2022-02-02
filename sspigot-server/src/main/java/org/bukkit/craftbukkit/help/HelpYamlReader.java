@@ -26,25 +26,9 @@ public class HelpYamlReader {
     public HelpYamlReader(Server server) {
         this.server = server;
 
-        File helpYamlFile = new File("help.yml");
-        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/help.yml"), Charsets.UTF_8));
-
-        try {
-            helpYaml = YamlConfiguration.loadConfiguration(helpYamlFile);
-            helpYaml.options().copyDefaults(true);
-            helpYaml.setDefaults(defaultConfig);
-
-            try {
-                if (!helpYamlFile.exists()) {
-                    helpYaml.save(helpYamlFile);
-                }
-            } catch (IOException ex) {
-                server.getLogger().log(Level.SEVERE, "Could not save " + helpYamlFile, ex);
-            }
-        } catch (Exception ex) {
-            server.getLogger().severe("Failed to load help.yml. Verify the yaml indentation is correct. Reverting to default help.yml.");
-            helpYaml = defaultConfig;
-        }
+        helpYaml = YamlConfiguration.loadConfiguration(
+                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/help.yml"), Charsets.UTF_8)
+        );
     }
 
     /**

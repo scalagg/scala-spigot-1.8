@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" packages="net.minecrell.terminalconsole">
+<configuration status="INFO" packages="net.minecrell.terminalconsole">
     <Appenders>
         <TerminalConsole name="TerminalConsole">
             <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx{full}}" />
         </TerminalConsole>
+
         <RollingRandomAccessFile name="File" fileName="logs/latest.log"
                                  filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
                                  immediateFlush="false">
@@ -25,5 +26,5 @@
             <AppenderRef ref="TerminalConsole" level="info"/>
         </Root>
     </Loggers>
-</Configuration>
+</configuration>
 

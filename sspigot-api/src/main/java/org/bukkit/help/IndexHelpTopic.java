@@ -102,10 +102,10 @@ public class IndexHelpTopic extends HelpTopic {
      */
     protected String buildIndexLine(CommandSender sender, HelpTopic topic) {
         StringBuilder line = new StringBuilder();
-        line.append(ChatColor.GOLD);
+        line.append(ChatColor.YELLOW);
         line.append(topic.getName());
         line.append(": ");
-        line.append(ChatColor.WHITE);
+        line.append(ChatColor.AQUA);
         line.append(topic.getShortText());
         return line.toString();
     }

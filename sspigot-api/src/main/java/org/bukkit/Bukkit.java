@@ -636,15 +636,6 @@ public final class Bukkit {
     }
 
     /**
-     * Gets a list of command aliases defined in the server properties.
-     *
-     * @return a map of aliases to command names
-     */
-    public static Map<String, String[]> getCommandAliases() {
-        return server.getCommandAliases();
-    }
-
-    /**
      * Gets the radius, in blocks, around each worlds spawn point to protect.
      *
      * @return spawn radius, or 0 if none

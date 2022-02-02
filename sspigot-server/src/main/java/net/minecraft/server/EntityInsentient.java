@@ -86,7 +86,11 @@ public abstract class EntityInsentient extends EntityLiving {
     }
 
     public EntityLiving getGoalTarget() {
-        return this.goalTarget.get();
+        try {
+            return this.goalTarget.get();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     public void setGoalTarget(EntityLiving entityliving) {

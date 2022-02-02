@@ -148,9 +148,6 @@ public abstract class CommandBlockListenerAbstract implements ICommandListener {
 
         // Handle vanilla commands;
         org.bukkit.command.Command commandBlockCommand = commandMap.getCommand(args[0]);
-        if (sender.getWorld().getServer().getCommandBlockOverride(args[0])) {
-            commandBlockCommand = commandMap.getCommand("minecraft:" + args[0]);
-        }
         if (commandBlockCommand instanceof VanillaCommandWrapper) {
             command = command.trim();
             if (command.startsWith("/")) {

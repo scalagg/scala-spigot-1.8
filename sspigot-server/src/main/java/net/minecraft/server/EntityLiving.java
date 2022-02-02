@@ -897,13 +897,7 @@ public abstract class EntityLiving extends Entity {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
-            KnockbackPreset preset = getKnockbackPreset();
-
-            if (preset == null)
-            {
-               preset = KnockbackHandler.INSTANCE.getActivePreset();
-            }
-
+            final KnockbackPreset preset = getKnockbackPreset();
             double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
 
             this.motX /= preset.getFriction();
@@ -917,6 +911,17 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
+
+            // ScalaSpigot start - add sprint multiply
+            if (
+                    this.isSprinting() &&
+                            preset.getSprintMultiply() > 0.0
+            ) {
+                this.motX *= preset.getSprintMultiply();
+                this.motY *= preset.getSprintMultiply();
+                this.motZ *= preset.getSprintMultiply();
+            }
+            // ScalaSpigot end
         }
     }
 

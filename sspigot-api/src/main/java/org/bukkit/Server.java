@@ -521,13 +521,6 @@ public interface Server extends PluginMessageRecipient {
     public void resetRecipes();
 
     /**
-     * Gets a list of command aliases defined in the server properties.
-     *
-     * @return a map of aliases to command names
-     */
-    public Map<String, String[]> getCommandAliases();
-
-    /**
      * Gets the radius, in blocks, around each worlds spawn point to protect.
      *
      * @return spawn radius, or 0 if none
