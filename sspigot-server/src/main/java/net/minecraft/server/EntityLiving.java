@@ -911,17 +911,6 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
-
-            // ScalaSpigot start - add sprint multiply
-            if (
-                    this.isSprinting() &&
-                            preset.getSprintMultiply() > 0.0
-            ) {
-                this.motX *= preset.getSprintMultiply();
-                this.motY *= preset.getSprintMultiply();
-                this.motZ *= preset.getSprintMultiply();
-            }
-            // ScalaSpigot end
         }
     }
 

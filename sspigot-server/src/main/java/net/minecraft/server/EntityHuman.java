@@ -974,8 +974,10 @@ public abstract class EntityHuman extends EntityLiving {
 
             int i = b0 + EnchantmentManager.a(this);
 
-            if (this.isSprinting()) {
-                ++i;
+            final KnockbackPreset preset = getKnockbackPreset();
+
+            if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
+                i += preset.getSprintMultiply();
             }
 
             if (f > 0.0F || f1 > 0.0F) {

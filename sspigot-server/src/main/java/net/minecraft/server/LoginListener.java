@@ -159,16 +159,14 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             // Spigot start
             initUUID();
 
-            // ScalaSpigot start - Use the ForkJoinPool commonPool instead of new thread
-            ForkJoinPool.commonPool().execute(() -> {
+            new Thread(() -> {
                 try {
                     new LoginHandler().fireEvents();
                 } catch (Exception ex) {
                     disconnect("Failed to verify username!");
                     server.server.getLogger().log(Level.WARNING, "Exception verifying " + i.getName(), ex);
                 }
-            });
-            // ScalaSpigot end
+            }).start();
             // Spigot end
         }
 
@@ -185,37 +183,48 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             this.g = net.minecraft.server.LoginListener.EnumProtocolState.AUTHENTICATING;
             this.networkManager.a(this.loginKey);
 
-            ForkJoinPool.commonPool().execute(() -> {
-                GameProfile gameprofile = net.minecraft.server.LoginListener.this.i;
+            (new Thread("User Authenticator #" + LoginListener.b.incrementAndGet()) {
+                @Override
+                public void run() {
+                    GameProfile gameprofile = LoginListener.this.i;
 
-                try {
-                    String s = (new BigInteger(MinecraftEncryption.a(net.minecraft.server.LoginListener.this.j, net.minecraft.server.LoginListener.this.server.Q().getPublic(), net.minecraft.server.LoginListener.this.loginKey))).toString(16);
+                    try {
+                        String s = (new BigInteger(MinecraftEncryption.a(LoginListener.this.j, LoginListener.this.server.Q().getPublic(), LoginListener.this.loginKey))).toString(16);
 
-                    net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.server.aD().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
-                    if (net.minecraft.server.LoginListener.this.server.T()) {
-                        c.warn("Failed to verify username but will let them in anyway!");
-                        net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.a(gameprofile);
-                        net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
-                    } else {
-                        net.minecraft.server.LoginListener.this.disconnect("Failed to verify username!");
-                        c.error("Username '" + gameprofile.getName() + "' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+                        LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
+                        if (LoginListener.this.i != null) {
+                            // CraftBukkit start - fire PlayerPreLoginEvent
+                            if (!networkManager.g()) {
+                                return;
+                            }
+
+                            new LoginHandler().fireEvents();
+                        } else if (LoginListener.this.server.T()) {
+                            LoginListener.c.warn("Failed to verify username but will let them in anyway!");
+                            LoginListener.this.i = LoginListener.this.a(gameprofile);
+                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                        } else {
+                            LoginListener.this.disconnect("Failed to verify username!");
+                            LoginListener.c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+                        }
+                    } catch (AuthenticationUnavailableException authenticationunavailableexception) {
+                        if (LoginListener.this.server.T()) {
+                            LoginListener.c.warn("Authentication servers are down but will let them in anyway!");
+                            LoginListener.this.i = LoginListener.this.a(gameprofile);
+                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                        } else {
+                            LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
+                            LoginListener.c.error("Couldn\'t verify username because servers are unavailable");
+                        }
+                        // CraftBukkit start - catch all exceptions
+                    } catch (Exception exception) {
+                        disconnect("Failed to verify username!");
+                        server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
+                        // CraftBukkit end
                     }
-                } catch (AuthenticationUnavailableException authenticationunavailableexception) {
-                    if (net.minecraft.server.LoginListener.this.server.T()) {
-                        c.warn("Authentication servers are down but will let them in anyway!");
-                        net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.a(gameprofile);
-                        net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
-                    } else {
-                        net.minecraft.server.LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
-                        c.error("Couldn't verify username because servers are unavailable");
-                    }
-                    // CraftBukkit start - catch all exceptions
-                } catch (Exception exception) {
-                    disconnect("Failed to verify username!");
-                    server.server.getLogger().log(Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
-                    // CraftBukkit end
+
                 }
-            });
+            }).start();
         }
     }
 
