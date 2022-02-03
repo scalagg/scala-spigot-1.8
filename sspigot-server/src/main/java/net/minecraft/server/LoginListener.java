@@ -1,12 +1,10 @@
 package net.minecraft.server;
 
-import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -194,14 +192,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     String s = (new BigInteger(MinecraftEncryption.a(net.minecraft.server.LoginListener.this.j, net.minecraft.server.LoginListener.this.server.Q().getPublic(), net.minecraft.server.LoginListener.this.loginKey))).toString(16);
 
                     net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.server.aD().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
-                    if (net.minecraft.server.LoginListener.this.i != null) {
-                        // CraftBukkit start - fire PlayerPreLoginEvent
-                        if (!networkManager.g()) {
-                            return;
-                        }
-
-                        new LoginHandler().fireEvents();
-                    } else if (net.minecraft.server.LoginListener.this.server.T()) {
+                    if (net.minecraft.server.LoginListener.this.server.T()) {
                         c.warn("Failed to verify username but will let them in anyway!");
                         net.minecraft.server.LoginListener.this.i = net.minecraft.server.LoginListener.this.a(gameprofile);
                         net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;

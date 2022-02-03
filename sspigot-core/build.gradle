@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
 
     compileOnly 'com.google.code.gson:gson:2.8.9'
     compileOnly 'com.google.guava:guava:31.0.1-jre'

@@ -335,8 +335,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
                     this.getPacketListener().a(new ChatComponentText("Disconnected"));
                 }
                 this.packetQueue.clear(); // Free up packet queue.
-            } else {
-                g.warn("handleDisconnection() called twice");
             }
 
         }
