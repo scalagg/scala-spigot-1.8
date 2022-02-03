@@ -313,8 +313,6 @@ public abstract class PlayerList {
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(cserver.getPlayer(entityplayer), joinMessage);
         cserver.getPluginManager().callEvent(playerJoinEvent);
 
-        System.out.println("called");
-
         joinMessage = playerJoinEvent.getJoinMessage();
 
         if (joinMessage != null && joinMessage.length() > 0) {
