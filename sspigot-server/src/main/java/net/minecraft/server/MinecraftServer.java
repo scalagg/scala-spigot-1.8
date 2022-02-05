@@ -339,21 +339,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             BlockPosition blockposition = worldserver.getSpawn();
             long j = az();
             i = 0;
-
-            for (int k = -192; k <= 192 && this.isRunning(); k += 16) {
-                for (int l = -192; l <= 192 && this.isRunning(); l += 16) {
-                    long i1 = az();
-
-                    if (i1 - j > 1000L) {
-                        this.a_("Preparing spawn area", i * 100 / 625);
-                        j = i1;
-                    }
-
-                    ++i;
-
-                    worldserver.chunkProviderServer.getChunkAt(blockposition.getX() + k >> 4, blockposition.getZ() + l >> 4);
-                }
-            }
         }
 
         for (WorldServer world : this.worlds) {
