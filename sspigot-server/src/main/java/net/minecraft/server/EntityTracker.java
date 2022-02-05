@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.papermc.paper.util.maplist.ObjectMapList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EntityTracker {
 
@@ -174,8 +177,18 @@ public class EntityTracker {
 
     }
 
+    private static final int TRACKER_THREADS = 4; // <-- 3 non-this threads, one this
+
+    private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(
+            TRACKER_THREADS - 1, new ThreadFactoryBuilder().setNameFormat("entity-tracker-%d").build()
+    );
+
     public void updatePlayers() {
-        // Nacho start - [Nacho-0048]
+        int offset = 0;
+
+        final CountDownLatch latch =
+                new CountDownLatch(TRACKER_THREADS);
+
         final ArrayList<EntityPlayer> entities = Lists.newArrayList();
 
         for (EntityTrackerEntry entry : this.getTrackedEntities()) {
@@ -185,14 +198,33 @@ public class EntityTracker {
             }
         }
 
-        for (EntityPlayer entity : entities) {
-            for (EntityTrackerEntry entry : this.getTrackedEntities()) {
-                if (entry.getTracker() != entity) {
-                    entry.updatePlayer(entity);
+        for (int i = 1; i <= TRACKER_THREADS; i++) {
+            final int localOffset = offset++;
+
+            final Runnable runnable = () -> {
+                for (int i1 = localOffset; i1 < entities.size(); i1 += TRACKER_THREADS) {
+                    final EntityPlayer entity = entities.get(i1);
+
+                    for (EntityTrackerEntry entry : this.getTrackedEntities()) {
+                        if (entry.getTracker() != entity) {
+                            entry.updatePlayer(entity);
+                        }
+                    }
                 }
-            }
+
+                latch.countDown();
+            };
+
+            if (i < TRACKER_THREADS)
+                THREAD_POOL.execute(runnable);
+            else runnable.run();
         }
-        // Nacho end
+
+        try {
+            latch.await();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void a(EntityPlayer entityplayer) {

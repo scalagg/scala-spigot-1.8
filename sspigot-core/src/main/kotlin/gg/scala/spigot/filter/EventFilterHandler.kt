@@ -1,7 +1,6 @@
 package gg.scala.spigot.filter
 
-import gg.scala.spigot.ScalaSpigot
-import gg.scala.spigot.logger.Logger
+import gg.scala.spigot.mock.AirClickEvent
 
 /**
  * @author GrowlyX
@@ -13,15 +12,7 @@ object EventFilterHandler
 
     fun initialLoad()
     {
-        ScalaSpigot.config.disabledEvents.forEach {
-            try
-            {
-                filters[Class.forName(it)] = false
-            } catch (exception: Exception)
-            {
-               Logger.send("Failed to disable $it", Logger.LogLevel.SEVERE)
-            }
-        }
+        filters[AirClickEvent::class.java] = false
     }
 
     fun shouldCall(event: Class<*>): Boolean
