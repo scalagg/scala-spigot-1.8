@@ -801,7 +801,7 @@ public abstract class EntityLiving extends Entity {
                         }
 
                         this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
-                        this.a(entity, f, d0, d1);
+                        this.a(entity, f, d0, d1, damagesource);
                     } else {
                         this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
                     }
@@ -893,7 +893,7 @@ public abstract class EntityLiving extends Entity {
     protected void dropEquipment(boolean flag, int i) {
     }
 
-    public void a(Entity entity, float f, double d0, double d1) {
+    public void a(Entity entity, float f, double d0, double d1, DamageSource damageSource) {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
@@ -907,6 +907,16 @@ public abstract class EntityLiving extends Entity {
             this.motX -= d0 / magnitude * preset.getHorizontal();
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
+
+            if (damageSource instanceof EntityDamageSourceIndirect) {
+                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
+
+                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
+                    this.motX *= preset.getRodHorizontal();
+                    this.motY *= preset.getRodVertical();
+                    this.motZ *= preset.getRodHorizontal();
+                }
+            }
 
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();

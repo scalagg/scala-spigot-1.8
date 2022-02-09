@@ -414,19 +414,6 @@ public abstract class World implements IBlockAccess {
                     this.methodProfiler.b();
                 }
 
-                /*
-                if ((i & 2) != 0 && (!this.isClientSide || (i & 4) == 0) && chunk.isReady()) {
-                    this.notify(blockposition);
-                }
-
-                if (!this.isClientSide && (i & 1) != 0) {
-                    this.update(blockposition, iblockdata1.getBlock());
-                    if (block.isComplexRedstone()) {
-                        this.updateAdjacentComparators(blockposition, block);
-                    }
-                }
-                */
-
                 // CraftBukkit start
                 if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
                     // Modularize client and physic updates
@@ -683,6 +670,7 @@ public abstract class World implements IBlockAccess {
                 if (blockposition.getY() >= 256) {
                     blockposition = new BlockPosition(blockposition.getX(), 255, blockposition.getZ());
                 }
+                if (!this.isLoaded(blockposition)) return 0; // Paper
 
                 Chunk chunk = this.getChunkAtWorldCoords(blockposition);
 
@@ -1096,6 +1084,7 @@ public abstract class World implements IBlockAccess {
         entity.die();
         if (entity instanceof EntityHuman) {
             this.players.remove(entity);
+            this.worldMaps.removeTrackedPlayer((EntityHuman) entity);
             // Spigot start
             for ( Object o : worldMaps.c )
             {

@@ -11,6 +11,16 @@ import java.util.Map;
 
 public class PersistentCollection {
 
+    // FlamePaper - Minetick fix memory leaks
+    public void removeTrackedPlayer(EntityHuman entityhuman) {
+        for(Object o: this.c) {
+            if(o instanceof WorldMap) {
+                WorldMap map = (WorldMap) o;
+                map.untrackPlayer(entityhuman);
+            }
+        }
+    }
+
     private IDataManager b;
     protected Map<String, PersistentBase> a = Maps.newHashMap();
     public List<PersistentBase> c = Lists.newArrayList(); // Spigot
@@ -24,16 +34,14 @@ public class PersistentCollection {
     public PersistentBase get(Class<? extends PersistentBase> oclass, String s) {
         PersistentBase persistentbase = (PersistentBase) this.a.get(s);
 
-        if (persistentbase != null) {
-            return persistentbase;
-        } else {
+        if (persistentbase == null) {
             if (this.b != null) {
                 try {
                     File file = this.b.getDataFile(s);
 
                     if (file != null && file.exists()) {
                         try {
-                            persistentbase = (PersistentBase) oclass.getConstructor(new Class[] { String.class}).newInstance(new Object[] { s});
+                            persistentbase = (PersistentBase) oclass.getConstructor(new Class[]{String.class}).newInstance(new Object[]{s});
                         } catch (Exception exception) {
                             throw new RuntimeException("Failed to instantiate " + oclass.toString(), exception);
                         }
@@ -54,8 +62,8 @@ public class PersistentCollection {
                 this.c.add(persistentbase);
             }
 
-            return persistentbase;
         }
+        return persistentbase;
     }
 
     public void a(String s, PersistentBase persistentbase) {
