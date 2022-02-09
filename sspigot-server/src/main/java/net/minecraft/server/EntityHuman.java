@@ -1013,7 +1013,7 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (i > 0) {
+                    if (i > 0 && entity instanceof EntityPlayer && entity.velocityChanged) {
                         final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
                         entity.g(
@@ -1023,6 +1023,7 @@ public abstract class EntityHuman extends EntityLiving {
 
                         this.motX *= 0.6D;
                         this.motZ *= 0.6D;
+
                         this.setSprinting(false);
                     }
 
