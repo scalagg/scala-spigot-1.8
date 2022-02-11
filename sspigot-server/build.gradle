@@ -68,6 +68,8 @@ dependencies {
 
     implementation "net.jafama:jafama:2.3.2"
 
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.5'
+
     compileOnly "commons-lang:commons-lang:2.6"
     compileOnly "com.googlecode.json-simple:json-simple:1.1.1"
 
