@@ -63,11 +63,16 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	public double motX;
 	public double motY;
 	public double motZ;
+	// IonSpigot start - Movement Cache
+	public double lastMotX;
+	public double lastMotY;
+	public double lastMotZ;
+	// IonSpigot end
 	public float yaw;
 	public float pitch;
 	public float lastYaw;
 	public float lastPitch;
-	private AxisAlignedBB boundingBox;
+	public AxisAlignedBB boundingBox; // IonSpigot - private -> public
 	public boolean onGround;
 	public boolean positionChanged;
 	public boolean E;
@@ -459,6 +464,18 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			this.a(this.getBoundingBox().c(d0, d1, d2));
 			this.recalcPosition();
 		} else {
+			if(d0 * d0 + d1 * d1 + d2 * d2 < 0.0001D) return;
+
+			// IonSpigot start - Movement Cache
+			this.lastMotX = this.motX;
+			this.lastMotY = this.motY;
+			this.lastMotZ = this.motZ;
+
+			if (world.movementCache.move(this)) {
+				return;
+			}
+			// IonSpigot end
+
 			// CraftBukkit start - Don't do anything if we aren't moving
 			// We need to do this regardless of whether or not we are moving thanks to portals
 			try {
@@ -694,6 +711,8 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			if (d7 != d1) {
 				block.a(this.world, this);
 			}
+
+			world.movementCache.cache(this); // IonSpigot - Movement Cache
 
 			// CraftBukkit start
 			if (positionChanged && getBukkitEntity() instanceof Vehicle) {

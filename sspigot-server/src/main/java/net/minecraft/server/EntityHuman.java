@@ -1351,7 +1351,7 @@ public abstract class EntityHuman extends EntityLiving {
     }
 
     public void b(Statistic statistic) {
-        this.a(statistic, 1);
+        this.a(statistic, 20);
     }
 
     public void a(Statistic statistic, int i) {

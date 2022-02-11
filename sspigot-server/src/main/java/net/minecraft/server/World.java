@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.MathHelper;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
+import me.suicidalkids.ion.movement.MovementCache;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftServer;
@@ -140,9 +141,11 @@ public abstract class World implements IBlockAccess {
     public ExecutorService lightingExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Paper - Lighting Thread").build()); // PaperSpigot - Asynchronous lighting updates
     public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<Explosion.CacheKey, Float>(); // PaperSpigot - Optimize explosions
 
+    public final MovementCache movementCache = new MovementCache(); // IonSpigot - Movement Cache
+
     public static long chunkToKey(int x, int z)
     {
-        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ( ( ( (long) x ) & 0x0000FFFFL ) << 0 );
+        long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ((((long) x) & 0x0000FFFFL));
         k |= ( ( ( (long) z ) & 0xFFFF0000L ) << 32 ) | ( ( ( (long) z ) & 0x0000FFFFL ) << 16 );
         return k;
     }
@@ -413,6 +416,8 @@ public abstract class World implements IBlockAccess {
                     this.x(blockposition);
                     this.methodProfiler.b();
                 }
+
+                movementCache.clear();
 
                 // CraftBukkit start
                 if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
