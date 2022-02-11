@@ -8,12 +8,13 @@ import org.bukkit.craftbukkit.util.AsynchronousExecutor;
 import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.PreChunkLoadEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChunk, Chunk, Runnable, RuntimeException> {
-    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    private static final AtomicInteger THREAD_NUMBER = new AtomicInteger(1);
 
     // async stuff
     public Chunk callStage1(QueuedChunk queuedChunk) throws RuntimeException {
@@ -86,8 +87,11 @@ class ChunkIOProvider implements AsynchronousExecutor.CallBackProvider<QueuedChu
         runnable.run();
     }
 
-    public Thread newThread(Runnable runnable) {
-        Thread thread = new Thread(runnable, "Chunk I/O Executor Thread-" + threadNumber.getAndIncrement());
+    @Override
+    public Thread newThread(@NotNull Runnable r) {
+        final Thread thread = new Thread(
+                r, "Chunk I/O Executor Thread-" + THREAD_NUMBER.incrementAndGet()
+        );
         thread.setDaemon(true);
         return thread;
     }
