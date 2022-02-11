@@ -45,7 +45,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	// CraftBukikt end
 
 	private static final AxisAlignedBB a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-	private static int entityCount;
+	private static int entityCount = 1;
 
 	private int id;
 	public double j;
