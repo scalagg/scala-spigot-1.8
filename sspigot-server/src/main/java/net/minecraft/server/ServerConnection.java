@@ -85,13 +85,8 @@ public class ServerConnection {
 		        protected void initChannel(Channel channel) throws Exception {
 			        try {
 				        channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
+                        channel.config().setOption(ChannelOption.IP_TOS, 0x18); // [Nacho-0027] :: Optimize networking
 			        } catch (ChannelException channelexception) {
-                        // Ignore
-                    }
-
-                    try {
-                        channel.config().setOption(ChannelOption.IP_TOS, 0x18);
-                    } catch (ChannelException e) {
                         // Ignore
                     }
 
