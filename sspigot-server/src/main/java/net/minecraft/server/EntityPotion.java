@@ -53,31 +53,22 @@ public class EntityPotion extends EntityProjectile {
     }
 
     protected float m() {
-        final PotionPreset preset = PotionHandler.INSTANCE.getActivePreset();
-
-        if (preset == null) {
-            return 0.05F;
-        }
+        final PotionPreset preset = PotionHandler
+                .INSTANCE.getActivePreset();
 
         return preset.getDistance();
     }
 
     protected float j() {
-        final PotionPreset preset = PotionHandler.INSTANCE.getActivePreset();
-
-        if (preset == null) {
-            return 0.5F;
-        }
+        final PotionPreset preset = PotionHandler
+                .INSTANCE.getActivePreset();
 
         return preset.getSpeed();
     }
 
     protected float l() {
-        final PotionPreset preset = PotionHandler.INSTANCE.getActivePreset();
-
-        if (preset == null) {
-            return -20.0F;
-        }
+        final PotionPreset preset = PotionHandler
+                .INSTANCE.getActivePreset();
 
         return preset.getOffset();
     }

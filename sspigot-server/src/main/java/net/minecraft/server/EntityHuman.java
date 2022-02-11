@@ -978,7 +978,7 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (!this.isSprinting() && previousSprintStatus && preset.getSprintMultiply() > 0.0) {
+            if (this.isSprinting() && !previousSprintStatus && preset.getSprintMultiply() > 0.0) {
                 i += preset.getSprintMultiply();
             }
 
