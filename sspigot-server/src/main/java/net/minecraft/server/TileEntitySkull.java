@@ -1,14 +1,16 @@
 package net.minecraft.server;
 
-import com.github.benmanes.caffeine.cache.CacheLoader;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.base.Predicate;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.properties.Property;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -27,13 +29,12 @@ public class TileEntitySkull extends TileEntity {
                     .setNameFormat("Head Conversion Thread - %1$d")
                     .build()
     );
-    public static final LoadingCache<String, GameProfile> skinCache = com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
+    public static final LoadingCache<String, GameProfile> skinCache = CacheBuilder.newBuilder()
             .maximumSize( 5000 )
             .expireAfterAccess( 60, TimeUnit.MINUTES )
-            .build( new CacheLoader<String, GameProfile>()
-            {
+            .build(new CacheLoader<String, GameProfile>() {
                 @Override
-                public GameProfile load(String key) {
+                public @NotNull GameProfile load(@NotNull String key) {
                     final GameProfile[] profiles = new GameProfile[1];
                     ProfileLookupCallback gameProfileLookup = new ProfileLookupCallback() {
 
@@ -67,10 +68,9 @@ public class TileEntitySkull extends TileEntity {
                         }
                     }
 
-
                     return profile;
                 }
-            } );
+            });
 
     // Spigot end
 
@@ -165,7 +165,7 @@ public class TileEntitySkull extends TileEntity {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            final GameProfile profile = skinCache.get(gameprofile.getName().toLowerCase());
+                            final GameProfile profile = skinCache.getUnchecked(gameprofile.getName().toLowerCase());
                             MinecraftServer.getServer().processQueue.add(new Runnable() {
                                 @Override
                                 public void run() {
