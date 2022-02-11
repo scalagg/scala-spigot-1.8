@@ -72,7 +72,6 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
 
     public void disconnect(String s) {
         try {
-            c.info("Disconnecting " + this.d() + ": " + s);
             ChatComponentText chatcomponenttext = new ChatComponentText(s);
 
             this.networkManager.handle(new PacketLoginOutDisconnect(chatcomponenttext));
