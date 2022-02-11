@@ -18,11 +18,13 @@ public class IntCache {
         if (i <= 256) {
             if (b.isEmpty()) {
                 aint = new int[256];
+                if (c.size() < org.spigotmc.SpigotConfig.intCacheLimit) c.add(aint);
+                return aint;
             } else {
-                aint = b.remove(b.size() - 1);
+                aint = (int[]) b.remove(b.size() - 1);
+                if (c.size() < org.spigotmc.SpigotConfig.intCacheLimit) c.add(aint);
+                return aint;
             }
-            if (c.size() < org.spigotmc.SpigotConfig.intCacheLimit) c.add(aint);
-            return aint;
         } else if (i > a) {
             a = i;
             d.clear();

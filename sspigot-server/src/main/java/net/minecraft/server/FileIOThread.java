@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FileIOThread implements Runnable {
 
-    public static final net.minecraft.server.FileIOThread a = new net.minecraft.server.FileIOThread();
+    private static final net.minecraft.server.FileIOThread a = new net.minecraft.server.FileIOThread();
     private List<IAsyncChunkSaver> b = Collections.synchronizedList(Lists.<IAsyncChunkSaver>newArrayList());
     private volatile long c;
     private volatile long d;

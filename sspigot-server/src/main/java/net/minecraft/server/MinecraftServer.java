@@ -10,16 +10,18 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import gg.scala.minetick.AutoSave;
+import gg.scala.minetick.AutoSaveJob;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import joptsimple.OptionSet;
+import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.Main;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -114,7 +116,45 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private long ab = az();
     private boolean hasStopped = false;
 
-    private AutoSave autoSaveManager;
+    private LinkedList<AutoSaveJob> autoSaveWorlds = new LinkedList<AutoSaveJob>();
+    private int autoSaveDelay = 0;
+    private boolean autoSaveOrdered = false;
+
+    private void queueWorldsForAutoSave() {
+        if (!this.N) {
+            this.autoSaveWorlds.clear();
+
+            for (int j = 0; j < this.worlds.size(); ++j) {
+                final WorldServer worldserver = this.worlds.get(j);
+
+                if( worldserver != null) {
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE, worldserver));
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE_EVENT, worldserver));
+                }
+            }
+
+            int queueSize = this.autoSaveWorlds.size() / 2;
+
+            this.autoSaveDelay = 0;
+            this.autoSaveOrdered = true;
+
+            this.info("[AutoSave] " + queueSize + " worlds - Starting ...");
+        }
+    }
+
+    private void autoSaveNextWorld() throws ExceptionWorldConflict {
+        if(!this.autoSaveWorlds.isEmpty()) {
+            if(this.autoSaveDelay++ > 20) { // delay of 1 seconds between checks of the auto-save job queue
+                this.autoSaveDelay = 0;
+                if(this.autoSaveWorlds.getFirst().process()) {
+                    this.autoSaveWorlds.removeFirst();
+                }
+            }
+        } else if(this.autoSaveOrdered){
+            this.info("[AutoSave] Completed!");
+            this.autoSaveOrdered = false;
+        }
+    }
 
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
         io.netty.util.ResourceLeakDetector.setEnabled(false);
@@ -486,7 +526,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                 this.r.setMOTD(new ChatComponentText(this.motd));
                 this.r.setServerInfo(new ServerPing.ServerData("1.8.8", 47));
-
                 this.a(this.r);
 
                 // Spigot start
@@ -527,6 +566,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                     // Imagine Start - backport tick events from Paper
                     new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent();
+                    this.C();
                     long endTime = System.nanoTime();
                     long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
                     new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent(); // Imagine+                    // Imagine End
@@ -645,25 +685,23 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.r.b().a(gameProfile);
         }
 
-        // Minetick start
-        if (this.autoSaveManager.isActive()) {
-            SpigotTimings.worldSaveTimer.startTiming(); // Spigot
+        if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
+            SpigotTimings.worldSaveTimer.startTiming();
+            this.methodProfiler.a("save");
+            this.playerList.savePlayers();
 
             server.playerCommandState = true;
-            this.autoSaveManager.execute();
+            this.queueWorldsForAutoSave();
             server.playerCommandState = false;
 
-            SpigotTimings.worldSaveTimer.stopTiming(); // Spigot
-        } else if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) { // CraftBukkit
-            this.autoSaveManager.reset();
-
-            for (WorldServer worldServer : this.worlds) {
-                this.autoSaveManager.queueWorld(worldServer);
-            }
-
-            this.autoSaveManager.start();
+            this.methodProfiler.b();
+            SpigotTimings.worldSaveTimer.stopTiming();
         }
-        // Minetick end
+
+        if (this.autoSaveOrdered)
+        {
+            this.autoSaveNextWorld(); // MinetickMod
+        }
 
         this.methodProfiler.a("tallying");
         this.h[this.ticks % 100] = System.nanoTime() - i;
@@ -819,6 +857,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public void a(IUpdatePlayerListBox iupdateplayerlistbox) {
         this.p.add(iupdateplayerlistbox);
+    }
+
+    public void C() {
     }
 
     public File d(String s) {
