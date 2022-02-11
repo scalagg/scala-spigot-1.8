@@ -960,6 +960,8 @@ public abstract class EntityHuman extends EntityLiving {
         return -0.35D;
     }
 
+    private boolean previousSprintStatus = isSprinting();
+
     public void attack(Entity entity) {
         if (entity.aD() && !entity.l(this)) {
             float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
@@ -976,9 +978,11 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
+            if (!this.isSprinting() && previousSprintStatus && preset.getSprintMultiply() > 0.0) {
                 i += preset.getSprintMultiply();
             }
+
+            this.previousSprintStatus = isSprinting();
 
             if (f > 0.0F || f1 > 0.0F) {
                 boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
