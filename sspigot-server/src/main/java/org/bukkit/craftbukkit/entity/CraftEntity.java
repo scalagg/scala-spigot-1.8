@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.github.paperspigot.PaperSpigotConfig;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +35,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     protected final CraftServer server;
     protected Entity entity;
-    private EntityDamageEvent lastDamageEvent;
+
+    private WeakReference<EntityDamageEvent> lastDamageEvent;
 
     public CraftEntity(final CraftServer server, final Entity entity) {
         this.server = server;
@@ -349,11 +351,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     }
 
     public void setLastDamageCause(EntityDamageEvent event) {
-        lastDamageEvent = event;
+        lastDamageEvent = new WeakReference<>(event);
     }
 
     public EntityDamageEvent getLastDamageCause() {
-        return lastDamageEvent;
+        return lastDamageEvent.get();
     }
 
     public UUID getUniqueId() {
