@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import gg.scala.minetick.AutoSaveWorldData;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.MathHelper;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
@@ -142,6 +143,15 @@ public abstract class World implements IBlockAccess {
     public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<Explosion.CacheKey, Float>(); // PaperSpigot - Optimize explosions
 
     public final MovementCache movementCache = new MovementCache(); // IonSpigot - Movement Cache
+
+    // Poweruser start
+    private final AutoSaveWorldData autoSaveWorldData =
+            new AutoSaveWorldData(this);
+
+    public AutoSaveWorldData getAutoSaveWorldData() {
+        return this.autoSaveWorldData;
+    }
+    // Poweruser end
 
     public static long chunkToKey(int x, int z)
     {

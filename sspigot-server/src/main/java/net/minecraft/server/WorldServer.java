@@ -12,6 +12,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.util.HashTreeSet;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
+import org.spigotmc.SpigotConfig;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -964,7 +965,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         return this.worldProvider.h();
     }
 
-    public void save(boolean flag, IProgressUpdate iprogressupdate) throws ExceptionWorldConflict {
+    public boolean save(boolean flag, IProgressUpdate iprogressupdate) throws ExceptionWorldConflict {
         if (this.chunkProvider.canSave()) {
             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); //
             // CraftBukkit
@@ -990,7 +991,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 }
             }
 
+            return true;
         }
+
+        return false;
     }
 
     public void flushSave() {
@@ -1250,6 +1254,45 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         }
 
     }
+
+    // Poweruser start
+    public void saveOnlyLevel(boolean flag, IProgressUpdate iprogressupdate) throws ExceptionWorldConflict {
+        if (this.chunkProvider.canSave()) {
+            if (iprogressupdate != null) {
+                iprogressupdate.a("Saving level");
+            }
+
+            this.a();
+        }
+    }
+
+    public boolean saveOnlyChunks(boolean flag, IProgressUpdate iprogressupdate) {
+        if (this.chunkProvider.canSave()) {
+            if (iprogressupdate != null) {
+                iprogressupdate.c("Saving chunks");
+            }
+
+            return this.chunkProvider.saveChunks(flag, iprogressupdate);
+        }
+        return true;
+    }
+
+    public void unloadOnlyUnusedChunks(boolean flag, IProgressUpdate iprogressupdate) {
+        if (this.chunkProvider.canSave()) {
+            // CraftBukkit - ArrayList -> Collection
+            Collection arraylist = this.chunkProviderServer.a();
+            Iterator iterator = arraylist.iterator();
+
+            while (iterator.hasNext()) {
+                Chunk chunk = (Chunk) iterator.next();
+
+                if (chunk != null && !this.manager.a(chunk.locX, chunk.locZ)) {
+                    this.chunkProviderServer.queueUnload(chunk.locX, chunk.locZ);
+                }
+            }
+        }
+    }
+    // Poweruser end
 
     public Entity getEntity(UUID uuid) {
         return (Entity) this.entitiesByUUID.get(uuid);
