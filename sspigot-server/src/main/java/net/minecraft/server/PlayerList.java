@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.Vector;
+import org.github.paperspigot.PaperSpigotConfig;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.io.File;
@@ -86,11 +87,8 @@ public abstract class PlayerList {
 
     public void a(NetworkManager networkmanager, EntityPlayer entityplayer) {
         GameProfile gameprofile = entityplayer.getProfile();
-        UserCache usercache = this.server.getUserCache();
-        GameProfile gameprofile1 = usercache.a(gameprofile.getId());
-        String s = gameprofile1 == null ? gameprofile.getName() : gameprofile1.getName();
+        String s = gameprofile.getName();
 
-        usercache.a(gameprofile);
         NBTTagCompound nbttagcompound = this.a(entityplayer);
         // CraftBukkit start - Better rename detection
         if (nbttagcompound != null && nbttagcompound.hasKey("bukkit")) {
