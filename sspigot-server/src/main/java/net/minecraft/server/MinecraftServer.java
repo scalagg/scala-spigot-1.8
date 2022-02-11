@@ -10,6 +10,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import gg.scala.minetick.AutoSaveJob;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -114,6 +115,46 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private long X = 0L;
     private long ab = az();
     private boolean hasStopped = false;
+
+    private LinkedList<AutoSaveJob> autoSaveWorlds = new LinkedList<AutoSaveJob>();
+    private int autoSaveDelay = 0;
+    private boolean autoSaveOrdered = false;
+
+    private void queueWorldsForAutoSave() {
+        if (!this.N) {
+            this.autoSaveWorlds.clear();
+
+            for (int j = 0; j < this.worlds.size(); ++j) {
+                final WorldServer worldserver = this.worlds.get(j);
+
+                if( worldserver != null) {
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE, worldserver));
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE_EVENT, worldserver));
+                }
+            }
+
+            int queueSize = this.autoSaveWorlds.size() / 2;
+
+            this.autoSaveDelay = 0;
+            this.autoSaveOrdered = true;
+
+            this.info("[AutoSave] " + queueSize + " worlds - Starting ...");
+        }
+    }
+
+    private void autoSaveNextWorld() throws ExceptionWorldConflict {
+        if(!this.autoSaveWorlds.isEmpty()) {
+            if(this.autoSaveDelay++ > 20) { // delay of 1 seconds between checks of the auto-save job queue
+                this.autoSaveDelay = 0;
+                if(this.autoSaveWorlds.getFirst().process()) {
+                    this.autoSaveWorlds.removeFirst();
+                }
+            }
+        } else if(this.autoSaveOrdered){
+            this.info("[AutoSave] Completed!");
+            this.autoSaveOrdered = false;
+        }
+    }
 
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
         io.netty.util.ResourceLeakDetector.setEnabled(false);
@@ -650,15 +691,16 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.playerList.savePlayers();
 
             server.playerCommandState = true;
-
-            for (World world : worlds) {
-                world.getWorld().save(false);
-            }
-
+            this.queueWorldsForAutoSave();
             server.playerCommandState = false;
 
             this.methodProfiler.b();
             SpigotTimings.worldSaveTimer.stopTiming();
+        }
+
+        if (this.autoSaveOrdered)
+        {
+            this.autoSaveNextWorld(); // MinetickMod
         }
 
         this.methodProfiler.a("tallying");

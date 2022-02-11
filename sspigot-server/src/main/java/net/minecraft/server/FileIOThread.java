@@ -31,6 +31,16 @@ public class FileIOThread implements Runnable {
         }
     }
 
+    // MinetickMod start
+    public boolean isDone() {
+        return this.c == this.d;
+    }
+
+    public void setNoDelay(boolean active) {
+        this.e = active;
+    }
+    // MinetickMod end
+
     private void c() {
         for (int i = 0; i < this.b.size(); ++i) {
             IAsyncChunkSaver iasyncchunksaver = (IAsyncChunkSaver) this.b.get(i);
