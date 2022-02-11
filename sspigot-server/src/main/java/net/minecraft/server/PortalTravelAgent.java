@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
 import org.bukkit.Location;
 import org.bukkit.event.entity.EntityPortalExitEvent;
 import org.bukkit.util.Vector;
@@ -15,7 +17,7 @@ public class PortalTravelAgent {
     private final WorldServer a;
     private final Random b;
     private final LongHashMap<net.minecraft.server.PortalTravelAgent.ChunkCoordinatesPortal> c = new LongHashMap();
-    private final List<Long> d = Lists.newArrayList();
+    private final LongArrayList d = new LongArrayList(); // Nacho :: ArrayList<Long> -> LongArrayList
 
     public PortalTravelAgent(WorldServer worldserver) {
         this.a = worldserver;
@@ -455,16 +457,16 @@ public class PortalTravelAgent {
 
     public void a(long i) {
         if (i % 100L == 0L) {
-            Iterator iterator = this.d.iterator();
+            LongListIterator iterator = this.d.iterator(); // Nacho :: Iterator -> LongListIterator
             long j = i - 300L;
 
             while (iterator.hasNext()) {
-                Long olong = (Long) iterator.next();
-                net.minecraft.server.PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (net.minecraft.server.PortalTravelAgent.ChunkCoordinatesPortal) this.c.getEntry(olong.longValue());
+                long l = iterator.nextLong();
+                net.minecraft.server.PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = this.c.getEntry(l);
 
                 if (portaltravelagent_chunkcoordinatesportal == null || portaltravelagent_chunkcoordinatesportal.c < j) {
                     iterator.remove();
-                    this.c.remove(olong.longValue());
+                    this.c.remove(l);
                 }
             }
         }
