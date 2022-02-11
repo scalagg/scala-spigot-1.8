@@ -14,7 +14,15 @@ public class AutoSaveWorldData {
     }
 
     public void setLastAutosaveTimeStamp() {
-        this.lastAutoSaveTimeStamp = this.world.worldData.getTime();
+        try
+        {
+            this.lastAutoSaveTimeStamp = this
+                    .world.worldData.getTime();
+        } catch (Exception ignored)
+        {
+            this.lastAutoSaveTimeStamp = 0L;
+        }
+
         this.autoSaveChunkCount = 0;
     }
 

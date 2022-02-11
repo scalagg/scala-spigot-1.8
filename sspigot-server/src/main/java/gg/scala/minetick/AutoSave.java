@@ -74,76 +74,9 @@ public class AutoSave {
 
                 this.moveToNextStep();
                 return this.execute();
-            case SAVE_PLAYERS:
-                MinecraftServer.getServer()
-                        .getPlayerList().savePlayers();
 
-                this.moveToNextStep();
-                break;
-            case SAVE_LEVEL_AND_MAPS:
-                worldServer = this.levelAndMapsQueue.poll();
-                if (worldServer != null) {
-                    worldServer.saveOnlyLevel(true, null);
-                }
-
-                if (this.levelAndMapsQueue.isEmpty()) {
-                    this.moveToNextStep();
-                }
-
-                break;
-            case SAVE_CHUNKS:
-                worldServer = this.saveChunksQueue.peek();
-                if (worldServer != null) {
-                    if (worldServer.saveOnlyChunks(false, null)) {
-                        this.chunkQueuedCount += worldServer.getAutoSaveWorldData().getAutoSaveChunkCount();
-                        this.saveChunksQueue.poll();
-                    }
-                }
-
-                if (this.saveChunksQueue.isEmpty()) {
-                    this.moveToNextStep();
-                }
-
-                break;
-            case UNLOAD_CHUNKS:
-                worldServer = this.unloadChunksQueue.poll();
-                if (worldServer != null) {
-                    worldServer.unloadOnlyUnusedChunks(true, null);
-                }
-
-                if (this.unloadChunksQueue.isEmpty()) {
-                    this.moveToNextStep();
-                }
-
-                break;
-            case WRITE_FILES_START:
-                FileIOThread.a.setNoDelay(true);
-                this.fileioStart = System.nanoTime();
-                this.moveToNextStep();
-                break;
-            case WRITE_FILES_WAIT:
-                if (FileIOThread.a.isDone()) {
-                    this.fileioEnd = System.nanoTime();
-                    FileIOThread.a.setNoDelay(false);
-                    this.moveToNextStep();
-                }
-                break;
-            case FIRE_WORLDSAVEEVENT:
-                this.regionFileCount = RegionFileCache.a.size();
-                this.regionFileCacheStart = System.nanoTime();
-                RegionFileCache.a();
-                this.regionFileCacheEnd = System.nanoTime();
-
-                for (WorldServer worldserver : this.eventQueue) {
-                    WorldSaveEvent event = new WorldSaveEvent(worldserver.getWorld());
-                    MinecraftServer.getServer().server.getPluginManager().callEvent(event);
-                }
-
-                this.moveToNextStep();
-                break;
             case FINISHED:
-                MinecraftServer.LOGGER.info("[AutoSave] Done. Queued " + this.chunkQueuedCount + " chunks for saving. Took " + formatLongTime(this.fileioEnd - this.fileioStart) + " seconds to write them.");
-                MinecraftServer.LOGGER.info("[AutoSave] Cleared " + this.regionFileCount + " cached region files in " + formatLongTime(this.regionFileCacheEnd - this.regionFileCacheStart) + " seconds.");
+                MinecraftServer.LOGGER.info("[AutoSave] Done!");
                 this.reset();
                 return true;
         }
