@@ -63,7 +63,9 @@ public class ChunkProviderServer implements IChunkProvider {
         if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
             return;
         }
-        Chunk chunk = chunks.get(LongHash.toLong(i, j));
+        long key = LongHash.toLong(i, j); // IonSpigot - Only create key once
+
+        Chunk chunk = chunks.get(key);
         if (chunk != null && chunk.world.paperSpigotConfig.useAsyncLighting && (chunk.pendingLightUpdates.get() > 0 || chunk.world.getTime() - chunk.lightUpdateTime < 20)) {
             return;
         }
@@ -84,7 +86,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 // CraftBukkit start
                 this.unloadQueue.add(i, j);
 
-                Chunk c = chunks.get(LongHash.toLong(i, j));
+                Chunk c = chunks.get(key);
                 if (c != null) {
                     c.mustSave = true;
                 }
@@ -94,7 +96,7 @@ public class ChunkProviderServer implements IChunkProvider {
             // CraftBukkit start
             this.unloadQueue.add(i, j);
 
-            Chunk c = chunks.get(LongHash.toLong(i, j));
+            Chunk c = chunks.get(key);
             if (c != null) {
                 c.mustSave = true;
             }

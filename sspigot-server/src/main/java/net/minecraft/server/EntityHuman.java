@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import net.jafama.FastMath;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
