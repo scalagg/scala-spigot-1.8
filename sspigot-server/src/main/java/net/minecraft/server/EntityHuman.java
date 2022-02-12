@@ -1018,11 +1018,12 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (i > 0 && entity instanceof EntityPlayer && entity.velocityChanged) {
+                    if (i > 0) {
                         final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
                         entity.g(
-                                (-gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()), knockbackPreset.getExtraVertical(),
+                                (-gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
+                                knockbackPreset.getExtraVertical(),
                                 (gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
                         );
 
