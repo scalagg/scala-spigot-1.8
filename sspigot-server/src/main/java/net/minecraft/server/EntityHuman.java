@@ -966,24 +966,21 @@ public abstract class EntityHuman extends EntityLiving {
     public void attack(Entity entity) {
         if (entity.aD() && !entity.l(this)) {
             float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-            byte b0 = 1;
             float f1;
+            double i = 1;
 
             if (entity instanceof EntityLiving) {
                 f1 = EnchantmentManager.a(this.bA(), ((EntityLiving) entity).getMonsterType());
+                i += EnchantmentManager.a(this);
             } else {
                 f1 = EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
             }
 
-            float i = b0 + EnchantmentManager.a(this);
-
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (this.isSprinting() && !previousSprintStatus && preset.getSprintMultiply() > 0.0) {
-                i += (float) preset.getSprintMultiply();
+            if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
+                i += preset.getSprintMultiply();
             }
-
-            this.previousSprintStatus = this.isSprinting();
 
             if (f > 0.0F || f1 > 0.0F) {
                 boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
@@ -1022,9 +1019,9 @@ public abstract class EntityHuman extends EntityLiving {
                         final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
                         entity.g(
-                                (-gg.scala.spigot.util.MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
+                                (double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
                                 knockbackPreset.getExtraVertical(),
-                                (gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
+                                (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
                         );
 
                         this.motX *= 0.6D;

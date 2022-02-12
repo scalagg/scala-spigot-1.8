@@ -11,6 +11,7 @@ open class KnockbackPreset(
     var horizontal: Double,
     var vertical: Double,
     var verticalLimit: Double,
+    var horizontalLimit: Double,
     var extraHorizontal: Double,
     var extraVertical: Double,
     var sprintMultiply: Double = 0.256,

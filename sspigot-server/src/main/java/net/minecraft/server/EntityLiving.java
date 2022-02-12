@@ -904,7 +904,7 @@ public abstract class EntityLiving extends Entity {
             this.motY /= preset.getFriction();
             this.motZ /= preset.getFriction();
 
-            this.motX -= d0 / magnitude * preset.getHorizontal();
+            this.motX -= d0 / (magnitude * preset.getHorizontal());
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
 
@@ -920,6 +920,14 @@ public abstract class EntityLiving extends Entity {
 
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
+            }
+
+            if (this.motX > preset.getHorizontalLimit()) {
+                this.motX = preset.getHorizontalLimit();
+            }
+
+            if (this.motZ > preset.getHorizontalLimit()) {
+                this.motZ = preset.getHorizontalLimit();
             }
         }
     }
