@@ -85,7 +85,6 @@ public final class CraftScoreboardManager implements ScoreboardManager {
 
     // CraftBukkit method
     public Collection<ScoreboardScore> getScoreboardScores(IScoreboardCriteria criteria, String name, Collection<ScoreboardScore> collection) {
-
         // Tuinity start - add timings for scoreboard search
         // plugins leaking scoreboards will make this very expensive, let server owners debug it easily
         co.aikar.timings.SpigotTimings.scoreboardScoreSearch.startTimingIfSync();

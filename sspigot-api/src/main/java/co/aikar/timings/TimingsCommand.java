@@ -56,31 +56,32 @@ public class TimingsCommand extends BukkitCommand {
         final String arg = args[0];
         if ("on".equalsIgnoreCase(arg)) {
             Timings.setTimingsEnabled(true);
-            sender.sendMessage("Enabled Timings & Reset");
+            sender.sendMessage(ChatColor.GREEN + "Enabled timings and reset.");
             return true;
         } else if ("off".equalsIgnoreCase(arg)) {
             Timings.setTimingsEnabled(false);
-            sender.sendMessage("Disabled Timings");
+            sender.sendMessage(ChatColor.RED + "Disabled timings.");
             return true;
         }
 
         if (!Timings.isTimingsEnabled()) {
-            sender.sendMessage("Please enable timings by typing /timings on");
+            sender.sendMessage(ChatColor.RED + "Timings is disabled! Use " + ChatColor.BOLD + "/timings on" + ChatColor.RED + " to re-enable it.");
             return true;
         }
+
         if ("verbon".equalsIgnoreCase(arg)) {
             Timings.setVerboseTimingsEnabled(true);
-            sender.sendMessage("Enabled Verbose Timings");
+            sender.sendMessage(ChatColor.GREEN + "Enabled verbose timings.");
             return true;
         } else if ("verboff".equalsIgnoreCase(arg)) {
             Timings.setVerboseTimingsEnabled(false);
-            sender.sendMessage("Disabled Verbose Timings");
+            sender.sendMessage(ChatColor.RED + "Disabled verbose timings.");
             return true;
         } else if ("reset".equalsIgnoreCase(arg)) {
             TimingsManager.reset();
-            sender.sendMessage("Timings reset");
+            sender.sendMessage(ChatColor.GREEN + "Reset timings.");
         } else if ("cost".equals(arg)) {
-            sender.sendMessage("Timings cost: " + TimingsExport.getCost());
+            sender.sendMessage(ChatColor.YELLOW + "Timings cost: " + ChatColor.GREEN + TimingsExport.getCost());
         } else  if (
             "paste".equalsIgnoreCase(arg) ||
                 "report".equalsIgnoreCase(arg) ||
@@ -88,6 +89,7 @@ public class TimingsCommand extends BukkitCommand {
                 "merged".equalsIgnoreCase(arg) ||
                 "separate".equalsIgnoreCase(arg)
             ) {
+
             TimingsExport.reportTimings(sender);
         } else {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
