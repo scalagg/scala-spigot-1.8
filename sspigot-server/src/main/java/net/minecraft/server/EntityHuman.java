@@ -975,14 +975,12 @@ public abstract class EntityHuman extends EntityLiving {
                 f1 = EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
             }
 
-            int i = b0 + EnchantmentManager.a(this);
+            float i = b0 + EnchantmentManager.a(this);
 
             final KnockbackPreset preset = getKnockbackPreset();
-            Bukkit.broadcastMessage("Using preset: " + preset.getId());
 
             if (this.isSprinting() && !previousSprintStatus && preset.getSprintMultiply() > 0.0) {
-                i += preset.getSprintMultiply();
-                Bukkit.broadcastMessage("Applying sprint multiply of: " + preset.getSprintMultiply());
+                i += (float) preset.getSprintMultiply();
             }
 
             this.previousSprintStatus = this.isSprinting();
@@ -1020,8 +1018,6 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    Bukkit.broadcastMessage("Damaged, i=" + i);
-
                     if (i > 0) {
                         final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
@@ -1030,8 +1026,6 @@ public abstract class EntityHuman extends EntityLiving {
                                 knockbackPreset.getExtraVertical(),
                                 (gg.scala.spigot.util.MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
                         );
-
-                        Bukkit.broadcastMessage("Applying extras!");
 
                         this.motX *= 0.6D;
                         this.motZ *= 0.6D;
