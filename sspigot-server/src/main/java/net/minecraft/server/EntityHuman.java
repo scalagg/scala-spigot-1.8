@@ -965,7 +965,7 @@ public abstract class EntityHuman extends EntityLiving {
 
     public void attack(Entity entity) {
         if (entity.aD() && !entity.l(this)) {
-            float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+            float f = (float) thithas.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
             float f1;
             double i = 1;
 
@@ -978,9 +978,9 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
-                i += preset.getSprintMultiply();
-            }
+            //if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
+           //     i += preset.getSprintMultiply();
+            //}
 
             if (f > 0.0F || f1 > 0.0F) {
                 boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
@@ -1015,20 +1015,19 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (i > 0) {
-                        final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
-                        entity.g(
-                                (double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
-                                knockbackPreset.getExtraVertical(),
-                                (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
-                        );
+                    final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
-                        this.motX *= 0.6D;
-                        this.motZ *= 0.6D;
+                    entity.g(
+                            (double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
+                            knockbackPreset.getExtraVertical(),
+                            (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
+                    );
 
-                        this.setSprinting(false);
-                    }
+                    this.motX *= 0.6D;
+                    this.motZ *= 0.6D;
+
+                    this.setSprinting(false);
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {

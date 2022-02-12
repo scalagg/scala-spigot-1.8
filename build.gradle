@@ -30,12 +30,12 @@ subprojects {
 
             final BufferedReader br = new BufferedReader(
                     new FileReader(file)
-
             )
+
             final String lines = br.lines()
-                    .map((line) -> {
-                        if (line.contains("<dependencies/>")) "" else line
-                    })
+                    .map{
+                        if (it.contains("<dependencies/>")) "" else it
+                    }
                     .collect(Collectors.joining("\n"))
 
             final BufferedWriter wr = new BufferedWriter(
