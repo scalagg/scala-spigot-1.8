@@ -43,6 +43,8 @@ public class SpigotConfig {
     static int version;
     static Map<String, Command> commands;
 
+    public static boolean autoSave = false;
+
     public static void init(File configFile) {
         CONFIG_FILE = configFile;
         config = new YamlConfiguration();
@@ -56,6 +58,8 @@ public class SpigotConfig {
 
         config.options().header(HEADER);
         config.options().copyDefaults(true);
+
+        autoSave = config.getBoolean("scala.autosave", false);
 
         commands = new HashMap<>();
 

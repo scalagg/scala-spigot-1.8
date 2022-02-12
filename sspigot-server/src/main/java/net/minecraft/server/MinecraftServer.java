@@ -22,6 +22,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.Main;
+import org.spigotmc.SpigotConfig;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -679,22 +680,25 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             this.r.b().a(gameProfile);
         }
 
-        //         if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
-        //            SpigotTimings.worldSaveTimer.startTiming();
-        //            this.methodProfiler.a("save");
-        //            this.playerList.savePlayers();
-        //
-        //            server.playerCommandState = true;
-        //            this.queueWorldsForAutoSave();
-        //            server.playerCommandState = false;
-        //
-        //            this.methodProfiler.b();
-        //            SpigotTimings.worldSaveTimer.stopTiming();
-        //        }
-        //
-        //        if (this.autoSaveOrdered) {
-        //            this.autoSaveNextWorld(); // MinetickMod
-        //        }
+        if (SpigotConfig.autoSave)
+        {
+            if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
+                SpigotTimings.worldSaveTimer.startTiming();
+                this.methodProfiler.a("save");
+                this.playerList.savePlayers();
+
+                server.playerCommandState = true;
+                this.queueWorldsForAutoSave();
+                server.playerCommandState = false;
+
+                this.methodProfiler.b();
+                SpigotTimings.worldSaveTimer.stopTiming();
+            }
+
+            if (this.autoSaveOrdered) {
+                this.autoSaveNextWorld(); // MinetickMod
+            }
+        }
 
         this.methodProfiler.a("tallying");
         this.h[this.ticks % 100] = System.nanoTime() - i;
