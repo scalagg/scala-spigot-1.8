@@ -26,7 +26,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
     }
 
     public CraftScoreboard getNewScoreboard() {
-        org.spigotmc.AsyncCatcher.catchOp( "scoreboard creation"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp("scoreboard creation"); // Spigot
         CraftScoreboard scoreboard = new CraftScoreboard(new ScoreboardServer(server));
         scoreboards.add(scoreboard);
         return scoreboard;
@@ -35,7 +35,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
     // CraftBukkit method
     public CraftScoreboard getPlayerBoard(CraftPlayer player) {
         CraftScoreboard board = playerBoards.get(player);
-        return (CraftScoreboard) (board == null ? getMainScoreboard() : board);
+        return board == null ? getMainScoreboard() : board;
     }
 
     // CraftBukkit method
@@ -54,7 +54,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
         if (scoreboard == mainScoreboard) {
             playerBoards.remove(player);
         } else {
-            playerBoards.put(player, (CraftScoreboard) scoreboard);
+            playerBoards.put(player, scoreboard);
         }
 
         // Old objective tracking
@@ -85,12 +85,24 @@ public final class CraftScoreboardManager implements ScoreboardManager {
 
     // CraftBukkit method
     public Collection<ScoreboardScore> getScoreboardScores(IScoreboardCriteria criteria, String name, Collection<ScoreboardScore> collection) {
-        for (CraftScoreboard scoreboard : scoreboards) {
-            Scoreboard board = scoreboard.board;
-            for (ScoreboardObjective objective : (Iterable<ScoreboardObjective>) board.getObjectivesForCriteria(criteria)) {
-                collection.add(board.getPlayerScoreForObjective(name, objective));
+
+        // Tuinity start - add timings for scoreboard search
+        // plugins leaking scoreboards will make this very expensive, let server owners debug it easily
+        co.aikar.timings.SpigotTimings.scoreboardScoreSearch.startTimingIfSync();
+        try {
+            // Tuinity end - add timings for scoreboard search
+            for (final CraftScoreboard scoreboard : scoreboards) {
+                final Scoreboard board = scoreboard.board;
+
+                for (final ScoreboardObjective objective : board.getObjectivesForCriteria(criteria)) {
+                    collection.add(board.getPlayerScoreForObjective(name, objective));
+                }
             }
+        } finally { // Tuinity start - add timings for scoreboard search
+            co.aikar.timings.SpigotTimings.scoreboardScoreSearch.stopTimingIfSync();
         }
+        // Tuinity end - add timings for scoreboard search
+
         return collection;
     }
 

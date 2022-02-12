@@ -19,7 +19,6 @@ public final class SpigotTimings {
     public static final Timing bukkitSchedulerTimer = Timings.ofSafe("Bukkit Scheduler");
     public static final Timing chunkIOTickTimer = Timings.ofSafe("ChunkIOTick");
     public static final Timing timeUpdateTimer = Timings.ofSafe("Time Update");
-    public static final Timing serverCommandTimer = Timings.ofSafe("Server Command");
     public static final Timing worldSaveTimer = Timings.ofSafe("World Save");
     public static final Timing tickEntityTimer = Timings.ofSafe("## tickEntity");
     public static final Timing tickTileEntityTimer = Timings.ofSafe("## tickTileEntity");
@@ -27,6 +26,7 @@ public final class SpigotTimings {
     public static final Timing playerCommandTimer = Timings.ofSafe("playerCommand");
     public static final Timing entityActivationCheckTimer = Timings.ofSafe("entityActivationCheck");
     public static final Timing checkIfActiveTimer = Timings.ofSafe("checkIfActive");
+    public static final Timing scoreboardScoreSearch = Timings.ofSafe("Scoreboard score search"); // Tuinity - add timings for scoreboard search
 
     private SpigotTimings() {}
 
