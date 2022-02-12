@@ -1197,9 +1197,9 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 				this.server.getPluginManager().callEvent(e2);
 
-				// ScalaSpigot start - set sprint status on actual toggle
-				this.player.previousSprintStatus = !e2.isSprinting();
-				// ScalaSpigot end
+//				// ScalaSpigot start - set sprint status on actual toggle
+//				this.player.previousSprintStatus = !e2.isSprinting();
+//				// ScalaSpigot end
 
 				if (e2.isCancelled()) {
 					return;

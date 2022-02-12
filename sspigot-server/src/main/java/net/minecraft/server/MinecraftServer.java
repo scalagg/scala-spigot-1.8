@@ -116,45 +116,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private long ab = az();
     private boolean hasStopped = false;
 
-    private LinkedList<AutoSaveJob> autoSaveWorlds = new LinkedList<AutoSaveJob>();
+    private final LinkedList<AutoSaveJob> autoSaveWorlds = new LinkedList<AutoSaveJob>();
     private int autoSaveDelay = 0;
     private boolean autoSaveOrdered = false;
-
-    private void queueWorldsForAutoSave() {
-        if (!this.N) {
-            this.autoSaveWorlds.clear();
-
-            for (int j = 0; j < this.worlds.size(); ++j) {
-                final WorldServer worldserver = this.worlds.get(j);
-
-                if( worldserver != null) {
-                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE, worldserver));
-                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE_EVENT, worldserver));
-                }
-            }
-
-            int queueSize = this.autoSaveWorlds.size() / 2;
-
-            this.autoSaveDelay = 0;
-            this.autoSaveOrdered = true;
-
-            this.info("[AutoSave] " + queueSize + " worlds - Starting ...");
-        }
-    }
-
-    private void autoSaveNextWorld() throws ExceptionWorldConflict {
-        if(!this.autoSaveWorlds.isEmpty()) {
-            if(this.autoSaveDelay++ > 20) { // delay of 1 seconds between checks of the auto-save job queue
-                this.autoSaveDelay = 0;
-                if(this.autoSaveWorlds.getFirst().process()) {
-                    this.autoSaveWorlds.removeFirst();
-                }
-            }
-        } else if(this.autoSaveOrdered){
-            this.info("[AutoSave] Completed!");
-            this.autoSaveOrdered = false;
-        }
-    }
 
     public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
         io.netty.util.ResourceLeakDetector.setEnabled(false);
@@ -210,6 +174,42 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     public static long az() {
         return System.currentTimeMillis();
+    }
+
+    private void queueWorldsForAutoSave() {
+        if (!this.N) {
+            this.autoSaveWorlds.clear();
+
+            for (int j = 0; j < this.worlds.size(); ++j) {
+                final WorldServer worldserver = this.worlds.get(j);
+
+                if (worldserver != null) {
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE, worldserver));
+                    this.autoSaveWorlds.add(new AutoSaveJob(AutoSaveJob.JobDetail.WORLD_SAVE_EVENT, worldserver));
+                }
+            }
+
+            int queueSize = this.autoSaveWorlds.size() / 2;
+
+            this.autoSaveDelay = 0;
+            this.autoSaveOrdered = true;
+
+            this.info("[AutoSave] " + queueSize + " worlds - Starting ...");
+        }
+    }
+
+    private void autoSaveNextWorld() throws ExceptionWorldConflict {
+        if (!this.autoSaveWorlds.isEmpty()) {
+            if (this.autoSaveDelay++ > 20) { // delay of 1 seconds between checks of the auto-save job queue
+                this.autoSaveDelay = 0;
+                if (this.autoSaveWorlds.getFirst().process()) {
+                    this.autoSaveWorlds.removeFirst();
+                }
+            }
+        } else if (this.autoSaveOrdered) {
+            this.info("[AutoSave] Completed!");
+            this.autoSaveOrdered = false;
+        }
     }
 
     public abstract PropertyManager getPropertyManager();
@@ -564,16 +564,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                     }
                     lastTick = curTime;
 
-                    // Imagine Start - backport tick events from Paper
-                    new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent();
-                    this.C();
-                    long endTime = System.nanoTime();
-                    long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
-                    new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent(); // Imagine+                    // Imagine End
-
                     LAST_TICK_TIME = System.currentTimeMillis();
 
-                    this.A();
+                    this.A(lastTick, catchupTime);
                     this.Q = true;
                 }
             } else {
@@ -656,9 +649,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     protected void z() {
     }
 
-    protected void A() throws ExceptionWorldConflict { // CraftBukkit - added throws
+    protected void A(long lastTick, long catchupTime) throws ExceptionWorldConflict { // CraftBukkit - added throws
         co.aikar.timings.TimingsManager.FULL_SERVER_TICK.startTiming(); // Spigot
         long i = System.nanoTime();
+        new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent(); // Paper
 
         ++this.ticks;
 
@@ -698,8 +692,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             SpigotTimings.worldSaveTimer.stopTiming();
         }
 
-        if (this.autoSaveOrdered)
-        {
+        if (this.autoSaveOrdered) {
             this.autoSaveNextWorld(); // MinetickMod
         }
 
@@ -719,6 +712,13 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.methodProfiler.b();
         this.methodProfiler.b();
         org.spigotmc.WatchdogThread.tick();
+
+        // Paper start
+        long endTime = System.nanoTime();
+        long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
+        new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent();
+        // Paper end
+
         co.aikar.timings.TimingsManager.FULL_SERVER_TICK.stopTiming();
     }
 
@@ -816,7 +816,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
             // Tick trackers
             worldserver.timings.tracker.startTiming();
-            if(this.getPlayerList().getPlayerCount() != 0) // Tuinity
+            if (this.getPlayerList().getPlayerCount() != 0) // Tuinity
                 worldserver.getTracker().updatePlayers();
             worldserver.timings.tracker.stopTiming();
 
