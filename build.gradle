@@ -33,7 +33,7 @@ subprojects {
             )
 
             final String lines = br.lines()
-                    .map{
+                    .map {
                         if (it.contains("<dependencies/>")) "" else it
                     }
                     .collect(Collectors.joining("\n"))

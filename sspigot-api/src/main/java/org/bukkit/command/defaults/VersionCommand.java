@@ -23,11 +23,16 @@ public class VersionCommand extends BukkitCommand {
     private Component versionMessage;
 
     public void setVersion() {
-        final Component message = Component.text("This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")", net.kyori.adventure.text.format.NamedTextColor.WHITE);
+        final Component message = LegacyComponentSerializer.legacyAmpersand()
+                .deserialize("&eThis server is running a modified version of &aSpigot&e by &6Scala&e.");
+
+        final Component hover = LegacyComponentSerializer.legacyAmpersand()
+                .deserialize("&eAuthors: &aGrowlyX&e, &aNV6&e, and &aHexab&e.");
 
         this.versionMessage = Component.text()
                 .append(message)
-                .hoverEvent(Component.text("Author: Scala", net.kyori.adventure.text.format.NamedTextColor.WHITE)).build();
+                .hoverEvent(hover)
+                .build();
     }
 
     public VersionCommand(String name) {
