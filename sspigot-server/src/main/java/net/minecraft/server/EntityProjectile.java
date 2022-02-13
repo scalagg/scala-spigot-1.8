@@ -95,9 +95,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         this.Q = this.locY;
         this.R = this.locZ;
         super.t_();
-        if (this.shake > 0) {
-            --this.shake;
-        }
 
         if (this.inGround) {
             if (this.world.getType(new BlockPosition(this.blockX, this.blockY, this.blockZ)).getBlock() == this.inBlockId) {
@@ -244,7 +241,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         MinecraftKey minecraftkey = (MinecraftKey) Block.REGISTRY.c(this.inBlockId);
 
         nbttagcompound.setString("inTile", minecraftkey == null ? "" : minecraftkey.toString());
-        nbttagcompound.setByte("shake", (byte) this.shake);
+        nbttagcompound.setByte("shake", (byte) 0);
         nbttagcompound.setByte("inGround", (byte) (this.inGround ? 1 : 0));
         if ((this.shooterName == null || this.shooterName.length() == 0) && this.shooter instanceof EntityHuman) {
             this.shooterName = this.shooter.getName();
@@ -263,7 +260,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             this.inBlockId = Block.getById(nbttagcompound.getByte("inTile") & 255);
         }
 
-        this.shake = nbttagcompound.getByte("shake") & 255;
         this.inGround = nbttagcompound.getByte("inGround") == 1;
         this.shooter = null;
         this.shooterName = nbttagcompound.getString("ownerName");

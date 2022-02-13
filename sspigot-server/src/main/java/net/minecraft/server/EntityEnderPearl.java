@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -9,8 +8,12 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 // CraftBukkit end
 
 public class EntityEnderPearl extends EntityProjectile {
-
     private EntityLiving c;
+    private Location lastValidTeleport;
+
+    private double lastValidX = 0.5D;
+    private double lastValidY;
+    private double lastValidZ = 0.5D;
 
     public EntityEnderPearl(World world) {
         super(world);
@@ -21,6 +24,9 @@ public class EntityEnderPearl extends EntityProjectile {
         super(world, entityliving);
         this.c = entityliving;
         this.loadChunks = world.paperSpigotConfig.loadUnloadedEnderPearls; // PaperSpigot
+
+        this.lastValidTeleport = entityliving.getBukkitEntity().getLocation(); // Fix nullPointerException
+        this.lastValidY = this.lastValidTeleport.getY(); // Fix nullPointerException
     }
 
     protected void a(MovingObjectPosition movingobjectposition) {
@@ -51,10 +57,10 @@ public class EntityEnderPearl extends EntityProjectile {
                 if (entityplayer.playerConnection.a().g() && entityplayer.world == this.world && !entityplayer.isSleeping()) {
                     // CraftBukkit start - Fire PlayerTeleportEvent
                     org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
-                    org.bukkit.Location location = getBukkitEntity().getLocation();
-                    location.setX(location.getBlockX() + 0.5D);
-                    location.setY(location.getBlockY() + 0.5D);
-                    location.setZ(location.getBlockZ() + 0.5D);
+                    Location location = this.lastValidTeleport.clone();
+                    location.setX(this.lastValidX);
+                    location.setY(this.lastValidY);
+                    location.setZ(this.lastValidZ);
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
 
@@ -98,25 +104,14 @@ public class EntityEnderPearl extends EntityProjectile {
         if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
-            // ScalaSpigot - enderpearl fix
-            final AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(
-                    this.locX - 0.3D, this.locY - 0.05D, this.locZ - 0.3D,
-                    this.locX + 0.3D, this.locY + 1.62D, this.locZ + 0.3D
-            );
-
-            if (world.getCubes(this, clearTeleportBoundingBox).isEmpty())
-            {
-                final Location location = getBukkitEntity().getLocation();
-                lastX = location.getX();
-                lastY = location.getY();
-                lastZ = location.getZ();
-                lastPitch = location.getPitch();
-                lastYaw = location.getYaw();
+            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
+                this.lastValidTeleport = getBukkitEntity().getLocation();
+                this.lastValidX = getBukkitEntity().getX();
+                this.lastValidY = getBukkitEntity().getY();
+                this.lastValidZ = getBukkitEntity().getZ();
             }
-            // ScalaSpigot end
 
             super.t_();
         }
-
     }
 }
