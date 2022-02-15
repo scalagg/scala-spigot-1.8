@@ -37,7 +37,9 @@ public class EntityTrackerEntry {
     private Entity w;
     private boolean x;
     private boolean y;
-    public boolean n; public boolean playerEntitiesUpdated() { return n; }
+    public boolean n;
+
+    public boolean playerEntitiesUpdated() { return n; }
     // PaperSpigot start
     // Replace trackedPlayers Set with a Map. The value is true until the player receives
     // their first update (which is forced to have absolute coordinates), false afterward.

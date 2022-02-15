@@ -191,8 +191,9 @@ public class EntityTracker {
 
         final ArrayList<EntityPlayer> entities = Lists.newArrayList();
 
-        for (EntityTrackerEntry entry : this.getTrackedEntities()) {
+        for (final EntityTrackerEntry entry : this.getTrackedEntities()) {
             entry.track(this.world.players);
+
             if (entry.playerEntitiesUpdated() && entry.getTracker() instanceof EntityPlayer) {
                 entities.add((EntityPlayer) entry.getTracker());
             }
@@ -217,13 +218,14 @@ public class EntityTracker {
 
             if (i < TRACKER_THREADS)
                 THREAD_POOL.execute(runnable);
+
             else runnable.run();
         }
 
         try {
             latch.await();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 

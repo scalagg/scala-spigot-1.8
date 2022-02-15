@@ -215,25 +215,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         this.worldProvider.m().b();
 
-        if (this.everyoneDeeplySleeping()) {
-            if (this.getGameRules().getBoolean("doDaylightCycle")) {
-                long i = this.worldData.getDayTime() + 24000L;
-
-                this.worldData.setDayTime(i - i % 24000L);
-            }
-
-            this.e();
-        }
-
         long time = this.worldData.getTime();
-
-        if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && (this instanceof net.minecraft.server.WorldServer && this.players.size() > 0)) {
-            timings.mobSpawn.startTiming();
-            this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this
-                    .ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time %
-                    this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
-            timings.mobSpawn.stopTiming();
-        }
 
         timings.doChunkUnload.startTiming();
 
@@ -275,18 +257,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         timings.doChunkMap.startTiming();
         this.manager.flush();
         timings.doChunkMap.stopTiming();
-
-        // Tick villages and village sieges
-        this.methodProfiler.c("village");
-        timings.doVillages.startTiming();
-        this.villages.tick();
-        this.siegeManager.a();
-        timings.doVillages.stopTiming();
-
-        this.methodProfiler.c("portalForcer");
-        timings.doPortalForcer.startTiming();
-        this.Q.a(this.getTime());
-        timings.doPortalForcer.stopTiming();
 
         // Tick sounds
         this.methodProfiler.b();
@@ -417,98 +387,9 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                 this.methodProfiler.a("getChunk");
                 Chunk chunk = this.getChunkAt(chunkX, chunkZ);
                 this.a(k, l, chunk);
+
                 this.methodProfiler.c("tickChunk");
                 chunk.b(false);
-                this.methodProfiler.c("thunder");
-
-                int i1;
-                BlockPosition blockposition;
-
-                if (!this.paperSpigotConfig.disableThunder && this.random.nextInt(100000) == 0 && this.S() && this.R()) {
-                    this.m = this.m * 3 + 1013904223;
-                    i1 = this.m >> 2;
-                    blockposition = this.a(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
-
-                    if (this.isRainingAt(blockposition)) {
-                        this.strikeLightning(new EntityLightning(this, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ()));
-                    }
-                }
-
-                this.methodProfiler.c("iceandsnow");
-
-                if (!this.paperSpigotConfig.disableIceAndSnow && this.random.nextInt(16) == 0) {
-                    this.m = this.m * 3 + 1013904223;
-                    i1 = this.m >> 2;
-                    blockposition = this.q(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
-                    BlockPosition blockposition1 = blockposition.down();
-
-                    if (this.w(blockposition1)) {
-                        BlockState blockState = this.getWorld().getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ()).getState();
-
-                        blockState.setTypeId(Block.getId(Blocks.ICE));
-
-                        BlockFormEvent iceBlockForm = new BlockFormEvent(blockState.getBlock(), blockState);
-
-                        this.getServer().getPluginManager().callEvent(iceBlockForm);
-
-                        if (!iceBlockForm.isCancelled()) {
-                            blockState.update(true);
-                        }
-                    }
-
-                    if (this.S() && this.f(blockposition, true)) {
-                        BlockState blockState = this.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()).getState();
-
-                        blockState.setTypeId(Block.getId(Blocks.SNOW_LAYER));
-
-                        BlockFormEvent snow = new BlockFormEvent(blockState.getBlock(), blockState);
-
-                        this.getServer().getPluginManager().callEvent(snow);
-
-                        if (!snow.isCancelled()) {
-                            blockState.update(true);
-                        }
-                    }
-
-                    if (this.S() && this.getBiome(blockposition1).e()) {
-                        this.getType(blockposition1).getBlock().k(this, blockposition1);
-                    }
-                }
-
-                this.methodProfiler.c("tickBlocks");
-
-                if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations()) {
-                    timings.chunkTicksBlocks.startTiming();
-
-                    i1 = this.getGameRules().c("randomTickSpeed");
-
-                    if (i1 > 0) {
-                        ChunkSection[] achunksection = chunk.getSections();
-                        int j1 = achunksection.length;
-
-                        for (int k1 = 0; k1 < j1; ++k1) {
-                            ChunkSection chunksection = achunksection[k1];
-
-                            if (chunksection != null && chunksection.shouldTick()) {
-                                for (int l1 = 0; l1 < i1; ++l1) {
-                                    this.m = this.m * 3 + 1013904223;
-                                    int i2 = this.m >> 2;
-                                    int j2 = i2 & 15;
-                                    int k2 = i2 >> 8 & 15;
-                                    int l2 = i2 >> 16 & 15;
-                                    IBlockData iblockdata = chunksection.getType(j2, l2, k2);
-                                    Block block = iblockdata.getBlock();
-
-                                    if (block.isTicking()) {
-                                        block.a(this, new BlockPosition(j2 + k, l2 + chunksection.getYPosition(), k2 + l), iblockdata, this.random);
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    timings.chunkTicksBlocks.stopTiming();
-                }
             }
         }
 
@@ -620,98 +501,83 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         } else {
             int i = this.M.size();
 
-            if (false) { // CraftBukkit
-                throw new IllegalStateException("TickNextTick list out of synch");
-            } else {
-                // PaperSpigot start - No, stop doing this, it affects things like redstone
-                /*
-                if (i > 1000) {
-                    // CraftBukkit start - If the server has too much to process over time, try to alleviate that
-                    if (i > 20 * 1000) {
-                        i = i / 20;
-                    } else {
-                        i = 1000;
-                    }
-                    // CraftBukkit end
-                */
-                if (i > paperSpigotConfig.tickNextTickCap) {
-                    i = paperSpigotConfig.tickNextTickCap;
+            if (i > paperSpigotConfig.tickNextTickCap) {
+                i = paperSpigotConfig.tickNextTickCap;
+            }
+            // PaperSpigot end
+
+            this.methodProfiler.a("cleaning");
+
+            timings.scheduledBlocksCleanup.startTiming(); // Spigot
+            NextTickListEntry nextticklistentry;
+
+            for (int j = 0; j < i; ++j) {
+                nextticklistentry = (NextTickListEntry) this.M.first();
+                if (!flag && nextticklistentry.b > this.worldData.getTime()) {
+                    break;
                 }
-                // PaperSpigot end
 
-                this.methodProfiler.a("cleaning");
+                // CraftBukkit - use M, PAIL: Rename nextTickList
+                this.M.remove(nextticklistentry);
+                this.V.add(nextticklistentry);
+            }
+            timings.scheduledBlocksCleanup.stopTiming(); // Spigot
 
-                timings.scheduledBlocksCleanup.startTiming(); // Spigot
-                NextTickListEntry nextticklistentry;
-
-                for (int j = 0; j < i; ++j) {
-                    nextticklistentry = (NextTickListEntry) this.M.first();
-                    if (!flag && nextticklistentry.b > this.worldData.getTime()) {
+            // PaperSpigot start - Allow redstone ticks to bypass the tickNextTickListCap
+            if (paperSpigotConfig.tickNextTickListCapIgnoresRedstone) {
+                Iterator<NextTickListEntry> iterator = this.M.iterator();
+                while (iterator.hasNext()) {
+                    NextTickListEntry next = iterator.next();
+                    if (!flag && next.b > this.worldData.getTime()) {
                         break;
                     }
 
-                    // CraftBukkit - use M, PAIL: Rename nextTickList
-                    this.M.remove(nextticklistentry);
-                    this.V.add(nextticklistentry);
-                }
-                timings.scheduledBlocksCleanup.stopTiming(); // Spigot
-
-                // PaperSpigot start - Allow redstone ticks to bypass the tickNextTickListCap
-                if (paperSpigotConfig.tickNextTickListCapIgnoresRedstone) {
-                    Iterator<NextTickListEntry> iterator = this.M.iterator();
-                    while (iterator.hasNext()) {
-                        NextTickListEntry next = iterator.next();
-                        if (!flag && next.b > this.worldData.getTime()) {
-                            break;
-                        }
-
-                        if (next.a().isPowerSource() || next.a() instanceof IContainer) {
-                            iterator.remove();
-                            this.V.add(next);
-                        }
+                    if (next.a().isPowerSource() || next.a() instanceof IContainer) {
+                        iterator.remove();
+                        this.V.add(next);
                     }
                 }
-                // PaperSpigot end
-
-                this.methodProfiler.b();
-                this.methodProfiler.a("ticking");
-                timings.scheduledBlocksTicking.startTiming(); // Spigot
-                Iterator iterator = this.V.iterator();
-
-                while (iterator.hasNext()) {
-                    nextticklistentry = (NextTickListEntry) iterator.next();
-                    iterator.remove();
-                    byte b0 = 0;
-
-                    if (this.areChunksLoadedBetween(nextticklistentry.a.a(-b0, -b0, -b0), nextticklistentry.a.a(b0,
-                            b0, b0))) {
-                        IBlockData iblockdata = this.getType(nextticklistentry.a);
-                        co.aikar.timings.Timing timing = iblockdata.getBlock().getTiming(); // Spigot
-                        timing.startTiming(); // Spigot
-
-                        if (iblockdata.getBlock().getMaterial() != Material.AIR && Block.a(iblockdata.getBlock(),
-                                nextticklistentry.a())) {
-                            try {
-                                iblockdata.getBlock().b((World) this, nextticklistentry.a, iblockdata, this.random);
-                            } catch (Throwable throwable) {
-                                CrashReport crashreport = CrashReport.a(throwable, "Exception while ticking a block");
-                                CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being ticked");
-
-                                CrashReportSystemDetails.a(crashreportsystemdetails, nextticklistentry.a, iblockdata);
-                                throw new ReportedException(crashreport);
-                            }
-                        }
-                        timing.stopTiming(); // Spigot
-                    } else {
-                        this.a(nextticklistentry.a, nextticklistentry.a(), 0);
-                    }
-                }
-                timings.scheduledBlocksTicking.stopTiming(); // Spigot
-
-                this.methodProfiler.b();
-                this.V.clear();
-                return !this.M.isEmpty();
             }
+            // PaperSpigot end
+
+            this.methodProfiler.b();
+            this.methodProfiler.a("ticking");
+            timings.scheduledBlocksTicking.startTiming(); // Spigot
+            Iterator iterator = this.V.iterator();
+
+            while (iterator.hasNext()) {
+                nextticklistentry = (NextTickListEntry) iterator.next();
+                iterator.remove();
+                byte b0 = 0;
+
+                if (this.areChunksLoadedBetween(nextticklistentry.a.a(-b0, -b0, -b0), nextticklistentry.a.a(b0,
+                        b0, b0))) {
+                    IBlockData iblockdata = this.getType(nextticklistentry.a);
+                    co.aikar.timings.Timing timing = iblockdata.getBlock().getTiming(); // Spigot
+                    timing.startTiming(); // Spigot
+
+                    if (iblockdata.getBlock().getMaterial() != Material.AIR && Block.a(iblockdata.getBlock(),
+                            nextticklistentry.a())) {
+                        try {
+                            iblockdata.getBlock().b((World) this, nextticklistentry.a, iblockdata, this.random);
+                        } catch (Throwable throwable) {
+                            CrashReport crashreport = CrashReport.a(throwable, "Exception while ticking a block");
+                            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being ticked");
+
+                            CrashReportSystemDetails.a(crashreportsystemdetails, nextticklistentry.a, iblockdata);
+                            throw new ReportedException(crashreport);
+                        }
+                    }
+                    timing.stopTiming(); // Spigot
+                } else {
+                    this.a(nextticklistentry.a, nextticklistentry.a(), 0);
+                }
+            }
+            timings.scheduledBlocksTicking.stopTiming(); // Spigot
+
+            this.methodProfiler.b();
+            this.V.clear();
+            return !this.M.isEmpty();
         }
     }
 
