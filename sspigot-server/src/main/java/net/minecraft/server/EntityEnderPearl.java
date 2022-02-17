@@ -11,10 +11,6 @@ public class EntityEnderPearl extends EntityProjectile {
     private EntityLiving c;
     private Location lastValidTeleport;
 
-    private double lastValidX = 0.5D;
-    private double lastValidY;
-    private double lastValidZ = 0.5D;
-
     public EntityEnderPearl(World world) {
         super(world);
         this.loadChunks = world.paperSpigotConfig.loadUnloadedEnderPearls; // PaperSpigot
@@ -24,9 +20,7 @@ public class EntityEnderPearl extends EntityProjectile {
         super(world, entityliving);
         this.c = entityliving;
         this.loadChunks = world.paperSpigotConfig.loadUnloadedEnderPearls; // PaperSpigot
-
         this.lastValidTeleport = entityliving.getBukkitEntity().getLocation(); // Fix nullPointerException
-        this.lastValidY = this.lastValidTeleport.getY(); // Fix nullPointerException
     }
 
     protected void a(MovingObjectPosition movingobjectposition) {
@@ -58,11 +52,9 @@ public class EntityEnderPearl extends EntityProjectile {
                     // CraftBukkit start - Fire PlayerTeleportEvent
                     org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
                     Location location = this.lastValidTeleport.clone();
-                    location.setX(this.lastValidX);
-                    location.setY(this.lastValidY);
-                    location.setZ(this.lastValidZ);
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
+                    location.setY(player.getLocation().getY() + 0.1D);
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);
@@ -106,11 +98,7 @@ public class EntityEnderPearl extends EntityProjectile {
         } else {
             if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
                 this.lastValidTeleport = getBukkitEntity().getLocation();
-                this.lastValidX = getBukkitEntity().getX();
-                this.lastValidY = getBukkitEntity().getY();
-                this.lastValidZ = getBukkitEntity().getZ();
             }
-
             super.t_();
         }
     }

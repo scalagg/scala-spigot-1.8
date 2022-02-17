@@ -22,12 +22,10 @@ import java.util.UUID;
 
 public abstract class EntityHuman extends EntityLiving {
 
+    private final GameProfile bH;
     public PlayerInventory inventory = new PlayerInventory(this);
-    private InventoryEnderChest enderChest = new InventoryEnderChest();
     public Container defaultContainer;
     public Container activeContainer;
-    protected FoodMetaData foodData = new FoodMetaData(this); // CraftBukkit - add "this" to constructor
-    protected int bm;
     public float bn;
     public float bo;
     public int bp;
@@ -42,33 +40,30 @@ public abstract class EntityHuman extends EntityLiving {
     public int sleepTicks;
     public float by;
     public float bz;
-    private BlockPosition c;
-    private boolean d;
-    private BlockPosition e;
     public PlayerAbilities abilities = new PlayerAbilities();
     public int expLevel;
     public int expTotal;
     public float exp;
-    private int f;
-    private ItemStack g;
-    private int h;
-    protected float bE = 0.1F;
-    protected float bF = 0.02F;
-    private int i;
-    private final GameProfile bH;
-    private boolean bI = false;
     public EntityFishingHook hookedFish;
     public boolean affectsSpawning = true; // PaperSpigot
-
     // CraftBukkit start
     public boolean fauxSleeping;
     public String spawnWorld = "";
     public int oldLevel = -1;
-
-    @Override
-    public CraftHumanEntity getBukkitEntity() {
-        return (CraftHumanEntity) super.getBukkitEntity();
-    }
+    protected FoodMetaData foodData = new FoodMetaData(this); // CraftBukkit - add "this" to constructor
+    protected int bm;
+    protected float bE = 0.1F;
+    protected float bF = 0.02F;
+    boolean previousSprintStatus = false;
+    private InventoryEnderChest enderChest = new InventoryEnderChest();
+    private BlockPosition c;
+    private boolean d;
+    private BlockPosition e;
+    private int f;
+    private ItemStack g;
+    private int h;
+    private int i;
+    private boolean bI = false;
     // CraftBukkit end
 
     public EntityHuman(World world, GameProfile gameprofile) {
@@ -82,6 +77,53 @@ public abstract class EntityHuman extends EntityLiving {
         this.setPositionRotation((double) blockposition.getX() + 0.5D, (double) (blockposition.getY() + 1), (double) blockposition.getZ() + 0.5D, 0.0F, 0.0F);
         this.aV = 180.0F;
         this.maxFireTicks = 20;
+    }
+
+    // PaperSpigot start - SPIGOT-1387: Resolve bed issues on unloaded chunks
+    public static BlockPosition getBed(World world, BlockPosition blockposition, boolean flag) {
+        boolean before = ((WorldServer) world).chunkProviderServer.forceChunkLoad;
+        ((WorldServer) world).chunkProviderServer.forceChunkLoad = true;
+        final BlockPosition result = getBed0(world, blockposition, flag);
+        ((WorldServer) world).chunkProviderServer.forceChunkLoad = before;
+        return result;
+    }
+
+    private static BlockPosition getBed0(World world, BlockPosition blockposition, boolean flag) {
+        // PaperSpigot end
+        ((ChunkProviderServer) world.chunkProvider).getChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4); // CraftBukkit
+        Block block = world.getType(blockposition).getBlock();
+
+        if (block != Blocks.BED) {
+            if (!flag) {
+                return null;
+            } else {
+                boolean flag1 = block.g();
+                boolean flag2 = world.getType(blockposition.up()).getBlock().g();
+
+                return flag1 && flag2 ? blockposition : null;
+            }
+        } else {
+            return BlockBed.a(world, blockposition, 0);
+        }
+    }
+
+    public static UUID a(GameProfile gameprofile) {
+        UUID uuid = gameprofile.getId();
+
+        if (uuid == null) {
+            uuid = b(gameprofile.getName());
+        }
+
+        return uuid;
+    }
+
+    public static UUID b(String s) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s).getBytes(Charsets.UTF_8));
+    }
+
+    @Override
+    public CraftHumanEntity getBukkitEntity() {
+        return (CraftHumanEntity) super.getBukkitEntity();
     }
 
     protected void initAttributes() {
@@ -961,8 +1003,6 @@ public abstract class EntityHuman extends EntityLiving {
         return -0.35D;
     }
 
-    boolean previousSprintStatus = false;
-
     public void attack(Entity entity) {
         if (entity.aD() && !entity.l(this)) {
             float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
@@ -978,9 +1018,11 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-           if (this.isSprinting() && preset.getSprintMultiply() > 0.0) {
+            if ((this.isSprinting() && !this.previousSprintStatus) && preset.getSprintMultiply() > 0.0) {
                 i += preset.getSprintMultiply();
             }
+
+            this.previousSprintStatus = this.isSprinting();
 
             if (f > 0.0F || f1 > 0.0F) {
                 boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
@@ -1015,19 +1057,29 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
+                    if (i > 0)
+                    {
+                        final KnockbackPreset knockbackPreset = getKnockbackPreset();
 
-                    final KnockbackPreset knockbackPreset = getKnockbackPreset();
+                        entity.g(
+                                -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal(),
+                                knockbackPreset.getExtraVertical(),
+                                MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()
+                        );
 
-                    entity.g(
-                            (double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()),
-                            knockbackPreset.getExtraVertical(),
-                            (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal())
-                    );
+                        this.motX *= 0.6D;
+                        this.motZ *= 0.6D;
 
-                    this.motX *= 0.6D;
-                    this.motZ *= 0.6D;
+                        this.setSprinting(false);
+                    }
 
-                    this.setSprinting(false);
+                    if (this.motX > preset.getHorizontalLimit()) {
+                        this.motX = preset.getHorizontalLimit();
+                    }
+
+                    if (this.motZ > preset.getHorizontalLimit()) {
+                        this.motZ = preset.getHorizontalLimit();
+                    }
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
@@ -1285,34 +1337,6 @@ public abstract class EntityHuman extends EntityLiving {
 
     private boolean p() {
         return this.world.getType(this.bx).getBlock() == Blocks.BED;
-    }
-
-    // PaperSpigot start - SPIGOT-1387: Resolve bed issues on unloaded chunks
-    public static BlockPosition getBed(World world, BlockPosition blockposition, boolean flag) {
-        boolean before = ((WorldServer) world).chunkProviderServer.forceChunkLoad;
-        ((WorldServer) world).chunkProviderServer.forceChunkLoad = true;
-        final BlockPosition result = getBed0(world, blockposition, flag);
-        ((WorldServer) world).chunkProviderServer.forceChunkLoad = before;
-        return result;
-    }
-
-    private static BlockPosition getBed0(World world, BlockPosition blockposition, boolean flag) {
-        // PaperSpigot end
-        ((ChunkProviderServer) world.chunkProvider).getChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4); // CraftBukkit
-        Block block = world.getType(blockposition).getBlock();
-
-        if (block != Blocks.BED) {
-            if (!flag) {
-                return null;
-            } else {
-                boolean flag1 = block.g();
-                boolean flag2 = world.getType(blockposition.up()).getBlock().g();
-
-                return flag1 && flag2 ? blockposition : null;
-            }
-        } else {
-            return BlockBed.a(world, blockposition, 0);
-        }
     }
 
     public boolean isSleeping() {
@@ -1719,30 +1743,16 @@ public abstract class EntityHuman extends EntityLiving {
         return f;
     }
 
+    public float getAbsorptionHearts() {
+        return this.getDataWatcher().getFloat(17);
+    }
+
     public void setAbsorptionHearts(float f) {
         if (f < 0.0F) {
             f = 0.0F;
         }
 
         this.getDataWatcher().watch(17, Float.valueOf(f));
-    }
-
-    public float getAbsorptionHearts() {
-        return this.getDataWatcher().getFloat(17);
-    }
-
-    public static UUID a(GameProfile gameprofile) {
-        UUID uuid = gameprofile.getId();
-
-        if (uuid == null) {
-            uuid = b(gameprofile.getName());
-        }
-
-        return uuid;
-    }
-
-    public static UUID b(String s) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + s).getBytes(Charsets.UTF_8));
     }
 
     public boolean a(ChestLock chestlock) {
@@ -1793,6 +1803,49 @@ public abstract class EntityHuman extends EntityLiving {
         }
     }
 
+    public static enum EnumBedResult {
+
+        OK, NOT_POSSIBLE_HERE, NOT_POSSIBLE_NOW, TOO_FAR_AWAY, OTHER_PROBLEM, NOT_SAFE;
+
+        private EnumBedResult() {
+        }
+    }
+
+    public static enum EnumChatVisibility {
+
+        FULL(0, "options.chat.visibility.full"), SYSTEM(1, "options.chat.visibility.system"), HIDDEN(2, "options.chat.visibility.hidden");
+
+        private static final net.minecraft.server.EntityHuman.EnumChatVisibility[] d = new net.minecraft.server.EntityHuman.EnumChatVisibility[values().length];
+
+        static {
+            net.minecraft.server.EntityHuman.EnumChatVisibility[] aentityhuman_enumchatvisibility = values();
+            int i = aentityhuman_enumchatvisibility.length;
+
+            for (int j = 0; j < i; ++j) {
+                net.minecraft.server.EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = aentityhuman_enumchatvisibility[j];
+
+                d[entityhuman_enumchatvisibility.e] = entityhuman_enumchatvisibility;
+            }
+
+        }
+
+        private final int e;
+        private final String f;
+
+        private EnumChatVisibility(int i, String s) {
+            this.e = i;
+            this.f = s;
+        }
+
+        public static net.minecraft.server.EntityHuman.EnumChatVisibility a(int i) {
+            return d[i % d.length];
+        }
+
+        public int a() {
+            return this.e;
+        }
+    }
+
     static class SyntheticClass_1 {
 
         static final int[] a = new int[EnumDirection.values().length];
@@ -1820,48 +1873,6 @@ public abstract class EntityHuman extends EntityLiving {
                 a[EnumDirection.EAST.ordinal()] = 4;
             } catch (NoSuchFieldError nosuchfielderror3) {
                 ;
-            }
-
-        }
-    }
-
-    public static enum EnumBedResult {
-
-        OK, NOT_POSSIBLE_HERE, NOT_POSSIBLE_NOW, TOO_FAR_AWAY, OTHER_PROBLEM, NOT_SAFE;
-
-        private EnumBedResult() {
-        }
-    }
-
-    public static enum EnumChatVisibility {
-
-        FULL(0, "options.chat.visibility.full"), SYSTEM(1, "options.chat.visibility.system"), HIDDEN(2, "options.chat.visibility.hidden");
-
-        private static final net.minecraft.server.EntityHuman.EnumChatVisibility[] d = new net.minecraft.server.EntityHuman.EnumChatVisibility[values().length];
-        private final int e;
-        private final String f;
-
-        private EnumChatVisibility(int i, String s) {
-            this.e = i;
-            this.f = s;
-        }
-
-        public int a() {
-            return this.e;
-        }
-
-        public static net.minecraft.server.EntityHuman.EnumChatVisibility a(int i) {
-            return d[i % d.length];
-        }
-
-        static {
-            net.minecraft.server.EntityHuman.EnumChatVisibility[] aentityhuman_enumchatvisibility = values();
-            int i = aentityhuman_enumchatvisibility.length;
-
-            for (int j = 0; j < i; ++j) {
-                net.minecraft.server.EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = aentityhuman_enumchatvisibility[j];
-
-                d[entityhuman_enumchatvisibility.e] = entityhuman_enumchatvisibility;
             }
 
         }
