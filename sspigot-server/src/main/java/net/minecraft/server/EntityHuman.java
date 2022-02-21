@@ -1015,9 +1015,7 @@ public abstract class EntityHuman extends EntityLiving {
             }
 
             final KnockbackPreset preset = getKnockbackPreset();
-
-            final boolean shouldApplyWTap =
-                    this.isSprinting() && !this.previousSprintStatus;
+            final boolean shouldApplyWTap = this.isSprinting() && !this.previousSprintStatus;
 
             if (shouldApplyWTap && preset.getWTapInitial() > 0.0) {
                 i += preset.getWTapInitial();
@@ -1072,13 +1070,8 @@ public abstract class EntityHuman extends EntityLiving {
                         this.setSprinting(false);
                     }
 
-                    if (this.motX > preset.getHorizontalLimit()) {
-                        this.motX = preset.getHorizontalLimit();
-                    }
-
-                    if (this.motZ > preset.getHorizontalLimit()) {
-                        this.motZ = preset.getHorizontalLimit();
-                    }
+                    this.motX = Math.min(this.motX, preset.getHorizontalLimit());
+                    this.motZ = Math.min(this.motZ, preset.getHorizontalLimit());
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
