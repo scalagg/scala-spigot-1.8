@@ -3,10 +3,8 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import net.jafama.FastMath;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -1004,7 +1002,7 @@ public abstract class EntityHuman extends EntityLiving {
     }
 
     public void attack(Entity entity) {
-        if (entity.aD() && !entity.l(this)) {
+        if (entity.aD() && !entity.l(this) && !this.velocityChanged) {
             float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
             float f1;
             double i = 1;
@@ -1018,8 +1016,11 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if ((this.isSprinting() && !this.previousSprintStatus) && preset.getSprintMultiply() > 0.0) {
-                i += preset.getSprintMultiply();
+            final boolean shouldApplyWTap =
+                    this.isSprinting() && !this.previousSprintStatus;
+
+            if (shouldApplyWTap && preset.getWTapInitial() > 0.0) {
+                i += preset.getWTapInitial();
             }
 
             this.previousSprintStatus = this.isSprinting();
@@ -1057,14 +1058,12 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (i > 0)
+                    if (this.isSprinting())
                     {
-                        final KnockbackPreset knockbackPreset = getKnockbackPreset();
-
                         entity.g(
-                                -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal(),
-                                knockbackPreset.getExtraVertical(),
-                                MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * knockbackPreset.getExtraHorizontal()
+                                -MathHelper.sin(this.yaw * ((float) Math.PI) / 180.0F) * (float) i * preset.getExtraHorizontal(),
+                                preset.getExtraVertical(),
+                                MathHelper.cos(this.yaw * ((float) Math.PI) / 180.0F) * (float) i * preset.getExtraHorizontal()
                         );
 
                         this.motX *= 0.6D;

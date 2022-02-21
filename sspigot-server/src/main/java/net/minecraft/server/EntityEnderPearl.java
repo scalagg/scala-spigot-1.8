@@ -54,7 +54,7 @@ public class EntityEnderPearl extends EntityProjectile {
                     Location location = this.lastValidTeleport.clone();
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
-                    location.setY(player.getLocation().getY() + 0.1D);
+                    location.setY(location.getY() + 0.1D);
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);

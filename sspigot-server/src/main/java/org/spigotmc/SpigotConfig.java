@@ -60,7 +60,6 @@ public class SpigotConfig {
         config.options().copyDefaults(true);
 
         autoSave = config.getBoolean("scala.autosave", false);
-
         commands = new HashMap<>();
 
         version = getInt("config-version", 8);

@@ -127,6 +127,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public Chunk getChunkAt(int i, int j, Runnable runnable) {
         unloadQueue.remove(i, j);
+
         Chunk chunk = chunks.get(LongHash.toLong(i, j));
         ChunkRegionLoader loader = null;
 

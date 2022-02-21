@@ -209,19 +209,15 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     public void doTick(int ticks) {
         super.doTick(ticks);
 
-        if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {
-            this.getWorldData().setDifficulty(EnumDifficulty.HARD);
-        }
-
         this.worldProvider.m().b();
 
-        long time = this.worldData.getTime();
-
-        timings.doChunkUnload.startTiming();
-
         if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
+            timings.doChunkUnload.startTiming();
+
             this.methodProfiler.c("chunkSource");
             this.chunkProvider.unloadChunks();
+
+            timings.doChunkUnload.stopTiming();
         }
 
         int j = this.a(1.0F);
@@ -238,19 +234,20 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             }
         }
 
-        timings.doChunkUnload.stopTiming();
-
         // Tick scheduled blocks
         this.methodProfiler.c("tickPending");
         timings.scheduledBlocks.startTiming();
         this.a(false);
         timings.scheduledBlocks.stopTiming();
 
-        // Tick current blocks
-        this.methodProfiler.c("tickBlocks");
-        timings.chunkTicks.startTiming();
-        this.h();
-        timings.chunkTicks.stopTiming();
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations())
+        {
+            // Tick current blocks
+            this.methodProfiler.c("tickBlocks");
+            timings.chunkTicks.startTiming();
+            this.h();
+            timings.chunkTicks.stopTiming();
+        }
 
         // Tick chunk map
         this.methodProfiler.c("chunkMap");
@@ -626,20 +623,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         return arraylist;
     }
-
-    /* CraftBukkit start - We prevent spawning in general, so this butchering is not needed
-    public void entityJoinedWorld(Entity entity, boolean flag) {
-        if (!this.getSpawnAnimals() && (entity instanceof EntityAnimal || entity instanceof EntityWaterAnimal)) {
-            entity.die();
-        }
-
-        if (!this.getSpawnNPCs() && entity instanceof NPC) {
-            entity.die();
-        }
-
-        super.entityJoinedWorld(entity, flag);
-    }
-    // CraftBukkit end */
 
     private boolean getSpawnNPCs() {
         return this.server.getSpawnNPCs();

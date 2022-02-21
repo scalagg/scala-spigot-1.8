@@ -22,5 +22,4 @@ class ScalaSpigotConfig
     val disabledEvents = mutableListOf(
         "AirClickEvent"
     )
-
 }

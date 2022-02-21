@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit;
 
 import com.google.common.base.Preconditions;
+import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.*;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Chunk;
@@ -108,14 +109,14 @@ public class CraftWorld implements World {
     }
 
     // PaperSpigot start - Async chunk load API
+    public void loadChunkAtAsync(final int x, final int z) {
+        final ChunkProviderServer cps = this.world.chunkProviderServer;
+        cps.getChunkAt(x, z, () -> { });
+    }
+
     public void getChunkAtAsync(final int x, final int z, final ChunkLoadCallback callback) {
         final ChunkProviderServer cps = this.world.chunkProviderServer;
-        cps.getChunkAt(x, z, new Runnable() {
-            @Override
-            public void run() {
-                callback.onLoad(cps.getChunkAt(x, z).bukkitChunk);
-            }
-        });
+        cps.getChunkAt(x, z, () -> callback.onLoad(cps.getChunkAt(x, z).bukkitChunk));
     }
     public void getChunkAtAsync(Block block, ChunkLoadCallback callback) {
         getChunkAtAsync(block.getX() >> 4, block.getZ() >> 4, callback);
