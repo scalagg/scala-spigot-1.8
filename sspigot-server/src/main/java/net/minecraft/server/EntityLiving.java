@@ -98,6 +98,8 @@ public abstract class EntityLiving extends Entity {
     private boolean isTickingEffects = false;
     private List<Object> effectsToProcess = Lists.newArrayList();
 
+    boolean previousSprintStatus = false;
+
     public void inactiveTick() {
         super.inactiveTick();
         ++this.ticksFarFromPlayer;
@@ -1231,6 +1233,9 @@ public abstract class EntityLiving extends Entity {
     public abstract void setEquipment(int i, ItemStack itemstack);
 
     public void setSprinting(boolean flag) {
+        this.previousSprintStatus =
+                this.isSprinting();
+
         super.setSprinting(flag);
 
         AttributeInstance attributeinstance = this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
