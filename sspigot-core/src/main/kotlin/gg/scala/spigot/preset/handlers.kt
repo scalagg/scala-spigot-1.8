@@ -17,7 +17,6 @@ object KnockbackHandler : PresetHandler<KnockbackPreset>() {
                     "default", listOf(""),
                     friction = 2.0,
                     horizontal = 0.35,
-                    horizontalLimit = 0.35,
                     vertical = 0.35,
                     verticalLimit = 0.4,
                     extraHorizontal = 0.425,
