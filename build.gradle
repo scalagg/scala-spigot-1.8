@@ -72,7 +72,7 @@ subprojects {
         }
     }
 
-    def targetJavaVersion = 17
+    def targetJavaVersion = 8
     java {
         def javaVersion = JavaVersion.toVersion(targetJavaVersion)
         sourceCompatibility = javaVersion
@@ -90,7 +90,7 @@ subprojects {
 
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "1.8"
         }
     }
 

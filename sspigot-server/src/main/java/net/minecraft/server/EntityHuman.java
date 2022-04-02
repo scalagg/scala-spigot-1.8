@@ -1070,9 +1070,6 @@ public abstract class EntityHuman extends EntityLiving {
                         this.setSprinting(false);
                     }
 
-                    this.motX = Math.min(this.motX, preset.getHorizontalLimit());
-                    this.motZ = Math.min(this.motZ, preset.getHorizontalLimit());
-
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
                         EntityPlayer attackedPlayer = (EntityPlayer) entity;
