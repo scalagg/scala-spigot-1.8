@@ -21,7 +21,7 @@ import java.util.*;
 
 public class NameReferencingFileConverter {
 
-    private static final Logger e = LogManager.getLogger();
+    private static final Logger e = MinecraftServer.LOGGER;
     public static final File a = new File("banned-ips.txt");
     public static final File b = new File("banned-players.txt");
     public static final File c = new File("ops.txt");

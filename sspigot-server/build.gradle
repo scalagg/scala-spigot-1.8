@@ -1,9 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 
-plugins {
-    id "application"
-}
-
 repositories {
     maven {
         url "https://maven.elmakers.com/repository/"
@@ -22,20 +18,6 @@ repositories {
     }
 
     mavenCentral()
-}
-
-application {
-    mainClassName "org.bukkit.craftbukkit.v1_8_R3.Main"
-}
-
-publishing {
-    manifest {
-        attributes 'Multi-Release': 'true'
-    }
-}
-
-manifest {
-    attributes 'Multi-Release': 'true'
 }
 
 dependencies {
@@ -78,16 +60,21 @@ dependencies {
     compileOnly 'org.yaml:snakeyaml:1.30'
     compileOnly "net.md-5:bungeecord-chat:1.16-R0.4"
 
-    compileOnly "org.projectlombok:lombok:1.18.22"
-    annotationProcessor "org.projectlombok:lombok:1.18.22"
+    compileOnly "org.projectlombok:lombok:1.18.24"
+    annotationProcessor "org.projectlombok:lombok:1.18.24"
 
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
 
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.21'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.21'
 }
 
 shadowJar {
+    manifest {
+        attributes 'Multi-Release': 'true'
+        attributes 'Main-Class': 'org.bukkit.craftbukkit.v1_8_R3.Main'
+    }
+
     archiveClassifier.set("")
 
     exclude "org.bukkit.craftbukkit.Main*"
@@ -99,6 +86,4 @@ shadowJar {
     relocate "org.bukkit.craftbukkit", "org.bukkit.craftbukkit.v1_8_R3"
     relocate "net.minecraft.server", "net.minecraft.server.v1_8_R3"
     relocate "gg.scala.server", "gg.scala.server.v1_8_R3"
-
-    archiveFileName = "scala-spigot-server.jar"
 }

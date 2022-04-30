@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class EntityTrackerEntry {
 
-    private static final Logger p = LogManager.getLogger();
+    private static final Logger p = MinecraftServer.LOGGER;
     public Entity tracker; public Entity getTracker() { return tracker; }
     public int b; public int maxTrackingDistance() { return b; }
     public int c; public int updateInterval() { return c; }

@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 public class EntityItem extends Entity {
 
-    private static final Logger b = LogManager.getLogger();
+    private static final Logger b = MinecraftServer.LOGGER;
     public int age;
     public int pickupDelay;
     private int e;

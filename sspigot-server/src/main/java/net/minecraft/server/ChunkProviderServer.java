@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class ChunkProviderServer implements IChunkProvider {
 
-    private static final Logger b = LogManager.getLogger();
+    private static final Logger b = MinecraftServer.LOGGER;
     public LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
     public Chunk emptyChunk;
     public IChunkProvider chunkProvider;

@@ -36,7 +36,7 @@ public abstract class PlayerList {
     public static final File b = new File("banned-ips.json");
     public static final File c = new File("ops.json");
     public static final File d = new File("whitelist.json");
-    private static final Logger f = LogManager.getLogger();
+    private static final Logger f = MinecraftServer.LOGGER;
     private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
     private final MinecraftServer server;
     private final Map<UUID, EntityPlayer> j = Maps.newHashMap();

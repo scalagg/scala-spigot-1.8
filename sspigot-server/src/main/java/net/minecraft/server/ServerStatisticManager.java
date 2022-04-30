@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 
 public class ServerStatisticManager extends StatisticManager {
 
-    private static final Logger b = LogManager.getLogger();
+    private static final Logger b = MinecraftServer.LOGGER;
     private final MinecraftServer c;
     private final Set<Statistic> e = Sets.newHashSet();
     private int f = -300;

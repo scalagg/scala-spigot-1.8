@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class WorldNBTStorage implements IDataManager, IPlayerFileData {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private final File baseDir;
     private final File playerDir;
     private final File dataDir;

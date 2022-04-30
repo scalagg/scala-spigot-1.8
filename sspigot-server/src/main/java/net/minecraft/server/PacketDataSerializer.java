@@ -4,10 +4,6 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.*;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.server.BlockPosition;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.NBTCompressedStreamTools;
-import net.minecraft.server.*;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 import java.io.*;

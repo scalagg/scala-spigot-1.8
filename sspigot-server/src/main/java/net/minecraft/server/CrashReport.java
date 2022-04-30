@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 
 public class CrashReport {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private final String b;
     private final Throwable c;
     private final CrashReportSystemDetails d = new CrashReportSystemDetails(this, "System Details");

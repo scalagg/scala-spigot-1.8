@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 public class EntityTracker {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private final WorldServer world;
 
     public Set<EntityTrackerEntry> c = new ObjectMapList<>(); // IonSpigot - HashSet -> ObjectMapList

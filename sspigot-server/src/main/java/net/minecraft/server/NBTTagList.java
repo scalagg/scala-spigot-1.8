@@ -15,7 +15,7 @@ import java.util.List;
 
 public class NBTTagList extends NBTBase {
 
-    private static final Logger b = LogManager.getLogger();
+    private static final Logger b = MinecraftServer.LOGGER;
     private List<NBTBase> list = Lists.newArrayList();
     private byte type = 0;
 

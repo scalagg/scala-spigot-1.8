@@ -15,7 +15,7 @@ public class DispenserRegistry {
 
     private static final PrintStream a = System.out;
     private static boolean b = false;
-    private static final Logger c = LogManager.getLogger();
+    private static final Logger c = MinecraftServer.LOGGER;
 
     public static boolean a() {
         return b;

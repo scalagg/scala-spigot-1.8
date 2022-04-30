@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PathfinderGoalNearestAttackableTargetInsentient extends PathfinderGoal {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private EntityInsentient b;
     private final Predicate<EntityLiving> c;
     private final PathfinderGoalNearestAttackableTarget.DistanceComparator d;

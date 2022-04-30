@@ -10,7 +10,7 @@ import java.util.*;
 
 public class PlayerChunkMap {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private final WorldServer world;
     private final List<EntityPlayer> managedPlayers = Lists.newArrayList();
     private final LongHashMap<net.minecraft.server.PlayerChunkMap.PlayerChunk> d = new LongHashMap();

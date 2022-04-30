@@ -10,7 +10,7 @@ import java.util.*;
 
 public abstract class BiomeBase {
 
-    private static final Logger aD = LogManager.getLogger();
+    private static final Logger aD = MinecraftServer.LOGGER;
     protected static final BiomeTemperature a = new BiomeTemperature(0.1F, 0.2F);
     protected static final BiomeTemperature b = new BiomeTemperature(-0.5F, 0.0F);
     protected static final BiomeTemperature c = new BiomeTemperature(-1.0F, 0.1F);

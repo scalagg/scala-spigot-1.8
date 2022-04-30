@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class GenericAttributes {
 
-    private static final Logger f = LogManager.getLogger();
+    private static final Logger f = MinecraftServer.LOGGER;
     // Spigot start
     public static final IAttribute maxHealth = (new AttributeRanged((IAttribute) null, "generic.maxHealth", 20.0D, 0.1D,  org.spigotmc.SpigotConfig.maxHealth)).a("Max Health").a(true);
     public static final IAttribute FOLLOW_RANGE = (new AttributeRanged((IAttribute) null, "generic.followRange", 32.0D, 0.0D, 2048.0D)).a("Follow Range");

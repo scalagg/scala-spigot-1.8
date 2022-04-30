@@ -41,8 +41,7 @@ import java.util.concurrent.FutureTask;
 
 public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
 
-    public static final Logger LOGGER =
-            LogManager.getLogger(MinecraftServer.class);
+    public static final Logger LOGGER = LogManager.getLogger(MinecraftServer.class);
 
     public static final File a = new File("usercache.json");
     public static final long SEC_IN_NANO = 1000000000;

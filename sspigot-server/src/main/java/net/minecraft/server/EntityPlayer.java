@@ -19,7 +19,7 @@ import java.util.*;
 
 public class EntityPlayer extends EntityHuman implements ICrafting {
 
-    private static final Logger bH = LogManager.getLogger();
+    private static final Logger bH = MinecraftServer.LOGGER;
     public final MinecraftServer server;
     public final PlayerInteractManager playerInteractManager;
     public final List<ChunkCoordIntPair> chunkCoordIntPairQueue = Lists.newLinkedList();

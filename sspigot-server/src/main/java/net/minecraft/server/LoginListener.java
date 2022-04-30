@@ -26,7 +26,7 @@ import java.util.logging.Level;
 public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBox {
 
     private static final AtomicInteger b = new AtomicInteger(0);
-    private static final Logger c = LogManager.getLogger();
+    private static final Logger c = MinecraftServer.LOGGER;
     private static final Random random = new Random();
     public final NetworkManager networkManager;
     private final byte[] e = new byte[4];

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PathfinderGoalSelector {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private List<net.minecraft.server.PathfinderGoalSelector.PathfinderGoalSelectorItem> b = new UnsafeList<net.minecraft.server.PathfinderGoalSelector.PathfinderGoalSelectorItem>();
     private List<net.minecraft.server.PathfinderGoalSelector.PathfinderGoalSelectorItem> c = new UnsafeList<net.minecraft.server.PathfinderGoalSelector.PathfinderGoalSelectorItem>();
     private final MethodProfiler d;

@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
-    private static final Logger g = LogManager.getLogger();
+    private static final Logger g = MinecraftServer.LOGGER;
     public static final Marker a = MarkerManager.getMarker("NETWORK");
     public static final Marker b = MarkerManager.getMarker("NETWORK_PACKETS", a);
     public static final AttributeKey<EnumProtocol> c = AttributeKey.valueOf("protocol");

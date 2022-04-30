@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerListBox {
 
-	private static final Logger c = LogManager.getLogger();
+	private static final Logger c = MinecraftServer.LOGGER;
 	public final NetworkManager networkManager;
 	private final MinecraftServer minecraftServer;
 	public EntityPlayer player;

@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class PropertyManager {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     public final Properties properties = new Properties();
     private final File file;
 

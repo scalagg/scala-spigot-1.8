@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DedicatedServer extends MinecraftServer implements IMinecraftServer {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = MinecraftServer.LOGGER;
     private final java.util.Queue<ServerCommand> l = new java.util.concurrent.ConcurrentLinkedQueue<>(); // Paper - use a proper queue
     private RemoteStatusListener m;
     private RemoteControlListener n;

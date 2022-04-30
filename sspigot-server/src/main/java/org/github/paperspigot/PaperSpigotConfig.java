@@ -68,26 +68,6 @@ public class PaperSpigotConfig
 
     static void readConfig(Class<?> clazz, Object instance)
     {
-        for ( Method method : clazz.getDeclaredMethods() )
-        {
-            if ( Modifier.isPrivate( method.getModifiers() ) )
-            {
-                if ( method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE )
-                {
-                    try
-                    {
-                        method.setAccessible( true );
-                        method.invoke( instance );
-                    } catch ( InvocationTargetException ex )
-                    {
-                        throw Throwables.propagate( ex.getCause() );
-                    } catch ( Exception ex )
-                    {
-                        Bukkit.getLogger().log( Level.SEVERE, "Error invoking " + method, ex );
-                    }
-                }
-            }
-        }
 
         try
         {

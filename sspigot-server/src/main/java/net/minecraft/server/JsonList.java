@@ -17,7 +17,7 @@ import java.util.*;
 
 public class JsonList<K, V extends JsonListEntry<K>> {
 
-    protected static final Logger a = LogManager.getLogger();
+    protected static final Logger a = MinecraftServer.LOGGER;
     protected final Gson b;
     private final File c;
     private final Map<String, V> d = Maps.newHashMap();

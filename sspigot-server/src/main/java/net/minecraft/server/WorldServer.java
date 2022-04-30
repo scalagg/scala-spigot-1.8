@@ -18,7 +18,7 @@ import java.util.logging.Level;
 
 public class WorldServer extends World implements IAsyncTaskHandler {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private final MinecraftServer server;
     public EntityTracker tracker;
     private final PlayerChunkMap manager;

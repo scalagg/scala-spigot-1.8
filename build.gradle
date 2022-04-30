@@ -1,15 +1,14 @@
-import java.util.stream.Collectors
-
 plugins {
     id "java"
     id "maven-publish"
-    id "org.jetbrains.kotlin.jvm" version "1.6.10"
+    id "com.jfrog.artifactory" version "4.28.2"
+    id "org.jetbrains.kotlin.jvm" version "1.6.21"
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 allprojects {
-    group 'gg.scala.spigot'
-    version '1.0.7'
+    group "gg.scala.spigot"
+    version "1.0.7"
 
     repositories {
         mavenCentral()
@@ -22,77 +21,63 @@ subprojects {
     apply plugin: "org.jetbrains.kotlin.jvm"
     apply plugin: "com.github.johnrengelman.shadow"
 
-    tasks.withType(GenerateMavenPom).all {
-        doLast {
-            final File file = new File(
-                    "$buildDir/publications/shadow/pom-default.xml"
-            )
+    apply plugin: "com.jfrog.artifactory"
 
-            final BufferedReader br = new BufferedReader(
-                    new FileReader(file)
-            )
+    compileKotlin {
+        kotlinOptions.javaParameters = true
+        kotlinOptions.jvmTarget = "1.8"
+    }
 
-            final String lines = br.lines()
-                    .map {
-                        if (it.contains("<dependencies/>")) "" else it
-                    }
-                    .collect(Collectors.joining("\n"))
+    compileJava {
+        options.compilerArgs += ["-parameters"]
+        options.fork = true
+        options.forkOptions.executable = "javac"
+    }
 
-            final BufferedWriter wr = new BufferedWriter(
-                    new FileWriter(file, true)
-            )
+    shadowJar {
+        archiveClassifier.set("")
 
-            final PrintWriter writer = new PrintWriter(file)
-            writer.print("")
-            writer.close()
+        exclude "**/*.kotlin_metadata"
+        exclude "**/*.kotlin_module"
+        exclude "**/*.kotlin_builtins"
 
-            wr.write(lines)
-            wr.close()
-        }
+        archiveFileName = "scala-spigot-${project.name.replace("sspigot-", "")}.jar"
     }
 
     publishing {
         publications {
             shadow(MavenPublication) { publication ->
-                project.shadow.component(publication)
+                from components.kotlin
             }
         }
 
         repositories {
             maven {
-                name "Scala"
-                allowInsecureProtocol true
-                url "http://repository.scala.gg/repository/maven-releases/"
-
+                name "scala"
+                url "${artifactory_contextUrl}/${artifactory_release}"
                 credentials {
-                    username property("scala.credentials.username") as String
-                    password property("scala.credentials.password") as String
+                    username "${artifactory_user}"
+                    password "${artifactory_password}"
                 }
             }
         }
     }
 
-    def targetJavaVersion = 8
-    java {
-        def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-        if (JavaVersion.current() < javaVersion) {
-            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    tasks.build.dependsOn(
+        shadowJar,
+        publishShadowPublicationToScalaRepository
+    )
+}
+
+artifactory {
+    this.contextUrl = "${artifactory_contextUrl}"
+
+    publish {
+        repository {
+            repoKey = "${artifactory_release_local}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
         }
     }
-
-    tasks.withType(JavaCompile).configureEach {
-        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-            options.release = targetJavaVersion
-        }
-    }
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
 }

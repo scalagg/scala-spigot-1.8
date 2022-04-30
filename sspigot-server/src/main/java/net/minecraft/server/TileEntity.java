@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 public abstract class TileEntity implements OptimizedRemoveUtil.Marker {
 
 	public Timing tickTimer = SpigotTimings.getTileEntityTimings(this); // Spigot
-	private static final Logger a = LogManager.getLogger();
+	private static final Logger a = MinecraftServer.LOGGER;
 	private static Map<String, Class<? extends net.minecraft.server.TileEntity>> f = Maps.newHashMap();
 	private static Map<Class<? extends net.minecraft.server.TileEntity>, String> g = Maps.newHashMap();
 	protected World world;

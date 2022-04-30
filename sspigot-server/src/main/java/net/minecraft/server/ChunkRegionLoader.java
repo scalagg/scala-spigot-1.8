@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
 
-    private static final Logger a = LogManager.getLogger();
+    private static final Logger a = MinecraftServer.LOGGER;
     private Map<ChunkCoordIntPair, NBTTagCompound> b = new ConcurrentHashMap();
     private Set<ChunkCoordIntPair> c = Collections.newSetFromMap(new ConcurrentHashMap());
     private final File d;

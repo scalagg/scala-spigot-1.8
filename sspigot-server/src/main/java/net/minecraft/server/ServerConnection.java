@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 
 public class ServerConnection {
 
-    private static final Logger e = LogManager.getLogger();
+    private static final Logger e = MinecraftServer.LOGGER;
     public static final LazyInitVar<NioEventLoopGroup> a = new LazyInitVar() {
         protected NioEventLoopGroup a() {
             return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).build());

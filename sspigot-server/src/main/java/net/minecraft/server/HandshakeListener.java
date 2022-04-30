@@ -61,7 +61,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
                     }
                 }
             } catch (Throwable t) {
-                org.apache.logging.log4j.LogManager.getLogger().debug("Failed to check connection throttle", t);
+                MinecraftServer.LOGGER.debug("Failed to check connection throttle", t);
             }
             // CraftBukkit end
 
