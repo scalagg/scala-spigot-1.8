@@ -23,16 +23,8 @@ public class VersionCommand extends BukkitCommand {
     private Component versionMessage;
 
     public void setVersion() {
-        final Component message = LegacyComponentSerializer.legacyAmpersand()
-                .deserialize("&eThis server is running a modified version of &aSpigot&e by &6Scala&e.");
-
-        final Component hover = LegacyComponentSerializer.legacyAmpersand()
-                .deserialize("&eAuthors: &aGrowlyX&e, &aNV6&e, and &aHexab&e.");
-
-        this.versionMessage = Component.text()
-                .append(message)
-                .hoverEvent(hover)
-                .build();
+        this.versionMessage = LegacyComponentSerializer.legacyAmpersand()
+                .deserialize("&fThis server is running ScalaSpigot version git-scala-spigot-1.8-\"unknown\" (MC: 1.8.8) (Implementing API version 1.8.8-R0.3-SNAPSHOT)");
     }
 
     public VersionCommand(String name) {
@@ -125,7 +117,7 @@ public class VersionCommand extends BukkitCommand {
             }
 
             if (!found) {
-                sender.sendMessage(ChatColor.RED + "This server is not running any plugin by that name.");
+                sender.sendMessage("This server is not running any plugin by that name.");
                 sender.sendMessage("Use /plugins to get a list of plugins.");
             }
         }
@@ -135,21 +127,22 @@ public class VersionCommand extends BukkitCommand {
 
     private void describeToSender(Plugin plugin, CommandSender sender) {
         PluginDescriptionFile desc = plugin.getDescription();
-        sender.sendMessage(ChatColor.AQUA + desc.getName() + ChatColor.YELLOW + " version " + ChatColor.AQUA + desc.getVersion() + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.GREEN + desc.getName() + ChatColor.WHITE + " version " + ChatColor.GREEN + desc.getVersion());
 
         if (desc.getDescription() != null) {
-            sender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + desc.getDescription());
+            sender.sendMessage(ChatColor.WHITE + desc.getDescription());
+            sender.sendMessage("");
         }
 
         if (desc.getWebsite() != null) {
-            sender.sendMessage(ChatColor.YELLOW + "Website: " + ChatColor.AQUA + desc.getWebsite());
+            sender.sendMessage(ChatColor.WHITE + "Website: " + ChatColor.GREEN + desc.getWebsite());
         }
 
         if (!desc.getAuthors().isEmpty()) {
             if (desc.getAuthors().size() == 1) {
-                sender.sendMessage(ChatColor.YELLOW + "Author: " + ChatColor.AQUA + getAuthors(desc));
+                sender.sendMessage(ChatColor.WHITE + "Author: " + ChatColor.GREEN + getAuthors(desc));
             } else {
-                sender.sendMessage(ChatColor.YELLOW + "Authors: " + ChatColor.AQUA + getAuthors(desc));
+                sender.sendMessage(ChatColor.WHITE + "Authors: " + ChatColor.GREEN + getAuthors(desc));
             }
         }
     }
@@ -168,9 +161,9 @@ public class VersionCommand extends BukkitCommand {
             }
 
             result
-                    .append(ChatColor.AQUA)
+                    .append(ChatColor.GREEN)
                     .append(authors.get(i))
-                    .append(ChatColor.YELLOW);
+                    .append(ChatColor.WHITE);
         }
 
         return result.toString();

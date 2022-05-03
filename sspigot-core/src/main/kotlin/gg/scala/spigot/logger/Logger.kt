@@ -22,7 +22,9 @@ object Logger
         message: String, level: LogLevel = LogLevel.INFO
     )
     {
-        println("${level.color ?: ""}[Scala] [${level.description}] $message$RESET")
+        java.util.logging.Logger.getAnonymousLogger().info(
+            "${level.color ?: ""}[Scala] [${level.description}] $message$RESET"
+        )
     }
 
     enum class LogLevel(

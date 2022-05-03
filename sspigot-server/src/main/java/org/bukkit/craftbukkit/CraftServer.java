@@ -303,7 +303,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String getVersion() {
-        return "development (MC: " + console.getVersion() + ")";
+        return "stable (MC: " + console.getVersion() + ")";
     }
 
     @Override

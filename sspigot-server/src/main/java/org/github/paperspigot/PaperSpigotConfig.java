@@ -159,12 +159,7 @@ public class PaperSpigotConfig
         try {
             maxStack = Material.class.getDeclaredField("maxStack");
             maxStack.setAccessible(true);
-
-            Field modifiers = Field.class.getDeclaredField("modifiers");
-            modifiers.setAccessible(true);
-            modifiers.setInt(maxStack, maxStack.getModifiers() & ~Modifier.FINAL);
         } catch (Exception e) {
-            e.printStackTrace();
             return;
         }
 

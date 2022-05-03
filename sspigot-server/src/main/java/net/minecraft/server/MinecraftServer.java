@@ -21,7 +21,9 @@ import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.Main;
+import org.bukkit.event.server.ServerStopEvent;
 import org.spigotmc.SpigotConfig;
 
 import javax.imageio.ImageIO;
@@ -467,6 +469,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
         if (!this.N) {
             LOGGER.info("Stopping server");
+
+            Bukkit.getPluginManager()
+                .callEvent(new ServerStopEvent());
+
             SpigotTimings.stopServer();
 
             if (this.server != null) {
