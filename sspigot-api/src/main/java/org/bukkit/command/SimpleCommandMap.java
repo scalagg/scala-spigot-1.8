@@ -192,20 +192,20 @@ SimpleCommandMap implements CommandMap {
             final String prefix = (sender instanceof Player ? "/" : "");
 
             for (Map.Entry<String, Command> commandEntry : knownCommands.entrySet()) {
-                Command command = commandEntry.getValue();
+                final Command command = commandEntry.getValue();
 
                 if (!command.testPermissionSilent(sender)) {
                     continue;
                 }
 
-                String name = commandEntry.getKey(); // Use the alias, not command name
+                final String name = commandEntry.getKey(); // Use the alias, not command name
 
                 if (StringUtil.startsWithIgnoreCase(name, cmdLine)) {
                     completions.add(prefix + name);
                 }
             }
 
-            Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);
+            completions.sort(String.CASE_INSENSITIVE_ORDER);
             return completions;
         }
 
