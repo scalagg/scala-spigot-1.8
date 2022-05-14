@@ -13,4 +13,5 @@ open class KnockbackPreset(
     var extraVertical: Double,
     var rodVerticalMultiplier: Double = 0.0,
     var rodHorizontalMultiplier: Double = 0.0,
+    var wTapInitial: Double = 0.256
 ) : Preset

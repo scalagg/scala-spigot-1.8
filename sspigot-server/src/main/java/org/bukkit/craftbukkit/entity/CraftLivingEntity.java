@@ -347,6 +347,11 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
         Validate.notNull(launch, "Projectile not supported");
 
         if (velocity != null) {
+            if (launch instanceof EntityFishingHook)
+            {
+                velocity.multiply(0.25);
+            }
+
             ((T) launch.getBukkitEntity()).setVelocity(velocity);
         }
 
