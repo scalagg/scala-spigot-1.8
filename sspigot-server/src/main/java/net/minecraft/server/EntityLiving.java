@@ -910,6 +910,23 @@ public abstract class EntityLiving extends Entity {
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
 
+            if (damageSource instanceof EntityDamageSourceIndirect) {
+                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
+
+                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
+                    if (preset.getRodHorizontalMultiplier() != 0)
+                    {
+                        this.motX *= preset.getRodHorizontalMultiplier();
+                        this.motZ *= preset.getRodHorizontalMultiplier();
+                    }
+
+                    if (preset.getRodVerticalMultiplier() != 0)
+                    {
+                        this.motY *= preset.getRodVerticalMultiplier();
+                    }
+                }
+            }
+
             this.motY = Math.min(this.motY, preset.getVerticalLimit());
         }
     }
