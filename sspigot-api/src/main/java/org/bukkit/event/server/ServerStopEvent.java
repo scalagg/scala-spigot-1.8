@@ -12,7 +12,7 @@ public class ServerStopEvent extends ServerEvent {
 
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
