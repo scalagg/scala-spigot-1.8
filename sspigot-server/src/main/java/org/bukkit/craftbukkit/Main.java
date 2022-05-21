@@ -19,6 +19,9 @@ public class Main {
     public static boolean useConsole = true;
 
     public static void main(String[] args) {
+        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null)
+            System.setProperty("jdk.nio.maxCachedBufferSize", "262144"); // PandaSpigot - cap per-thread NIO cache size
+
         OptionParser parser = new OptionParser() {
             {
                 acceptsAll(asList("?", "help"), "Show the help");

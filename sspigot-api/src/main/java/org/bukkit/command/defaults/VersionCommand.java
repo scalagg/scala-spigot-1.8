@@ -24,7 +24,7 @@ public class VersionCommand extends BukkitCommand {
 
     public void setVersion() {
         this.versionMessage = LegacyComponentSerializer.legacyAmpersand()
-                .deserialize("&fThis server is running ScalaSpigot version git-scala-spigot-1.8-\"unknown\" (MC: 1.8.8) (Implementing API version 1.8.8-R0.3-SNAPSHOT)");
+                .deserialize("&fThis server is running Xvf version git-scala-spigot-1.8-\"unknown\" (MC: 1.8.8) (Implementing API version 1.8.8-R0.3-SNAPSHOT)");
     }
 
     public VersionCommand(String name) {

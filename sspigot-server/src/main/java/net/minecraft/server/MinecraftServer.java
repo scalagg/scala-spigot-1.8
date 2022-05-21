@@ -627,6 +627,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
         if (file.isFile()) {
             ByteBuf bytebuf = Unpooled.buffer();
+            ByteBuf bytebuf1 = null; // PandaSpigot - cleanup favicon bytebuf
 
             try {
                 BufferedImage bufferedimage = ImageIO.read(file);
@@ -635,13 +636,14 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high");
                 ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
 
-                ByteBuf buffer = Base64.encode(bytebuf);
+                /*ByteBuf */bytebuf1 = Base64.encode(bytebuf); // PandaSpigot - cleanup favicon bytebuf
 
-                serverping.setFavicon("data:image/png;base64," + buffer.toString(Charsets.UTF_8));
+                serverping.setFavicon("data:image/png;base64," + bytebuf1.toString(Charsets.UTF_8));
             } catch (Exception exception) {
                 LOGGER.error("Couldn't load server icon", exception);
             } finally {
                 bytebuf.release();
+                if (bytebuf1 != null) bytebuf1.release(); // PandaSpigot - cleanup favicon bytebuf
             }
         }
     }
@@ -761,10 +763,22 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         SpigotTimings.timeUpdateTimer.startTiming();
 
         // Send time updates to everyone, it will get the right time from the world the player is in.
-        for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
-            final EntityPlayer entityplayer = this.getPlayerList().players.get(i);
-
-            entityplayer.playerConnection.sendPacket(new PacketPlayOutUpdateTime(entityplayer.world.getTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle")));
+        // PandaSpigot start - optimize time updates
+        for (final WorldServer world : this.worlds) {
+            final boolean doDaylight = world.getGameRules().getBoolean("doDaylightCycle");
+            final long dayTime = world.getDayTime();
+            long worldTime = world.getTime();
+            final PacketPlayOutUpdateTime worldPacket = new PacketPlayOutUpdateTime(worldTime, dayTime, doDaylight);
+            for (EntityHuman entityhuman : world.players) {
+                if (!(entityhuman instanceof EntityPlayer) || (this.ticks + entityhuman.getId()) % 20 != 0) {
+                    continue;
+                }
+                EntityPlayer entityplayer = (EntityPlayer) entityhuman;
+                long playerTime = entityplayer.getPlayerTime();
+                PacketPlayOutUpdateTime packet = (playerTime == dayTime) ? worldPacket :
+                    new PacketPlayOutUpdateTime(worldTime, playerTime, doDaylight);
+                entityplayer.playerConnection.sendPacket(packet); // Add support for per player time
+            }
         }
 
         SpigotTimings.timeUpdateTimer.stopTiming();

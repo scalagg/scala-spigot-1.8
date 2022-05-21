@@ -57,55 +57,72 @@ public class BlockPosition extends BaseBlockPosition {
     }
 
     public net.minecraft.server.BlockPosition up() {
-        return this.up(1);
+        return new BlockPosition(this.getX(), this.getY() + 1, this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition up(int i) {
-        return this.shift(EnumDirection.UP, i);
+        return i == 0 ? this : new BlockPosition(this.getX(), this.getY() + i, this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition down() {
-        return this.down(1);
+        return new BlockPosition(this.getX(), this.getY() - 1, this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition down(int i) {
-        return this.shift(EnumDirection.DOWN, i);
+        return i == 0 ? this : new BlockPosition(this.getX(), this.getY() - i, this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition north() {
-        return this.north(1);
+        return new BlockPosition(this.getX(), this.getY(), this.getZ() - 1); // PandaSpigot - Optimize BlockPosition`
     }
 
     public net.minecraft.server.BlockPosition north(int i) {
-        return this.shift(EnumDirection.NORTH, i);
+        return i == 0 ? this : new BlockPosition(this.getX(), this.getY(), this.getZ() - i); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition south() {
-        return this.south(1);
+        return new BlockPosition(this.getX(), this.getY(), this.getZ() + 1); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition south(int i) {
-        return this.shift(EnumDirection.SOUTH, i);
+        return i == 0 ? this : new BlockPosition(this.getX(), this.getY(), this.getZ() + i); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition west() {
-        return this.west(1);
+        return new BlockPosition(this.getX() - 1, this.getY(), this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition west(int i) {
-        return this.shift(EnumDirection.WEST, i);
+        return i == 0 ? this : new BlockPosition(this.getX() - i, this.getY(), this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition east() {
-        return this.east(1);
+        return new BlockPosition(this.getX() + 1, this.getY(), this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition east(int i) {
-        return this.shift(EnumDirection.EAST, i);
+        return i == 0 ? this : new BlockPosition(this.getX() + i, this.getY(), this.getZ()); // PandaSpigot - Optimize BlockPosition
     }
 
     public net.minecraft.server.BlockPosition shift(EnumDirection enumdirection) {
-        return this.shift(enumdirection, 1);
+        // PandaSpigot start - Optimize BlockPosition
+        switch(enumdirection) {
+            case UP:
+                return new BlockPosition(this.getX(), this.getY() + 1, this.getZ());
+            case DOWN:
+                return new BlockPosition(this.getX(), this.getY() - 1, this.getZ());
+            case NORTH:
+                return new BlockPosition(this.getX(), this.getY(), this.getZ() - 1);
+            case SOUTH:
+                return new BlockPosition(this.getX(), this.getY(), this.getZ() + 1);
+            case WEST:
+                return new BlockPosition(this.getX() - 1, this.getY(), this.getZ());
+            case EAST:
+                return new BlockPosition(this.getX() + 1, this.getY(), this.getZ());
+            default:
+                return new BlockPosition(this.getX() + enumdirection.getAdjacentX(), this.getY() + enumdirection.getAdjacentY(), this.getZ() + enumdirection.getAdjacentZ());
+        }
+        // PandaSpigot end
     }
 
     public net.minecraft.server.BlockPosition shift(EnumDirection enumdirection, int i) {
