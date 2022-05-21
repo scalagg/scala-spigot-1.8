@@ -32,6 +32,12 @@ dependencies {
     implementation "com.eatthepath:fast-uuid:0.2.0"
     implementation "it.unimi.dsi:fastutil:8.5.8"
 
+    implementation "org.apache.logging.log4j:log4j-core:2.17.2"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "commons-codec:commons-codec:1.15"
+
     // ScalaSpigot start
     implementation fileTree("lib")
 
@@ -62,8 +68,6 @@ dependencies {
 
     compileOnly "org.projectlombok:lombok:1.18.24"
     annotationProcessor "org.projectlombok:lombok:1.18.24"
-
-    implementation "org.apache.logging.log4j:log4j-core:2.17.2"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.21"
