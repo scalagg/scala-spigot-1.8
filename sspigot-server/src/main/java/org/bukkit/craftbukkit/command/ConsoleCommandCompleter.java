@@ -20,39 +20,38 @@ public class ConsoleCommandCompleter implements Completer {
         this.server = server;
     }
 
+    @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-        final CraftServer server = this.server.server;
-        final String buffer = line.line();
-        // Paper end
-
-        Waitable<List<String>> waitable = new Waitable<List<String>>() {
-            @Override
-            protected List<String> evaluate() {
-                return server.getCommandMap().tabComplete(server.getConsoleSender(), buffer);
-            }
-        };
-
-        server.getServer().processQueue.add(waitable);
+        CompletionWaiter waiter = new CompletionWaiter(line.line());
+        this.server.processQueue.add(waiter);
 
         try {
-            List<String> offers = waitable.get();
-            if (offers == null) {
-                return;
-            }
+            List<String> offers = waiter.get(); // wait until completions get processed on main thread
 
-            // Paper start - JLine update
-            for (String completion : offers) {
-                if (completion.isEmpty()) {
-                    continue;
-                }
+            for (String offer : offers) {
+                if (offer.isEmpty()) continue;
 
-                candidates.add(new Candidate(completion));
+                candidates.add(new Candidate(offer));
             }
-            // Paper end
         } catch (ExecutionException e) {
-            server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
+            this.server.server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private class CompletionWaiter extends Waitable<List<String>> {
+        private final String buffer;
+
+        private CompletionWaiter(String buffer) {
+            this.buffer = buffer;
+        }
+
+        @Override
+        protected List<String> evaluate() {
+            final CraftServer server = ConsoleCommandCompleter.this.server.server;
+
+            return server.getCommandMap().tabComplete(server.getConsoleSender(), this.buffer);
         }
     }
 }

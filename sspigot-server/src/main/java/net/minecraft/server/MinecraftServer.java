@@ -992,7 +992,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     }
 
     public void sendMessage(IChatBaseComponent ichatbasecomponent) {
-        MinecraftServer.LOGGER.info(org.bukkit.craftbukkit.util.CraftChatMessage.fromComponent(ichatbasecomponent, net.minecraft.server.EnumChatFormat.WHITE));
+        MinecraftServer.LOGGER.info(org.bukkit.craftbukkit.util.CraftChatMessage.fromComponent(ichatbasecomponent));
     }
 
     public boolean a(int i, String s) {

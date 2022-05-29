@@ -180,6 +180,7 @@ public class Main {
                     System.out.println("Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions.");
                 }
 
+                System.setProperty("library.jansi.version", "ScalaSpigot");
                 System.out.println("Libraries are loading, please wait...");
 
                 MinecraftServer.main(options);

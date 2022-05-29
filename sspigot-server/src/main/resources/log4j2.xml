@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" packages="net.minecrell.terminalconsole">
+<Configuration status="INFO" packages="com.mojang.util">
     <Appenders>
         <TerminalConsole name="TerminalConsole">
-            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx{full}}" />
+            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg{nolookups}}%n%xEx}" />
         </TerminalConsole>
-        <RollingRandomAccessFile name="File" fileName="logs/latest.log"
-                                 filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
-                                 immediateFlush="false">
-            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx{full}}"/>
+        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg{nolookups}}{strip}%n" />
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <OnStartupTriggeringPolicy/>
