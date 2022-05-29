@@ -31,7 +31,8 @@ public enum GameMode {
      * invisible to normal players. This grants the player the
      * ability to no-clip through the world.
      */
-    SPECTATOR(3);
+    SPECTATOR(3),
+    WATCHER(-1);
 
     private final int value;
     private final static Map<Integer, GameMode> BY_ID = Maps.newHashMap();
