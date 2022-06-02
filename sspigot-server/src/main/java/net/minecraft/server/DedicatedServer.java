@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import gg.scala.server.command.KnockbackCommand;
 import gg.scala.server.command.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
+import me.suicidalkids.ion.movement.parallel.HitDetectionThread;
+import me.suicidalkids.ion.movement.parallel.KnockbackThread;
 import me.suicidalkids.ion.movement.parallel.Parallel;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -157,6 +159,10 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // Load ScalaSpigot
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
         ScalaSpigot.INSTANCE.initialLoad();
+
+        // Initialize threads
+        KnockbackThread.INSTANCE.init();
+        HitDetectionThread.INSTANCE.init();
 
         server.getCommandMap().register("xvf", new KnockbackCommand());
         server.getCommandMap().register("xvf", new PotionCommand());

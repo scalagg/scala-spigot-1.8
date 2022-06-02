@@ -17,6 +17,11 @@ public abstract class Parallel {
 
     private boolean running;
 
+    public void init()
+    {
+
+    }
+
     public Parallel() {
         final Thread thread = new Thread(this::loop);
         thread.start();
