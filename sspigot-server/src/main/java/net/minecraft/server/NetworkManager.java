@@ -12,6 +12,8 @@ import io.netty.handler.timeout.TimeoutException;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import me.suicidalkids.ion.movement.parallel.HitDetectionThread;
+import me.suicidalkids.ion.movement.parallel.KnockbackThread;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -173,9 +175,23 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public void a(Packet packet, GenericFutureListener<? extends Future<? super Void>> genericfuturelistener, GenericFutureListener<? extends Future<? super Void>>... agenericfuturelistener) {
+        if (g() && packet instanceof PacketPlayInUseEntity) {
+            final PacketPlayInUseEntity pI = (PacketPlayInUseEntity) packet;
+
+            if (pI.a() == PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) {
+                HitDetectionThread.INSTANCE.addPacket(packet, this, agenericfuturelistener);
+                return;
+            }
+        }
+
+        if (g() && (packet instanceof PacketPlayOutEntityVelocity || packet instanceof PacketPlayOutPosition || packet instanceof PacketPlayInFlying)) {
+            KnockbackThread.INSTANCE.addPacket(packet, this, agenericfuturelistener);
+            return;
+        }
+
         if (this.g()) {
             this.m();
-            this.a(packet, (GenericFutureListener[]) ArrayUtils.add(agenericfuturelistener, 0, genericfuturelistener));
+            this.a(packet, ArrayUtils.add(agenericfuturelistener, 0, genericfuturelistener));
         } else {
             this.j.writeLock().lock();
 

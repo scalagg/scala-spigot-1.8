@@ -705,7 +705,14 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				if (!cancelled) {
 					this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
 				}
+			} else {
+				// SportPaper start
+				if (MinecraftServer.currentTick - lastDropTick > 1) {
+					this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
+				}
+				// SportPaper end
 			}
+			// Spigot end
 
 			always = (itemstack.count != itemstackAmount) || itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY);
 		} else if (blockposition.getY() >= this.minecraftServer.getMaxBuildHeight() - 1 && (enumdirection == EnumDirection.UP || blockposition.getY() >= this.minecraftServer.getMaxBuildHeight())) {
