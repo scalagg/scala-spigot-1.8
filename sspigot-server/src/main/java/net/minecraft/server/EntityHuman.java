@@ -1015,7 +1015,9 @@ public abstract class EntityHuman extends EntityLiving {
             }
 
             final KnockbackPreset preset = getKnockbackPreset();
-            final boolean shouldApplyWTap = this.isSprinting() && !this.previousSprintStatus;
+
+            final boolean shouldApplyWTap =
+                this.isSprinting() && !this.previousSprintStatus;
 
             if (shouldApplyWTap && preset.getWTapInitial() > 0.0) {
                 i += preset.getWTapInitial();
