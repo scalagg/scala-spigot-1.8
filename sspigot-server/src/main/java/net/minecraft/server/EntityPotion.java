@@ -3,10 +3,8 @@ package net.minecraft.server;
 import gg.scala.spigot.preset.PotionHandler;
 import gg.scala.spigot.preset.potion.PotionPreset;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PotionSplashEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +13,7 @@ import java.util.List;
 public class EntityPotion extends EntityProjectile {
 
     public ItemStack item;
+    public boolean compensated = false; // IonSpigot - Lag Compensated Potions
 
     public EntityPotion(World world) {
         super(world);
@@ -27,15 +26,26 @@ public class EntityPotion extends EntityProjectile {
     public EntityPotion(World world, EntityLiving entityliving, ItemStack itemstack) {
         super(world, entityliving);
         this.item = itemstack;
+
+        // IonSpigot start - Lag Compensated Potions
+        if (entityliving instanceof EntityPlayer) {
+            ((EntityPlayer) entityliving).potions.add(this);
+            compensated = true;
+        }
+        // IonSpigot end
     }
 
+    // IonSpigot start - Lag Compensated Potions
     @Override
     public void t_() {
+        if (!compensated) {
+            tick();
+        }
     }
-
     public void tick() {
         super.t_();
     }
+    // IonSpigot end
 
     public EntityPotion(World world, double d0, double d1, double d2, ItemStack itemstack) {
         super(world, d0, d1, d2);
@@ -79,64 +89,95 @@ public class EntityPotion extends EntityProjectile {
         return this.item.getData();
     }
 
-    @Override
     protected void a(MovingObjectPosition movingobjectposition) {
         if (!this.world.isClientSide) {
-            Player shooter;
-            List<MobEffect> list = Items.POTION.h(this.item);
-            AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0, 2.0, 4.0);
-            List<EntityLiving> list1 = this.world.a(EntityLiving.class, axisalignedbb);
-            Iterator<EntityLiving> iterator = list1.iterator();
-            HashMap<LivingEntity, Double> affected = new HashMap<LivingEntity, Double>();
+            List list = Items.POTION.h(this.item);
+
+            AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0D, 2.0D, 4.0D);
+            List list1 = this.world.a(EntityLiving.class, axisalignedbb);
+
+            Iterator iterator = list1.iterator();
+
+            // CraftBukkit
+            HashMap<LivingEntity, Double> affected = new HashMap<>();
+
             while (iterator.hasNext()) {
-                EntityLiving entityliving = iterator.next();
+                EntityLiving entityliving = (EntityLiving) iterator.next();
                 double d0 = this.h(entityliving);
-                if (!(d0 < 16.0)) continue;
-                double d1 = 1.0 - Math.sqrt(d0) / 4.0;
-                if (entityliving == movingobjectposition.entity) {
-                    d1 = 1.0;
-                } else if (Math.hypot(this.motX, this.motZ) > 0.4 && d1 > 0.8) {
-                    d1 = 1.0;
+
+                if (d0 < 16.0D) {
+                    double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
+
+                    if (entityliving == movingobjectposition.entity) {
+                        d1 = 1.0D;
+                    }
+
+                    affected.put((LivingEntity) entityliving.getBukkitEntity(), d1);
                 }
-                affected.put((LivingEntity)((Object)entityliving.getBukkitEntity()), d1);
             }
-            PotionSplashEvent event = CraftEventFactory.callPotionSplashEvent(this, affected);
-            if (event.getEntity().getShooter() instanceof Player && (shooter = (Player)event.getEntity().getShooter()).isSprinting() && event.getIntensity(shooter) > 0.5) {
-                event.setIntensity(shooter, 1.0);
+
+            org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPotionSplashEvent(this, affected);
+
+            if (event.getEntity().getShooter() instanceof Player) {
+                Player shooter = (Player) event.getEntity().getShooter();
+
+                if (shooter.isSprinting() && event.getIntensity(shooter) > 0.5D) {
+                    event.setIntensity(shooter, 1.0D);
+                }
             }
+
             if (!event.isCancelled() && list != null && !list.isEmpty()) {
                 for (LivingEntity victim : event.getAffectedEntities()) {
-                    if (!(victim instanceof CraftLivingEntity)) continue;
-                    EntityLiving entityliving = ((CraftLivingEntity)victim).getHandle();
-                    if (this.getShooter() != null && entityliving instanceof EntityPlayer && !((EntityPlayer)entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity())) continue;
+                    if (!(victim instanceof CraftLivingEntity)) {
+                        continue;
+                    }
+
+                    EntityLiving entityliving = ((CraftLivingEntity) victim).getHandle();
+
+                    if (entityliving instanceof EntityPlayer && !((EntityPlayer) entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity())) {
+                        continue;
+                    }
+
                     double d1 = event.getIntensity(victim);
-                    for (MobEffect mobeffect : list) {
+
+                    for (Object o : list) {
+                        MobEffect mobeffect = (MobEffect) o;
                         int i = mobeffect.getEffectId();
-                        if (!this.world.pvpMode && this.getShooter() instanceof EntityPlayer && entityliving instanceof EntityPlayer && entityliving != this.getShooter() && (i == 2 || i == 4 || i == 7 || i == 15 || i == 17 || i == 18 || i == 19)) continue;
+
+                        // CraftBukkit start - Abide by PVP settings - for players only!
+                        if (!this.world.pvpMode && this.getShooter() instanceof EntityPlayer && entityliving instanceof EntityPlayer && entityliving != this.getShooter()) {
+                            // Block SLOWER_MOVEMENT, SLOWER_DIG, HARM, BLINDNESS, HUNGER, WEAKNESS and POISON potions
+                            if (i == 2 || i == 4 || i == 7 || i == 15 || i == 17 || i == 18 || i == 19) continue;
+                        }
+                        // CraftBukkit end
+
                         if (MobEffectList.byId[i].isInstant()) {
                             MobEffectList.byId[i].applyInstantEffect(this, this.getShooter(), entityliving, mobeffect.getAmplifier(), d1);
-                            continue;
+                        } else {
+                            int j = (int) (d1 * (double) mobeffect.getDuration() + 0.5D);
+
+                            if (j > 20) {
+                                entityliving.addEffect(new MobEffect(i, j, mobeffect.getAmplifier()));
+                            }
                         }
-                        int j = (int)(d1 * (double)mobeffect.getDuration() + 0.5);
-                        if (j <= 20) continue;
-                        entityliving.addEffect(new MobEffect(i, j, mobeffect.getAmplifier()));
                     }
                 }
             }
+
             if (this.getShooter() instanceof EntityHuman) {
                 int x = (int)Math.round(this.locX);
                 int y = (int)Math.round(this.locY);
                 int z = (int)Math.round(this.locZ);
                 BlockPosition customLocation = new BlockPosition(x, y, z);
-                this.world.a((EntityHuman)this.getShooter(), 2002, customLocation, this.getPotionValue());
+                this.world.a((EntityHuman) this.getShooter(), 2002, customLocation, this.getPotionValue());
             } else {
                 this.world.triggerEffect(2002, new BlockPosition(this), this.getPotionValue());
             }
             this.die();
         }
+
     }
 
-    @Override
     public void a(NBTTagCompound nbttagcompound) {
         super.a(nbttagcompound);
         if (nbttagcompound.hasKeyOfType("Potion", 10)) {
@@ -144,16 +185,18 @@ public class EntityPotion extends EntityProjectile {
         } else {
             this.setPotionValue(nbttagcompound.getInt("potionValue"));
         }
+
         if (this.item == null) {
             this.die();
         }
+
     }
 
-    @Override
     public void b(NBTTagCompound nbttagcompound) {
         super.b(nbttagcompound);
         if (this.item != null) {
             nbttagcompound.set("Potion", this.item.save(new NBTTagCompound()));
         }
+
     }
 }
