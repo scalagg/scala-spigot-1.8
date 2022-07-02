@@ -299,10 +299,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
                 // Check if size is > 9, this should cover some abuse
                 if (entityPotion.dead || this.potions.size() > 9) {
-                    if (!entityPotion.dead) {
-                        entityPotion.compensated = false;
-                    }
-
                     this.potions.remove(i--);
                 }
             }
