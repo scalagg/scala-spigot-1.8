@@ -81,7 +81,6 @@ shadowJar {
 
     exclude "org.bukkit.craftbukkit.Main*"
     exclude "**/*.kotlin_metadata"
-    exclude "**/*.kotlin_builtins"
 
     transform(Log4j2PluginsCacheFileTransformer)
 
