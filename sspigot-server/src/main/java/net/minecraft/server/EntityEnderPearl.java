@@ -54,7 +54,6 @@ public class EntityEnderPearl extends EntityProjectile {
                     Location location = this.lastValidTeleport.clone();
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
-                    location.setY(location.getY() + 0.1D);
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);
@@ -96,8 +95,12 @@ public class EntityEnderPearl extends EntityProjectile {
         if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
-            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
-                this.lastValidTeleport = getBukkitEntity().getLocation();
+//            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
+//                this.lastValidTeleport = getBukkitEntity().getLocation();
+//            }
+            AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(this.locX - 0.3, this.locY - 0.05, this.locZ - 0.3, this.locX + 0.3, this.locY + 1.62, this.locZ + 0.3);
+            if (this.world.getCubes(this, clearTeleportBoundingBox).isEmpty()) {
+                this.lastValidTeleport = this.getBukkitEntity().getLocation();
             }
             super.t_();
         }

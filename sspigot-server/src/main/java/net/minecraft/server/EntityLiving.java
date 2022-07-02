@@ -927,7 +927,9 @@ public abstract class EntityLiving extends Entity {
                 }
             }
 
-            this.motY = Math.min(this.motY, preset.getVerticalLimit());
+            if (this.motY > preset.getVerticalLimit()) {
+                this.motY = preset.getVerticalLimit();
+            }
         }
     }
 
