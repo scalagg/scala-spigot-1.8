@@ -82,6 +82,8 @@ shadowJar {
     exclude "org.bukkit.craftbukkit.Main*"
     exclude "**/*.kotlin_metadata"
 
+    exclude "**/com/fasterxml/**"
+
     transform(Log4j2PluginsCacheFileTransformer)
 
     relocate "org.bukkit.craftbukkit", "org.bukkit.craftbukkit.v1_8_R3"
