@@ -40,9 +40,9 @@ public class EntityEnderPearl extends EntityProjectile {
         }
         // PaperSpigot end
 
-        for (int i = 0; i < 32; ++i) {
-            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
-        }
+//        for (int i = 0; i < 32; ++i) {
+//            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
+//        }
 
         if (!this.world.isClientSide) {
             if (entityliving instanceof EntityPlayer) {
