@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import net.jafama.FastMath;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -902,7 +903,14 @@ public abstract class EntityHuman extends EntityLiving {
         // CraftBukkit end
         if (!this.isInvulnerable(damagesource)) {
             if (!damagesource.ignoresArmor() && this.isBlocking() && f > 0.0F) {
-                f = (1.0F + f) * this.world.paperSpigotConfig.playerBlockingDamageMultiplier; // PaperSpigot - Configurable damage multiplier for blocking;
+                final PlayerBlockedHitEvent event =
+                    new PlayerBlockedHitEvent(uniqueID);
+
+                Bukkit.getPluginManager().callEvent(event);
+
+                if (!event.isCancelled()) {
+                    f = (1.0F + f) * this.world.paperSpigotConfig.playerBlockingDamageMultiplier; // PaperSpigot - Configurable damage multiplier for blocking;
+                }
             }
 
             f = this.applyArmorModifier(damagesource, f);
