@@ -63,7 +63,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     public final RollingAverage tps15 = new RollingAverage(60 * 15);
     protected final ICommandHandler b;
     protected final Proxy e;
-    protected final Queue<FutureTask<?>> j = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    protected final Queue<FutureTask<?>> j = new com.destroystokyo.paper.utils.CachedSizeConcurrentLinkedQueue<>();
     private final MojangStatisticsGenerator n = new MojangStatisticsGenerator("net/minecraft/server", this, az());
     private final List<IUpdatePlayerListBox> p = Lists.newArrayList();
     private final ServerPing r = new ServerPing();
