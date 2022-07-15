@@ -60,10 +60,19 @@ public class RegionFile {
             this.f.set(1, Boolean.valueOf(false));
             this.c.seek(0L);
 
+            // PandaSpigot start - Reduce IO ops
+            java.nio.ByteBuffer header = java.nio.ByteBuffer.allocate(8192);
+            while (header.hasRemaining())  {
+                if (this.c.getChannel().read(header) == -1) throw new java.io.EOFException();
+            }
+            ((java.nio.Buffer) header).clear(); // cast required, due to Java 9+ changing return type
+            java.nio.IntBuffer headerAsInts = header.asIntBuffer();
+            // PandaSpigot end
+
             int k;
 
             for (j = 0; j < 1024; ++j) {
-                k = this.c.readInt();
+                k = headerAsInts.get(); // PandaSpigot
                 this.d[j] = k;
                 if (k != 0 && (k >> 8) + (k & 255) <= this.f.size()) {
                     for (int l = 0; l < (k & 255); ++l) {
@@ -73,7 +82,7 @@ public class RegionFile {
             }
 
             for (j = 0; j < 1024; ++j) {
-                k = this.c.readInt();
+                k = headerAsInts.get(); // PandaSpigot
                 this.e[j] = k;
             }
         } catch (IOException ioexception) {
