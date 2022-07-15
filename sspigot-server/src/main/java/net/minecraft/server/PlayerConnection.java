@@ -238,7 +238,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					this.lastYaw = to.getYaw();
 					this.lastPitch = to.getPitch();
 
-					if (EventFilterHandler.INSTANCE.shouldCall(PlayerMoveEvent.class)) {
+					if (
+						EventFilterHandler.INSTANCE.shouldCall(PlayerMoveEvent.class) &&
+						PlayerMoveEvent.getHandlerList().getRegisteredListeners().length != 0
+					) {
 						Location oldTo = to.clone();
 						PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
 						this.server.getPluginManager().callEvent(event);
