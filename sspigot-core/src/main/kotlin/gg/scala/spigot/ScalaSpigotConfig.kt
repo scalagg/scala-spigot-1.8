@@ -11,6 +11,7 @@ class ScalaSpigotConfig
 {
     val kickForInvalidArmAnimation = true
     val hidePlayersFromTabList = false
+    val smoothTeleportation = true
 
     val automaticChunkUnload = true
     val handleBlockOperations = false
