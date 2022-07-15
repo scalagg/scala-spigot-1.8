@@ -177,6 +177,21 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		this.die();
 	}
 
+	// PandaSpigot start - Use shared random for entities
+	public static final Random SHARED_RANDOM = new Random() {
+		private boolean locked = false;
+		@Override
+		public synchronized void setSeed(long seed) {
+			if (locked) {
+				MinecraftServer.LOGGER.error("Ignoring setSeed on Entity.SHARED_RANDOM", new Throwable());
+			} else {
+				super.setSeed(seed);
+				locked = true;
+			}
+		}
+	};
+	// PandaSpigot end
+
 	public Entity(World world) {
 		this.id = entityCount++;
 		this.j = 1.0D;
@@ -184,7 +199,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		this.width = 0.6F;
 		this.length = 1.8F;
 		this.h = 1;
-		this.random = new Random();
+		this.random = SHARED_RANDOM;
 		this.maxFireTicks = 1;
 		this.justCreated = true;
 		this.uniqueID = MathHelper.a(this.random);
