@@ -51,7 +51,13 @@ public class BlockChest extends BlockContainer {
         while (iterator.hasNext()) {
             EnumDirection enumdirection = (EnumDirection) iterator.next();
             BlockPosition blockposition1 = blockposition.shift(enumdirection);
-            IBlockData iblockdata1 = world.getType(blockposition1);
+
+            // FlamePaper start - Don't load chunks for chests
+            final IBlockData iblockdata1 = world.isLoaded(blockposition1) ? world.getType(blockposition1) : null;
+            if (iblockdata1 == null) {
+                continue;
+            }
+            // FlamePaper end
 
             if (iblockdata1.getBlock() == this) {
                 this.e(world, blockposition1, iblockdata1);
