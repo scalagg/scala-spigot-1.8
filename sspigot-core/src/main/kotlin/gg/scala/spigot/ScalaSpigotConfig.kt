@@ -16,6 +16,8 @@ class ScalaSpigotConfig
     val handleEntityActivation = false
     val handleMobIntelligence = false
 
+    val fishingRodMultiplier = 1.0
+
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
 

@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import gg.scala.spigot.ScalaSpigot;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -206,6 +207,15 @@ public class EntityFishingHook extends Entity {
             }
 
             if (!this.as) {
+                final double fishingRodMultiplier = ScalaSpigot.INSTANCE
+                    .getConfig().getFishingRodMultiplier();
+
+                // WindSpigot start
+                motX *= fishingRodMultiplier;
+                motY *= fishingRodMultiplier;
+                motZ *= fishingRodMultiplier;
+                // WindSpigot end
+
                 this.move(this.motX, this.motY, this.motZ);
                 float f1 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
