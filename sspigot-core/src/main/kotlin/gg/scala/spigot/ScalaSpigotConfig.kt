@@ -11,10 +11,12 @@ class ScalaSpigotConfig
 {
     val kickForInvalidArmAnimation = true
     val hidePlayersFromTabList = false
+
     val automaticChunkUnload = true
     val handleBlockOperations = false
     val handleEntityActivation = false
     val handleMobIntelligence = false
+    val handlePlayerDataSave = false
 
     val fishingRodMultiplier = 1.0
 

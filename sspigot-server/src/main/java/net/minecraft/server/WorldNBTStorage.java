@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -173,6 +174,11 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
 
     public void save(EntityHuman entityhuman) {
         try {
+            if (!ScalaSpigot.INSTANCE.getConfig().getHandlePlayerDataSave())
+            {
+                return;
+            }
+
             NBTTagCompound nbttagcompound = new NBTTagCompound();
 
             entityhuman.e(nbttagcompound);
@@ -192,6 +198,11 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
     }
 
     public NBTTagCompound load(EntityHuman entityhuman) {
+        if (!ScalaSpigot.INSTANCE.getConfig().getHandlePlayerDataSave())
+        {
+            return null;
+        }
+
         NBTTagCompound nbttagcompound = null;
 
         try {
