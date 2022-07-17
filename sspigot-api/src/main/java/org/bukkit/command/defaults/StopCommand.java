@@ -8,12 +8,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Deprecated
 public class StopCommand extends VanillaCommand {
     public StopCommand() {
-        super("stop");
+        super("stop", "", "", Collections.singletonList("sotp"));
         this.description = "Stops the server with optional reason";
         this.usageMessage = "/stop [reason]";
         this.setPermission("bukkit.command.stop");

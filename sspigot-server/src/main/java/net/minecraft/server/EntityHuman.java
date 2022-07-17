@@ -1068,7 +1068,7 @@ public abstract class EntityHuman extends EntityLiving {
                     this.motX *= preset.getSlowdown();
                     this.motZ *= preset.getSlowdown();
 
-//                    this.setSprinting(false);
+                    this.setSprinting(false);
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
