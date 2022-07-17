@@ -1059,19 +1059,16 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (this.isSprinting())
-                    {
-                        entity.g(
-                                -MathHelper.sin(this.yaw * ((float) Math.PI) / 180.0F) * (float) i * preset.getExtraHorizontal(),
-                                preset.getExtraVertical(),
-                                MathHelper.cos(this.yaw * ((float) Math.PI) / 180.0F) * (float) i * preset.getExtraHorizontal()
-                        );
+                    entity.g(
+                        -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
+                        preset.getExtraVertical(),
+                        MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
+                    );
 
-                        this.motX *= 0.6D;
-                        this.motZ *= 0.6D;
+                    this.motX *= preset.getSlowdown();
+                    this.motZ *= preset.getSlowdown();
 
-                        this.setSprinting(false);
-                    }
+//                    this.setSprinting(false);
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
