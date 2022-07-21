@@ -1,22 +1,10 @@
 plugins {
     id "java"
     id "maven-publish"
+    id "net.kyori.indra" version "2.1.1"
     id "com.jfrog.artifactory" version "4.28.2"
     id "org.jetbrains.kotlin.jvm" version "1.7.0"
     id "com.github.johnrengelman.shadow" version "7.1.2"
-}
-
-String environmental(String key)
-{
-    final String environment =
-        System.getenv(key)
-
-    if (environment != null)
-    {
-        return environment
-    }
-
-    return project.property(key)
 }
 
 allprojects {
@@ -65,11 +53,11 @@ subprojects {
         repositories {
             maven {
                 name "Scala"
-                url "${environmental("artifactory_contextUrl")}/gradle-release"
+                url "${property("artifactory_contextUrl")}/gradle-release"
 
                 credentials {
-                    username environmental("artifactory_user")
-                    password environmental("artifactory_password")
+                    username property("artifactory_user")
+                    password property("artifactory_password")
                 }
             }
         }
@@ -82,13 +70,13 @@ subprojects {
 }
 
 artifactory {
-    this.contextUrl = environmental("artifactory_contextUrl")
+    this.contextUrl = property("artifactory_contextUrl")
 
     publish {
         repository {
-            repoKey = environmental("artifactory_release_local")
-            username = environmental("artifactory_user")
-            password = environmental("artifactory_password")
+            repoKey = property("artifactory_release_local")
+            username = property("artifactory_user")
+            password = property("artifactory_password")
             maven = true
         }
     }
