@@ -12,7 +12,7 @@ object EventFilterHandler
 
     fun initialLoad()
     {
-        filters[AirClickEvent::class.java] = false
+//        filters[AirClickEvent::class.java] = false
     }
 
     fun shouldCall(event: Class<*>): Boolean

@@ -619,9 +619,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						if (!this.minecraftServer.a(worldserver, blockposition, this.player) && worldserver.getWorldBorder().a(blockposition)) {
 							this.player.playerInteractManager.a(blockposition, packetplayinblockdig.b());
 						} else {
-							if (EventFilterHandler.INSTANCE.shouldCall(LeftClickBlockEvent.class)) {
-								CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, blockposition, packetplayinblockdig.b(), this.player.inventory.getItemInHand());
-							}
+							CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, blockposition, packetplayinblockdig.b(), this.player.inventory.getItemInHand());
 
 							this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(worldserver, blockposition));
 
@@ -1158,27 +1156,25 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 		this.player.resetIdleTimer();
 
-		if (EventFilterHandler.INSTANCE.shouldCall(AirClickEvent.class)) {
-			float pitch = this.player.pitch;
-			float yaw = this.player.yaw;
-			double locX = this.player.locX;
-			double locY = this.player.locY + (double) this.player.getHeadHeight();
-			double locZ = this.player.locZ;
-			Vec3D vec3d = new Vec3D(locX, locY, locZ);
-			float f3 = (float) gg.scala.spigot.util.MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
-			float f4 = (float) gg.scala.spigot.util.MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
-			float f5 = (float) -gg.scala.spigot.util.MathHelper.cos(-pitch * 0.017453292F);
-			float f6 = (float) gg.scala.spigot.util.MathHelper.sin(-pitch * 0.017453292F);
-			float f7 = f4 * f5;
-			float f8 = f3 * f5;
-			double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
-			Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
+		float pitch = this.player.pitch;
+		float yaw = this.player.yaw;
+		double locX = this.player.locX;
+		double locY = this.player.locY + (double) this.player.getHeadHeight();
+		double locZ = this.player.locZ;
+		Vec3D vec3d = new Vec3D(locX, locY, locZ);
+		float f3 = (float) gg.scala.spigot.util.MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
+		float f4 = (float) gg.scala.spigot.util.MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
+		float f5 = (float) -gg.scala.spigot.util.MathHelper.cos(-pitch * 0.017453292F);
+		float f6 = (float) gg.scala.spigot.util.MathHelper.sin(-pitch * 0.017453292F);
+		float f7 = f4 * f5;
+		float f8 = f3 * f5;
+		double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
+		Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
 
-			MovingObjectPosition movingobjectposition = this.player.world.rayTrace(vec3d, vec3d1, false);
+		MovingObjectPosition movingobjectposition = this.player.world.rayTrace(vec3d, vec3d1, false);
 
-			if (movingobjectposition == null || movingobjectposition.type != MovingObjectPosition.EnumMovingObjectType.BLOCK) {
-				CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_AIR, this.player.inventory.getItemInHand());
-			}
+		if (movingobjectposition == null || movingobjectposition.type != MovingObjectPosition.EnumMovingObjectType.BLOCK) {
+			CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_AIR, this.player.inventory.getItemInHand());
 		}
 
 		PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());

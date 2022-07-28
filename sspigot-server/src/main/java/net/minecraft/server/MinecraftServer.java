@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import co.aikar.timings.SpigotTimings;
+import com.destroystokyo.paper.tick.ReentrantIAsyncHandler;
+import com.destroystokyo.paper.tick.TasksPerTick;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
@@ -41,7 +43,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
+public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
 
     public static final Logger LOGGER = LogManager.getLogger(MinecraftServer.class);
 
@@ -123,7 +125,36 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     private int autoSaveDelay = 0;
     private boolean autoSaveOrdered = false;
 
-    public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
+    // PandaSpigot start - Modern tick loop
+    private long nextTickTime;
+    private long delayedTasksMaxNextTickTime;
+    private boolean mayHaveDelayedTasks;
+    private boolean forceTicks;
+    private volatile boolean isReady;
+    private long lastOverloadWarning;
+    public long serverStartTime;
+    public volatile Thread shutdownThread;
+    private long lastTick = 0;
+    private long catchupTime = 0;
+    public static <S extends MinecraftServer> S spin(java.util.function.Function<Thread, S> serverFactory) {
+        java.util.concurrent.atomic.AtomicReference<S> reference = new java.util.concurrent.atomic.AtomicReference<>();
+        Thread thread = new Thread(() -> reference.get().run(), "Server thread");
+
+        thread.setUncaughtExceptionHandler((thread1, throwable) -> MinecraftServer.LOGGER.error(throwable));
+        S server = serverFactory.apply(thread);
+
+        reference.set(server);
+        thread.setPriority(Thread.NORM_PRIORITY + 2);
+        thread.start();
+        return server;
+    }
+
+    public MinecraftServer(OptionSet options, Proxy proxy, File file1, Thread thread) {
+        super("Server");
+        this.nextTickTime = getMillis();
+        this.primaryThread = thread;
+        this.serverThread = thread;
+        // PandaSpigot end
         io.netty.util.ResourceLeakDetector.setEnabled(false);
 
         this.e = proxy;
@@ -138,7 +169,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
 
-        this.serverThread = primaryThread = new Thread(this, "Server thread");
+//        this.serverThread = primaryThread = new Thread(this, "Server thread");
     }
 
     public static void main(final OptionSet options) {
@@ -147,6 +178,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         LogCleanup.cleanup();
 
         try {
+            /* // PandaSpigot start - comment out
             DedicatedServer dedicatedserver = new DedicatedServer(options);
 
             if (options.has("port")) {
@@ -166,6 +198,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             }
 
             dedicatedserver.primaryThread.start();
+            */ // PandaSpigot end
         } catch (Exception exception) {
             LOGGER.fatal("Failed to start the minecraft server", exception);
         }
@@ -526,8 +559,21 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.isRunning = false;
     }
 
+
+    // PandaSpigot start - Modern tick loop
+    public static long getMillis() {
+        return getNanos() / 1000000L;
+    }
+
+    public static long getNanos() {
+        return System.nanoTime();
+    }
+
     public void run() {
         try {
+            this.serverStartTime = getNanos();
+            // PandaSpigot end
+
             if (this.init()) {
                 this.ab = az();
 
@@ -536,31 +582,24 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                 this.a(this.r);
 
                 // Spigot start
-                long start = System.nanoTime(), lastTick = start - TICK_TIME, catchupTime = 0, curTime, wait, tickSection = start; // Paper - Further improve server tick loop
+                // PandaSpigot start - Modern tick loop
+                long start = System.nanoTime(), curTime, tickSection = start;
+                lastTick = start - TICK_TIME;
+                // PandaSpigot end
 
                 while (this.isRunning) {
-                    curTime = System.nanoTime();
-                    // Paper start - Further improve server tick loop
-                    wait = TICK_TIME - (curTime - lastTick);
-                    if (wait > 0) {
-                        if (catchupTime < 2E6) {
-                            wait += Math.abs(catchupTime);
-                        } else if (wait < catchupTime) {
-                            catchupTime -= wait;
-                            wait = 0;
-                        } else {
-                            wait -= catchupTime;
-                            catchupTime = 0;
-                        }
-                    }
-                    if (wait > 0) {
-                        Thread.sleep(wait / 1000000);
-                        curTime = System.nanoTime();
-                        wait = TICK_TIME - (curTime - lastTick);
+                    // PandaSpigot start - Modern tick loop
+                    long i = ((curTime = System.nanoTime()) / (1000L * 1000L)) - this.nextTickTime; // Paper
+
+                    if (i > 5000L && this.nextTickTime - this.lastOverloadWarning >= 30000L) { // CraftBukkit
+                        long j = i / 50L;
+                        if (this.server.getWarnOnOverload()) // CraftBukkit
+                            MinecraftServer.LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
+                        this.nextTickTime += j * 50L;
+                        this.lastOverloadWarning = this.nextTickTime;
                     }
 
-                    catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
-                    if (++MinecraftServer.currentTick % SAMPLE_INTERVAL == 0) {
+                    if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
                         final long diff = curTime - tickSection;
                         double currentTps = 1E9 / diff * SAMPLE_INTERVAL;
                         tps1.add(currentTps, diff);
@@ -573,8 +612,16 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
                     LAST_TICK_TIME = System.currentTimeMillis();
 
-                    this.A(lastTick, catchupTime);
-                    this.Q = true;
+                    this.nextTickTime += 50L;
+                    this.methodProfiler.a("tick");
+                    this.A(this::haveTime);
+                    this.methodProfiler.c("nextTickWait");
+                    this.mayHaveDelayedTasks = true;
+                    this.delayedTasksMaxNextTickTime = Math.max(getMillis() + 50L, this.nextTickTime);
+                    this.waitUntilNextTick();
+                    this.methodProfiler.b();
+                    this.isReady = true;
+                    // PandaSpigot end
                 }
             } else {
                 this.a((CrashReport) null);
@@ -622,6 +669,63 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
 
     }
 
+    // PandaSpigot start - Modern tick loop
+    private boolean haveTime() {
+        if (isOversleep) return canOversleep();
+        return this.forceTicks || this.runningTask() || getMillis() < (this.mayHaveDelayedTasks ? this.delayedTasksMaxNextTickTime : this.nextTickTime);
+    }
+
+    boolean isOversleep = false;
+    private boolean canOversleep() {
+        return this.mayHaveDelayedTasks && getMillis() < this.delayedTasksMaxNextTickTime;
+    }
+
+    private boolean canSleepForTickNoOversleep() {
+        return this.forceTicks || this.runningTask() || getMillis() < this.nextTickTime;
+    }
+
+    private void executeModerately() {
+        this.runAllRunnable();
+        java.util.concurrent.locks.LockSupport.parkNanos("executing tasks", 1000L);
+    }
+
+    protected void waitUntilNextTick() {
+        this.controlTerminate(() -> !this.canSleepForTickNoOversleep());
+    }
+
+    @Override
+    protected TasksPerTick packUpRunnable(Runnable runnable) {
+        // anything that does try to post to main during watchdog crash, run on watchdog
+        if (this.hasStopped && Thread.currentThread().equals(shutdownThread)) {
+            runnable.run();
+            runnable = () -> {};
+        }
+        return new TasksPerTick(this.ticks, runnable);
+    }
+
+    @Override
+    protected boolean shouldRun(TasksPerTick task) {
+        return task.getTick() + 3 < this.ticks || this.haveTime();
+    }
+
+    @Override
+    public boolean drawRunnable() {
+        boolean flag = this.pollTaskInternal();
+
+        this.mayHaveDelayedTasks = flag;
+        return flag;
+    }
+
+    private boolean pollTaskInternal() {
+        return super.drawRunnable();
+    }
+
+    @Override
+    public Thread getMainThread() {
+        return serverThread;
+    }
+    // PandaSpigot end
+
     private void a(ServerPing serverping) {
         File file = this.d("server-icon.png");
 
@@ -656,9 +760,14 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
     protected void z() {
     }
 
-    protected void A(long lastTick, long catchupTime) throws ExceptionWorldConflict { // CraftBukkit - added throws
+    // PandaSpigot start - Modern tick loop
+    protected void A(java.util.function.BooleanSupplier shouldKeepTicking) throws ExceptionWorldConflict { // CraftBukkit - added throws
         co.aikar.timings.TimingsManager.FULL_SERVER_TICK.startTiming(); // Spigot
         long i = System.nanoTime();
+
+        isOversleep = true;
+        this.controlTerminate(() -> !this.canOversleep());
+        isOversleep = false;
         new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent(); // Paper
 
         ++this.ticks;
@@ -706,6 +815,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
             }
         }
 
+        // PandaSpigot start - Modern tick loop
+        long endTime = System.nanoTime();
+        long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
+        new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent();
+        // PandaSpigot end
+
         this.methodProfiler.a("tallying");
         this.h[this.ticks % 100] = System.nanoTime() - i;
         this.methodProfiler.b();
@@ -714,12 +829,6 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
         this.methodProfiler.b();
         this.methodProfiler.b();
         org.spigotmc.WatchdogThread.tick();
-
-        // Paper start
-        long endTime = System.nanoTime();
-        long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
-        new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent();
-        // Paper end
 
         co.aikar.timings.TimingsManager.FULL_SERVER_TICK.stopTiming();
     }

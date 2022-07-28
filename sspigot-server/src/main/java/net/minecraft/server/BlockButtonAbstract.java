@@ -173,11 +173,17 @@ public abstract class BlockButtonAbstract extends Block {
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {}
 
     public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
+        System.out.println("1");
+
         if (!world.isClientSide) {
+            System.out.println("2");
             if (((Boolean) iblockdata.get(POWERED)).booleanValue()) {
+                System.out.println("3");
                 if (this.N) {
+                    System.out.println("4-1");
                     this.f(world, blockposition, iblockdata);
                 } else {
+                    System.out.println("4-2");
                     // CraftBukkit start
                     org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
 
@@ -187,6 +193,7 @@ public abstract class BlockButtonAbstract extends Block {
                     if (eventRedstone.getNewCurrent() > 0) {
                         return;
                     }
+                    System.out.println("5");
                     // CraftBukkit end
                     world.setTypeUpdate(blockposition, iblockdata.set(POWERED, Boolean.valueOf(false)));
                     this.c(world, blockposition, (EnumDirection) iblockdata.get(FACING));
