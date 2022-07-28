@@ -136,6 +136,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public volatile Thread shutdownThread;
     private long lastTick = 0;
     private long catchupTime = 0;
+
     public static <S extends MinecraftServer> S spin(java.util.function.Function<Thread, S> serverFactory) {
         java.util.concurrent.atomic.AtomicReference<S> reference = new java.util.concurrent.atomic.AtomicReference<>();
         Thread thread = new Thread(() -> reference.get().run(), "Server thread");
