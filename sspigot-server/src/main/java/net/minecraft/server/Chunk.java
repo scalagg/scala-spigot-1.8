@@ -71,6 +71,8 @@ public class Chunk {
     private PacketPlayOutMapChunk.ChunkMap chunkMap;
     private int emptySectionBits;
 
+    private final ChunkCoordIntPair chunkCoords; // PandaSpigot
+
     public PacketPlayOutMapChunk.ChunkMap getChunkMap(boolean groundUpContinuous, int primaryBitMask) {
         if (!world.paperSpigotConfig.cacheChunkMaps || !groundUpContinuous || (primaryBitMask != 0 && primaryBitMask != '\uffff')) {
             return PacketPlayOutMapChunk.a(this, groundUpContinuous, !world.worldProvider.o(), primaryBitMask);
@@ -169,6 +171,8 @@ public class Chunk {
 
         this.blockPos = new BlockPosition(this.locX << 4, 0, this.locZ << 4);
         this.cachedArea = new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8);
+
+        this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // PandaSpigot
     }
 
     public org.bukkit.Chunk bukkitChunk;
@@ -1216,7 +1220,7 @@ public class Chunk {
     }
 
     public ChunkCoordIntPair j() {
-        return new ChunkCoordIntPair(this.locX, this.locZ);
+        return this.chunkCoords;
     }
 
     public boolean c(int i, int j) {
