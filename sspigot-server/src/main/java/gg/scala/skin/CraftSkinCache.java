@@ -1,4 +1,4 @@
-package dev.rocco.kig.paper.impl.skin;
+package gg.scala.skin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.TileEntitySkull;

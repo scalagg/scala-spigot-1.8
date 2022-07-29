@@ -60,6 +60,11 @@ public abstract class World implements IBlockAccess {
             }
         }
     };
+
+    private static final Random RANDOM = new Random();
+
+    public final Random random = RANDOM;
+
     // Spigot end
     protected final Set<Entity> g = Sets.newHashSet(); // Paper
     //public final List<TileEntity> h = Lists.newArrayList(); // PaperSpigot - Remove unused list
@@ -71,14 +76,13 @@ public abstract class World implements IBlockAccess {
     protected final IntHashMap<Entity> entitiesById = new IntHashMap();
     private long d = 16777215L;
     private int I;
-    protected int m = (new Random()).nextInt();
+    protected int m = this.random.nextInt();
     protected final int n = 1013904223;
     protected float o;
     protected float p;
     protected float q;
     protected float r;
     private int J;
-    public final Random random = new Random();
     public WorldProvider worldProvider; // CraftBukkit - remove final
     protected List<IWorldAccess> u = Lists.newArrayList();
     protected IChunkProvider chunkProvider;

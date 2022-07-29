@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.WeatherType;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.util.HashTreeSet;
+import org.bukkit.craftbukkit.util.LongHash;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 
@@ -29,6 +30,8 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     private boolean O;
     private int emptyTime;
     private final PortalTravelAgent Q;
+
+    private final SpawnerCreature R = new SpawnerCreature();
     private net.minecraft.server.WorldServer.BlockActionDataList[] S = new net.minecraft.server.WorldServer.BlockActionDataList[]{
             new net.minecraft.server.WorldServer.BlockActionDataList(null),
             new net.minecraft.server.WorldServer.BlockActionDataList(null)
@@ -207,15 +210,39 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     public void doTick(int ticks) {
         super.doTick(ticks);
 
+        if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {
+            this.getWorldData().setDifficulty(EnumDifficulty.HARD);
+        }
+
         this.worldProvider.m().b();
 
+        if (this.everyoneDeeplySleeping()) {
+            if (this.getGameRules().getBoolean("doDaylightCycle")) {
+                final long i = this.worldData.getDayTime() + 24000L;
+                this.worldData.setDayTime(i - i % 24000L);
+            }
+
+            this.e();
+        }
+
+        // CraftBukkit start - Only call spawner if we have players online and the world allows for mobs or animals
+        long time = this.worldData.getTime();
+        if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && this.players.size() > 0) {
+            timings.mobSpawn.startTiming(); // Spigot
+            this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
+            timings.mobSpawn.stopTiming(); // Spigot
+            // CraftBukkit end
+        }
+
+        // CraftBukkit end
         if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
-            timings.doChunkUnload.startTiming();
-
+            timings.doChunkUnload.startTiming(); // Spigot
             this.methodProfiler.c("chunkSource");
-            this.chunkProvider.unloadChunks();
 
-            timings.doChunkUnload.stopTiming();
+            // Only unload if chunkProvider isn't null
+            if (this.chunkProvider != null) {
+                this.chunkProvider.unloadChunks();
+            }
         }
 
         int j = this.a(1.0F);
@@ -224,12 +251,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             this.c(j);
         }
 
-        if (ticks % DedicatedServer.NORMAL_TICK_TIME == 0) {
-            this.worldData.setTime(this.worldData.getTime() + 1L);
+        this.worldData.setTime(this.worldData.getTime() + 1L);
 
-            if (this.getGameRules().getBoolean("doDaylightCycle")) {
-                this.worldData.setDayTime(this.worldData.getDayTime() + 1L);
-            }
+        if (this.getGameRules().getBoolean("doDaylightCycle")) {
+            this.worldData.setDayTime(this.worldData.getDayTime() + 1L);
         }
 
         // Tick scheduled blocks
@@ -238,14 +263,11 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         this.a(false);
         timings.scheduledBlocks.stopTiming();
 
-        if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations())
-        {
-            // Tick current blocks
-            this.methodProfiler.c("tickBlocks");
-            timings.chunkTicks.startTiming();
-            this.h();
-            timings.chunkTicks.stopTiming();
-        }
+        // Tick current blocks
+        this.methodProfiler.c("tickBlocks");
+        timings.chunkTicks.startTiming();
+        this.h();
+        timings.chunkTicks.stopTiming();
 
         // Tick chunk map
         this.methodProfiler.c("chunkMap");
@@ -352,89 +374,97 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
     protected void h() {
         super.h();
-
         if (this.worldData.getType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+            // Spigot start
             gnu.trove.iterator.TLongShortIterator iterator = this.chunkTickList.iterator();
 
             while (iterator.hasNext()) {
                 iterator.advance();
-
                 long chunkCoord = iterator.key();
 
-                this.getChunkAt(World.keyToX(chunkCoord), World.keyToZ(chunkCoord)).b(false);
+                this.getChunkAt(World.keyToX( chunkCoord ), World.keyToZ( chunkCoord )).b(false);
+                // Spigot end
             }
 
         } else {
-            for (gnu.trove.iterator.TLongShortIterator iter = chunkTickList.iterator(); iter.hasNext(); ) {
+            int i = 0;
+            int j = 0;
+
+            // CraftBukkit start
+            //for (Iterator iterator1 = this.chunkTickList.iterator(); iterator1.hasNext(); this.methodProfiler.b()) {
+            //    ChunkCoordIntPair chunkcoordintpair1 = (ChunkCoordIntPair) iterator1.next();
+            //    int k = chunkcoordintpair1.x * 16;
+            //    int l = chunkcoordintpair1.z * 16;
+            // Spigot start
+            for (gnu.trove.iterator.TLongShortIterator iter = chunkTickList.iterator(); iter.hasNext(); )
+            {
                 iter.advance();
                 long chunkCoord = iter.key();
-                int chunkX = World.keyToX(chunkCoord);
-                int chunkZ = World.keyToZ(chunkCoord);
-
-                if ((!this.chunkProvider.isChunkLoaded(chunkX, chunkZ)) || (this.chunkProviderServer.unloadQueue.contains(chunkX, chunkZ))) {
+                int chunkX = World.keyToX( chunkCoord );
+                int chunkZ = World.keyToZ( chunkCoord );
+                // If unloaded, or in procedd of being unloaded, drop it
+                if ( ( !this.chunkProvider.isChunkLoaded( chunkX, chunkZ ) ) || ( this.chunkProviderServer.unloadQueue.contains( LongHash.toLong(chunkX, chunkZ) ) ) ) // TacoSpigot - invoke LongHash directly
+                {
                     iter.remove();
                     continue;
                 }
-
+                // Spigot end
+                // ChunkCoordIntPair chunkcoordintpair = (ChunkCoordIntPair) iterator.next();
                 int k = chunkX * 16;
                 int l = chunkZ * 16;
 
                 this.methodProfiler.a("getChunk");
                 Chunk chunk = this.getChunkAt(chunkX, chunkZ);
+                // CraftBukkit end
+
                 this.a(k, l, chunk);
-
                 this.methodProfiler.c("tickChunk");
+                if (!chunk.areNeighborsLoaded(1)) continue; // Spigot
                 chunk.b(false);
-
                 this.methodProfiler.c("thunder");
-
                 int i1;
                 BlockPosition blockposition;
 
-                if (!this.paperSpigotConfig.disableThunder && this.random.nextInt(100000) == 0 && this.S() && this.R()) {
+                if (!this.paperSpigotConfig.disableThunder && this.random.nextInt(100000) == 0 && this.S() && this.R()) { // PaperSpigot - Disable thunder
                     this.m = this.m * 3 + 1013904223;
                     i1 = this.m >> 2;
                     blockposition = this.a(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
-
                     if (this.isRainingAt(blockposition)) {
                         this.strikeLightning(new EntityLightning(this, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ()));
                     }
                 }
 
                 this.methodProfiler.c("iceandsnow");
-
-                if (!this.paperSpigotConfig.disableIceAndSnow && this.random.nextInt(16) == 0) {
+                if (!this.paperSpigotConfig.disableIceAndSnow && this.random.nextInt(16) == 0) { // PaperSpigot - Disable ice and snow
                     this.m = this.m * 3 + 1013904223;
                     i1 = this.m >> 2;
                     blockposition = this.q(new BlockPosition(k + (i1 & 15), 0, l + (i1 >> 8 & 15)));
                     BlockPosition blockposition1 = blockposition.down();
 
                     if (this.w(blockposition1)) {
+                        // CraftBukkit start
                         BlockState blockState = this.getWorld().getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ()).getState();
-
                         blockState.setTypeId(Block.getId(Blocks.ICE));
 
                         BlockFormEvent iceBlockForm = new BlockFormEvent(blockState.getBlock(), blockState);
-
                         this.getServer().getPluginManager().callEvent(iceBlockForm);
-
                         if (!iceBlockForm.isCancelled()) {
                             blockState.update(true);
                         }
+                        // CraftBukkit end
                     }
 
                     if (this.S() && this.f(blockposition, true)) {
+                        // CraftBukkit start
                         BlockState blockState = this.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()).getState();
-
                         blockState.setTypeId(Block.getId(Blocks.SNOW_LAYER));
 
                         BlockFormEvent snow = new BlockFormEvent(blockState.getBlock(), blockState);
-
                         this.getServer().getPluginManager().callEvent(snow);
-
                         if (!snow.isCancelled()) {
                             blockState.update(true);
                         }
+                        // CraftBukkit end
                     }
 
                     if (this.S() && this.getBiome(blockposition1).e()) {
@@ -444,43 +474,40 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
                 if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations()) {
                     this.methodProfiler.c("tickBlocks");
-                    timings.chunkTicksBlocks.startTiming();
-
-                    i1 = this.getGameRules().c("randomTickSpeed");
-
-                    if (i1 > 0) {
-                        ChunkSection[] achunksection = chunk.getSections();
-                        int j1 = achunksection.length;
-
-                        for (int k1 = 0; k1 < j1; ++k1) {
-                            ChunkSection chunksection = achunksection[k1];
-
-                            if (chunksection != null && chunksection.shouldTick()) {
-                                for (int l1 = 0; l1 < i1; ++l1) {
+                    timings.chunkTicksBlocks.startTiming(); // Spigot
+                    int randomTickSpeed = this.getGameRules().c("randomTickSpeed");
+                    if (randomTickSpeed > 0) {
+                        for (ChunkSection section : chunk.getSections()) {
+                            if (section != null && section.shouldTick()) {
+                                for (int l1 = 0; l1 < randomTickSpeed; ++l1) {
                                     this.m = this.m * 3 + 1013904223;
                                     int i2 = this.m >> 2;
                                     int j2 = i2 & 15;
                                     int k2 = i2 >> 8 & 15;
                                     int l2 = i2 >> 16 & 15;
-                                    IBlockData iblockdata = chunksection.getType(j2, l2, k2);
+
+                                    ++j;
+                                    IBlockData iblockdata = section.getType(j2, l2, k2);
                                     Block block = iblockdata.getBlock();
 
                                     if (block.isTicking()) {
-                                        block.a(this, new BlockPosition(j2 + k, l2 + chunksection.getYPosition(), k2 + l), iblockdata, this.random);
-
+                                        ++i;
+                                        block.a(this, new BlockPosition(j2 + k, l2 + section.getYPosition(), k2 + l), iblockdata, this.random);
                                     }
                                 }
                             }
                         }
                     }
-                    timings.chunkTicksBlocks.stopTiming();
                 }
+                timings.chunkTicksBlocks.stopTiming(); // Spigot
             }
-        }
 
+        }
+        // Spigot Start
         if (spigotConfig.clearChunksOnTick) {
             chunkTickList.clear();
         }
+        // Spigot End
     }
 
     protected BlockPosition a(BlockPosition blockposition) {
@@ -637,16 +664,12 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                     iterator.remove();
                     byte b0 = 0;
 
-                    System.out.println("0");
-
                     if (this.areChunksLoadedBetween(nextticklistentry.a.a(-b0, -b0, -b0), nextticklistentry.a.a(b0, b0, b0))) {
-                        System.out.println("1");
                         IBlockData iblockdata = this.getType(nextticklistentry.a);
                         co.aikar.timings.Timing timing = iblockdata.getBlock().getTiming(); // Spigot
                         timing.startTiming(); // Spigot
 
                         if (iblockdata.getBlock().getMaterial() != Material.AIR && Block.a(iblockdata.getBlock(), nextticklistentry.a())) {
-                            System.out.println("2");
                             try {
                                 iblockdata.getBlock().b((World) this, nextticklistentry.a, iblockdata, this.random);
                             } catch (Throwable throwable) {

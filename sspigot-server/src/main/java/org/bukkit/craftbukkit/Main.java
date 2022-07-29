@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 public class Main {
 
+    public static long startup = -1L;
+
     public static boolean useJline = true;
     public static boolean useConsole = true;
 
@@ -180,6 +182,7 @@ public class Main {
                 }
 
                 System.out.println("Libraries are loading, please wait...");
+                startup = System.nanoTime();
 
                 // PandaSpigot start - Modern tick loop
                 net.minecraft.server.DispenserRegistry.c();

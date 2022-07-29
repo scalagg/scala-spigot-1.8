@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.LoggerOutputStream;
+import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -226,7 +227,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             this.propertyManager.setProperty("max-build-height", this.getMaxBuildHeight());
             this.a(this.U(), this.U(), actualSeed, worldType, generatorSettings);
 
-            long i1 = System.nanoTime() - j;
+            long i1 = System.nanoTime() - Main.startup;
             String s3 = String.format("%.3fs", (double) i1 / 1.0E9D);
 
             LOGGER.info("[Scala] Finished loading the server in " + s3 + ".");

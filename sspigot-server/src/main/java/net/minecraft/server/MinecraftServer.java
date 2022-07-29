@@ -408,7 +408,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
         for (int m = 0; m < worlds.size(); m++) {
             WorldServer worldserver = this.worlds.get(m);
-            LOGGER.info("Preparing start region for level " + m + " (Seed: " + worldserver.getSeed() + ")");
+            MinecraftServer.LOGGER.info("Initializing world " + worldserver.getWorld().getName() + "...");
 
             if (!worldserver.getWorld().getKeepSpawnInMemory()) {
                 continue;
@@ -477,7 +477,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
                 if (worldserver != null) {
                     if (!flag) {
-                        LOGGER.info("Saving chunks for level '" + worldserver.getWorldData().getName() + "'/" + worldserver.worldProvider.getName());
+                        LOGGER.info("Saving chunks for world \"" + worldserver.getWorldData().getName() + "\" with type " + worldserver.worldProvider.getName() + "...");
                     }
 
                     try {
