@@ -6,20 +6,13 @@ import org.bukkit.craftbukkit.command.ConsoleCommandCompleter;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 
-public final class PaperConsole extends SimpleTerminalConsole {
+import java.nio.file.Paths;
 
+public class PaperConsole extends SimpleTerminalConsole {
     private final DedicatedServer server;
 
     public PaperConsole(DedicatedServer server) {
         this.server = server;
-    }
-
-    @Override
-    protected LineReader buildReader(LineReaderBuilder builder) {
-        return super.buildReader(builder
-                .appName("Paper")
-                .completer(new ConsoleCommandCompleter(this.server))
-        );
     }
 
     @Override
@@ -35,5 +28,13 @@ public final class PaperConsole extends SimpleTerminalConsole {
     @Override
     protected void shutdown() {
         this.server.safeShutdown();
+    }
+
+    @Override
+    protected LineReader buildReader(LineReaderBuilder builder) {
+        return super.buildReader(builder
+            .appName("ScalaSpigot")
+            .variable(LineReader.HISTORY_FILE, Paths.get(".console_history"))
+            .completer(new ConsoleCommandCompleter(this.server)));
     }
 }
