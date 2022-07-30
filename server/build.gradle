@@ -37,7 +37,7 @@ dependencies {
     implementation(fileTree("lib"))
     implementation('org.jline:jline-terminal-jansi:3.21.0')
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
     implementation "javax.xml.bind:jaxb-api:2.4.0-b180830.0359"
 
     implementation "net.kyori:adventure-platform-bukkit:4.1.1"
@@ -64,8 +64,8 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.24"
 
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
 }
 
 processResources {
