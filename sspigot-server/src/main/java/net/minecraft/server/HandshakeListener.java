@@ -75,8 +75,36 @@ public class HandshakeListener implements PacketHandshakingInListener {
                 this.b.close(chatcomponenttext);
             } else {
                 this.b.a((PacketListener) (new LoginListener(this.a, this.b)));
+                // PandaSpigot start - handshake event
+                boolean proxyLogicEnabled = org.spigotmc.SpigotConfig.bungee;
+                boolean handledByEvent = false;
+                // Try and handle the handshake through the event
+                if (com.destroystokyo.paper.event.player.PlayerHandshakeEvent.getHandlerList().getRegisteredListeners().length != 0) { // Hello? Can you hear me?
+                    java.net.SocketAddress socketAddress = this.b.l;
+                    String hostnameOfRemote = socketAddress instanceof java.net.InetSocketAddress ? ((java.net.InetSocketAddress) socketAddress).getHostString() : InetAddress.getLoopbackAddress().getHostAddress();
+                    com.destroystokyo.paper.event.player.PlayerHandshakeEvent event = new com.destroystokyo.paper.event.player.PlayerHandshakeEvent(packethandshakinginsetprotocol.hostname, hostnameOfRemote, !proxyLogicEnabled);
+                    org.bukkit.Bukkit.getPluginManager().callEvent(event);
+                    if (!event.isCancelled()) {
+                        // If we've failed somehow, let the client know so and go no further.
+                        if (event.isFailed()) {
+                            chatcomponenttext = new ChatComponentText(event.getFailMessage());
+                            this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext));
+                            this.b.close(chatcomponenttext);
+                            return;
+                        }
+
+                        packethandshakinginsetprotocol.hostname = event.getServerHostname();
+                        if (event.getSocketAddressHostname() != null) this.b.l = new java.net.InetSocketAddress(event.getSocketAddressHostname(), socketAddress instanceof java.net.InetSocketAddress ? ((java.net.InetSocketAddress) socketAddress).getPort() : 0);
+                        this.b.spoofedUUID = event.getUniqueId();
+                        this.b.spoofedProfile = gson.fromJson(event.getPropertiesJson(), com.mojang.authlib.properties.Property[].class);
+                        handledByEvent = true; // Hooray, we did it!
+                    }
+                }
+                // Don't try and handle default logic if it's been handled by the event.
+                if (!handledByEvent && proxyLogicEnabled) {
+                    // PandaSpigot end
                 // Spigot Start
-                if (org.spigotmc.SpigotConfig.bungee) {
+                // if (org.spigotmc.SpigotConfig.bungee) { // PandaSpigot - comment out, we check above!
                     String[] split = packethandshakinginsetprotocol.hostname.split("\00");
                     if ( split.length == 3 || split.length == 4 ) {
                         packethandshakinginsetprotocol.hostname = split[0];
