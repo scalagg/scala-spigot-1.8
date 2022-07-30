@@ -13,6 +13,8 @@ class ScalaSpigotConfig
     val hidePlayersFromTabList = false
     val smoothTeleportation = true
 
+    val doDayCycle = true
+
     val automaticChunkUnload = true
     val handleBlockOperations = false
     val handleEntityActivation = false

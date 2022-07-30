@@ -253,8 +253,11 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         this.worldData.setTime(this.worldData.getTime() + 1L);
 
-        if (this.getGameRules().getBoolean("doDaylightCycle")) {
-            this.worldData.setDayTime(this.worldData.getDayTime() + 1L);
+        if (ScalaSpigot.INSTANCE.getConfig().getDoDayCycle())
+        {
+            if (this.getGameRules().getBoolean("doDaylightCycle")) {
+                this.worldData.setDayTime(this.worldData.getDayTime() + 1L);
+            }
         }
 
         // Tick scheduled blocks
@@ -263,11 +266,14 @@ public class WorldServer extends World implements IAsyncTaskHandler {
         this.a(false);
         timings.scheduledBlocks.stopTiming();
 
-        // Tick current blocks
-        this.methodProfiler.c("tickBlocks");
-        timings.chunkTicks.startTiming();
-        this.h();
-        timings.chunkTicks.stopTiming();
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations())
+        {
+            // Tick current blocks
+            this.methodProfiler.c("tickBlocks");
+            timings.chunkTicks.startTiming();
+            this.h();
+            timings.chunkTicks.stopTiming();
+        }
 
         // Tick chunk map
         this.methodProfiler.c("chunkMap");
