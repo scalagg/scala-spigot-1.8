@@ -10,8 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
 
     private static final Logger a = MinecraftServer.LOGGER;
-    private Map<ChunkCoordIntPair, NBTTagCompound> b = new ConcurrentHashMap();
-    private Set<ChunkCoordIntPair> c = Collections.newSetFromMap(new ConcurrentHashMap());
+
+    // FlamePaper - Make b and c public
+    public final Map<ChunkCoordIntPair, NBTTagCompound> b = new ConcurrentHashMap<>();
+    public final Set<ChunkCoordIntPair> c = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     private final File d;
     private boolean e = false;
 

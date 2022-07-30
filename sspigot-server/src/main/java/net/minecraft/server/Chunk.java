@@ -1,35 +1,22 @@
 package net.minecraft.server;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import net.minecraft.server.BiomeBase;
-import net.minecraft.server.Block;
-import net.minecraft.server.BlockPosition;
-import net.minecraft.server.ChunkSection;
-import net.minecraft.server.CrashReport;
-import net.minecraft.server.Entity;
-import net.minecraft.server.EntityInsentient;
-import net.minecraft.server.EntityItem;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.IInventory;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PacketPlayOutMapChunk;
-import net.minecraft.server.TileEntity;
-import net.minecraft.server.World;
-import net.minecraft.server.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.util.CraftMagicNumbers;
-import org.github.paperspigot.exception.ServerInternalException;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicInteger; // PaperSpigot
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists; // CraftBukkit
+import org.bukkit.Bukkit; // CraftBukkit
 
 public class Chunk {
 
@@ -61,7 +48,7 @@ public class Chunk {
     private long u;
     private int v;
     private ConcurrentLinkedQueue<BlockPosition> w;
-    protected gnu.trove.map.hash.TObjectIntHashMap<Class> entityCount = new gnu.trove.map.hash.TObjectIntHashMap<Class>(); // Spigot
+    protected gnu.trove.map.hash.TObjectIntHashMap<Class> entityCount = new gnu.trove.map.hash.TObjectIntHashMap<>(); // Spigot
     // PaperSpigot start - Asynchronous light updates
     public AtomicInteger pendingLightUpdates = new AtomicInteger();
     public long lightUpdateTime;
@@ -70,8 +57,6 @@ public class Chunk {
     // PaperSpigot start - ChunkMap caching
     private PacketPlayOutMapChunk.ChunkMap chunkMap;
     private int emptySectionBits;
-
-    private final ChunkCoordIntPair chunkCoords; // PandaSpigot
 
     public PacketPlayOutMapChunk.ChunkMap getChunkMap(boolean groundUpContinuous, int primaryBitMask) {
         if (!world.paperSpigotConfig.cacheChunkMaps || !groundUpContinuous || (primaryBitMask != 0 && primaryBitMask != '\uffff')) {
@@ -112,6 +97,10 @@ public class Chunk {
     }
     // PaperSpigot end
 
+    private boolean isTicked() {
+        return this.p;
+    }
+
     // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
     private int neighbors = 0x1 << 12;
 
@@ -121,8 +110,8 @@ public class Chunk {
                 return this.neighbors == Integer.MAX_VALUE >> 6;
             case 1:
                 final int mask =
-                        //       x        z   offset          x        z   offset          x         z   offset
-                        (0x1 << (1 * 5 +  1 + 12)) | (0x1 << (0 * 5 +  1 + 12)) | (0x1 << (-1 * 5 +  1 + 12)) |
+                    //       x        z   offset          x        z   offset          x         z   offset
+                    (0x1 << (1 * 5 +  1 + 12)) | (0x1 << (0 * 5 +  1 + 12)) | (0x1 << (-1 * 5 +  1 + 12)) |
                         (0x1 << (1 * 5 +  0 + 12)) | (0x1 << (0 * 5 +  0 + 12)) | (0x1 << (-1 * 5 +  0 + 12)) |
                         (0x1 << (1 * 5 + -1 + 12)) | (0x1 << (0 * 5 + -1 + 12)) | (0x1 << (-1 * 5 + -1 + 12));
                 return (this.neighbors & mask) == mask;
@@ -140,6 +129,10 @@ public class Chunk {
     }
     // CraftBukkit end
 
+    public PacketPlayOutMapChunkBulk cachedPacket;
+    public PacketPlayOutMapChunk cachedEmptyPacket;
+
+    private final ChunkCoordIntPair chunkCoords; // InsanePaper-269 - Cache Chunk Coordinations
     private final BlockPosition blockPos;
     private final BlockPosition cachedArea;
 
@@ -151,14 +144,14 @@ public class Chunk {
         this.tileEntities = Maps.newHashMap();
         this.v = 4096;
         this.w = Queues.newConcurrentLinkedQueue();
-        this.entitySlices = (List[]) (new List[16]); // Spigot
+        this.entitySlices = new List[16]; // Spigot
         this.world = world;
         this.locX = i;
         this.locZ = j;
         this.heightMap = new int[256];
 
         for (int k = 0; k < this.entitySlices.length; ++k) {
-            this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
+            this.entitySlices[k] = new io.papermc.paper.util.maplist.ObjectMapList<>(); // IonSpigot - UnsafeList -> ObjectMapList // Spigot
         }
 
         Arrays.fill(this.f, -999);
@@ -168,11 +161,9 @@ public class Chunk {
         if (!(this instanceof EmptyChunk)) {
             this.bukkitChunk = new org.bukkit.craftbukkit.CraftChunk(this);
         }
-
+        this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // InsanePaper-269 - Cache Chunk Coordinations
         this.blockPos = new BlockPosition(this.locX << 4, 0, this.locZ << 4);
         this.cachedArea = new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8);
-
-        this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // PandaSpigot
     }
 
     public org.bukkit.Chunk bukkitChunk;
@@ -294,6 +285,8 @@ public class Chunk {
         this.g[i + j * 16] = true;
         this.k = true;
     }
+
+    private void recheckGaps(boolean flag) { h(flag); } // Paper
 
     private void h(boolean flag) {
         this.world.methodProfiler.a("recheckGaps");
@@ -486,7 +479,7 @@ public class Chunk {
 
             crashreportsystemdetails.a("Location", new Callable() {
                 public String a() throws Exception {
-                    return CrashReportSystemDetails.a(new BlockPosition(net.minecraft.server.Chunk.this.locX * 16 + i, j, net.minecraft.server.Chunk.this.locZ * 16 + k));
+                    return CrashReportSystemDetails.a(new BlockPosition(Chunk.this.locX * 16 + i, j, Chunk.this.locZ * 16 + k));
                 }
 
                 public Object call() throws Exception {
@@ -526,6 +519,17 @@ public class Chunk {
         }
         return Blocks.AIR.getBlockData();
     }
+
+    public IBlockData getBlockData(int blockposition_x, int blockposition_y, int blockposition_z) {
+        if (blockposition_y >= 0 && blockposition_y >> 4 < this.sections.length) {
+            ChunkSection chunksection = this.sections[blockposition_y >> 4];
+            if (chunksection != null) {
+                return chunksection.getType(blockposition_x & 15, blockposition_y & 15, blockposition_z & 15);
+            }
+        }
+        return Blocks.AIR.getBlockData();
+    }
+
     public IBlockData getBlockDataSlow(final BlockPosition blockposition) {
         // PaperSpigot end
         if (this.world.G() == WorldType.DEBUG_ALL_BLOCK_STATES) {
@@ -587,7 +591,14 @@ public class Chunk {
         return this.g(blockposition.getX() & 15, blockposition.getY(), blockposition.getZ() & 15);
     }
 
+    // NachoSpigot start
     public IBlockData a(BlockPosition blockposition, IBlockData iblockdata) {
+        return a(blockposition,iblockdata,true);
+    }
+    // NachoSpigot end
+
+    // KigPaper - add updateLight param
+    public IBlockData a(BlockPosition blockposition, IBlockData iblockdata, boolean updateLight) {
         int i = blockposition.getX() & 15;
         int j = blockposition.getY();
         int k = blockposition.getZ() & 15;
@@ -629,9 +640,9 @@ public class Chunk {
             if (chunksection.b(i, j & 15, k) != block) {
                 return null;
             } else {
-                if (flag) {
+                if (updateLight && flag) {
                     this.initLighting();
-                } else {
+                } else if (updateLight) { // KigPaper - conditional light update
                     int j1 = block.p();
                     int k1 = block1.p();
 
@@ -651,7 +662,7 @@ public class Chunk {
                 TileEntity tileentity;
 
                 if (block1 instanceof IContainer) {
-                    tileentity = this.a(blockposition, net.minecraft.server.Chunk.EnumTileEntityState.CHECK);
+                    tileentity = this.a(blockposition, Chunk.EnumTileEntityState.CHECK);
                     if (tileentity != null) {
                         tileentity.E();
                     }
@@ -663,7 +674,7 @@ public class Chunk {
                 }
 
                 if (block instanceof IContainer) {
-                    tileentity = this.a(blockposition, net.minecraft.server.Chunk.EnumTileEntityState.CHECK);
+                    tileentity = this.a(blockposition, Chunk.EnumTileEntityState.CHECK);
                     if (tileentity == null) {
                         tileentity = ((IContainer) block).a(this.world, block.toLegacyData(iblockdata));
                         this.world.setTileEntity(blockposition, tileentity);
@@ -689,6 +700,44 @@ public class Chunk {
         return chunksection == null ? (this.d(blockposition) ? enumskyblock.c : 0) : (enumskyblock == EnumSkyBlock.SKY ? (this.world.worldProvider.o() ? 0 : chunksection.d(i, j & 15, k)) : (enumskyblock == EnumSkyBlock.BLOCK ? chunksection.e(i, j & 15, k) : enumskyblock.c));
     }
 
+    public int getBrightness(EnumSkyBlock enumskyblock, int blockposition_x, int blockposition_y, int blockposition_z) {
+        int i = blockposition_x & 15;
+        int j = blockposition_y;
+        int k = blockposition_z & 15;
+        ChunkSection chunksection = this.sections[j >> 4];
+
+        if(chunksection == null)
+        {
+            if(j >= this.heightMap[(k) << 4 | (i)])
+            {
+                return enumskyblock.c;
+            }
+        }
+        else
+        {
+            if(enumskyblock == EnumSkyBlock.SKY)
+            {
+                if(!this.world.worldProvider.o())
+                {
+                    return chunksection.d(i, j & 15, k);
+                }
+            }
+            else
+            {
+                if(enumskyblock == EnumSkyBlock.BLOCK)
+                {
+                    return chunksection.e(i, j & 15, k);
+                }
+                else
+                {
+                    return enumskyblock.c;
+                }
+            }
+        }
+
+        return 0;
+    }
+
     public void a(EnumSkyBlock enumskyblock, BlockPosition blockposition, int i) {
         int j = blockposition.getX() & 15;
         int k = blockposition.getY();
@@ -709,6 +758,11 @@ public class Chunk {
             chunksection.b(j, k & 15, l, i);
         }
 
+    }
+
+    public int getLightSubtracted(BlockPosition blockposition, int i)
+    {
+        return this.a(blockposition, i);
     }
 
     public int a(BlockPosition blockposition, int i) {
@@ -733,21 +787,26 @@ public class Chunk {
         }
     }
 
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
     public void a(Entity entity) {
         this.r = true;
-        int i = gg.scala.spigot.util.MathHelper.floorD(entity.locX / 16.0D);
-        int j = gg.scala.spigot.util.MathHelper.floorD(entity.locZ / 16.0D);
+        int i = MathHelper.floor(entity.locX / 16.0D);
+        int j = MathHelper.floor(entity.locZ / 16.0D);
 
         if (i != this.locX || j != this.locZ) {
             // CraftBukkit start
             Bukkit.getLogger().warning("Wrong location for " + entity + " in world '" + world.getWorld().getName() + "'!");
-            // Chunk.setServerIp.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.locX + ", " + this.locZ + "), " + entity, new Object[] { entity});
+            // Chunk.c.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.locX + ", " + this.locZ + "), " + entity, new Object[] { entity});
             Bukkit.getLogger().warning("Entity is at " + entity.locX + "," + entity.locZ + " (chunk " + i + "," + j + ") but was stored in chunk " + this.locX + "," + this.locZ);
             // CraftBukkit end
             entity.die();
         }
 
-        int k = gg.scala.spigot.util.MathHelper.floorD(entity.locY / 16.0D);
+
+        int k = MathHelper.floor(entity.locY / 16.0D);
 
         if (k < 0) {
             k = 0;
@@ -758,9 +817,9 @@ public class Chunk {
         }
 
         entity.ad = true;
-        entity.ae = this.locX;
-        entity.af = k;
-        entity.ag = this.locZ;
+        entity.ae = this.locX; // Nacho - deobfuscate chunkX
+        entity.af = k; // Nacho - deobfuscate chunkY
+        entity.ag = this.locZ; // Nacho - deobfuscate chunkZ
         this.entitySlices[k].add(entity);
         // PaperSpigot start - update counts
         if (entity instanceof EntityItem) {
@@ -787,11 +846,11 @@ public class Chunk {
         // Spigot end
     }
 
-    public void b(Entity entity) {
-        this.a(entity, entity.af);
+    public void removeEntity(Entity entity) { // Nacho - deobfuscate
+        this.removeEntity(entity, entity.af); // Nacho - deobfuscate chunkY
     }
 
-    public void a(Entity entity, int i) {
+    public void removeEntity(Entity entity, int i) { // Nacho - deobfuscate
         if (i < 0) {
             i = 0;
         }
@@ -800,7 +859,7 @@ public class Chunk {
             i = this.entitySlices.length - 1;
         }
 
-        this.entitySlices[i].remove(entity);
+        if (!this.entitySlices[i].remove(entity)) return; // TacoSpigot
         // PaperSpigot start - update counts
         if (entity instanceof EntityItem) {
             itemCounts[i]--;
@@ -834,13 +893,21 @@ public class Chunk {
         return j >= this.heightMap[k << 4 | i];
     }
 
+    public boolean isBelowHeightMap(int blockposition_x, int blockposition_y, int blockposition_z) {
+        int i = blockposition_x & 15;
+        int j = blockposition_y;
+        int k = blockposition_z & 15;
+
+        return j >= this.heightMap[k << 4 | i];
+    }
+
     private TileEntity i(BlockPosition blockposition) {
         Block block = this.getType(blockposition);
 
         return !block.isTileEntity() ? null : ((IContainer) block).a(this.world, this.c(blockposition));
     }
 
-    public TileEntity a(BlockPosition blockposition, net.minecraft.server.Chunk.EnumTileEntityState chunk_enumtileentitystate) {
+    public TileEntity a(BlockPosition blockposition, Chunk.EnumTileEntityState chunk_enumtileentitystate) {
         // CraftBukkit start
         TileEntity tileentity = null;
         if (world.captureBlockStates) {
@@ -852,10 +919,10 @@ public class Chunk {
         // CraftBukkit end
 
         if (tileentity == null) {
-            if (chunk_enumtileentitystate == net.minecraft.server.Chunk.EnumTileEntityState.IMMEDIATE) {
+            if (chunk_enumtileentitystate == Chunk.EnumTileEntityState.IMMEDIATE) {
                 tileentity = this.i(blockposition);
                 this.world.setTileEntity(blockposition, tileentity);
-            } else if (chunk_enumtileentitystate == net.minecraft.server.Chunk.EnumTileEntityState.QUEUED) {
+            } else if (chunk_enumtileentitystate == Chunk.EnumTileEntityState.QUEUED) {
                 this.w.add(blockposition);
             }
         } else if (tileentity.x()) {
@@ -887,19 +954,14 @@ public class Chunk {
             // CraftBukkit start
             // PaperSpigot start - Remove invalid mob spawner tile entities
         } else if (this.world.paperSpigotConfig.removeInvalidMobSpawnerTEs && tileentity instanceof TileEntityMobSpawner &&
-                CraftMagicNumbers.getMaterial(getType(blockposition)) != org.bukkit.Material.MOB_SPAWNER) {
+            org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(getType(blockposition)) != org.bukkit.Material.MOB_SPAWNER) {
             this.tileEntities.remove(blockposition);
             // PaperSpigot end
         } else {
-            // Paper start
-            ServerInternalException e = new ServerInternalException(
-                    "Attempted to place a tile entity (" + tileentity + ") at " + tileentity.position.getX() + ","
-                    + tileentity.position.getY() + "," + tileentity.position.getZ()
-                    + " (" + CraftMagicNumbers.getMaterial(getType(blockposition)) + ") where there was no entity tile!\n" +
-                    "Chunk coordinates: " + (this.locX * 16) + "," + (this.locZ * 16));
-            e.printStackTrace();
-            ServerInternalException.reportInternalException(e);
-            // Paper end
+            Chunk.c.warn("Attempted to place a tile entity (" + tileentity + ") at " + tileentity.position.getX() + "," + tileentity.position.getY() + "," + tileentity.position.getZ()
+                + " (" + org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(getType(blockposition)) + ") where there was no entity tile!");
+            Chunk.c.warn("Chunk coordinates: " + (this.locX * 16) + "," + (this.locZ * 16));
+            new Exception().printStackTrace();
             // CraftBukkit end
         }
     }
@@ -918,57 +980,40 @@ public class Chunk {
     public void addEntities() {
         this.h = true;
         this.world.a(this.tileEntities.values());
-
-        for (int i = 0; i < this.entitySlices.length; ++i) {
-            Iterator iterator = this.entitySlices[i].iterator();
-
-            while (iterator.hasNext()) {
-                Entity entity = (Entity) iterator.next();
-
+        for (List<Entity> entitySlice : this.entitySlices) {
+            for (Entity entity : entitySlice) {
                 entity.ah();
             }
-
-            this.world.b((Collection) this.entitySlices[i]);
+            this.world.b(entitySlice);
         }
 
     }
 
     public void removeEntities() {
         this.h = false;
-        Iterator iterator = this.tileEntities.values().iterator();
-
-        while (iterator.hasNext()) {
-            TileEntity tileentity = (TileEntity) iterator.next();
+        for (TileEntity tileentity : this.tileEntities.values()) {
             // Spigot Start
-            if ( tileentity instanceof IInventory )
-            {
-                for ( org.bukkit.entity.HumanEntity h : Lists.<org.bukkit.entity.HumanEntity>newArrayList((List<org.bukkit.entity.HumanEntity>) ( (IInventory) tileentity ).getViewers() ) )
-                {
-                    if ( h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity )
-                    {
-                       ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
+            if (tileentity instanceof IInventory) {
+                for (org.bukkit.entity.HumanEntity h : Lists.<org.bukkit.entity.HumanEntity>newArrayList((List<org.bukkit.entity.HumanEntity>) ((IInventory) tileentity).getViewers())) {
+                    if (h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity) {
+                        ((org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
                     }
                 }
             }
             // Spigot End
-
             this.world.b(tileentity);
         }
-
-        for (int i = 0; i < this.entitySlices.length; ++i) {
+        for (List<Entity> entitySlice : this.entitySlices) {
             // CraftBukkit start
-            List<Entity> newList = Lists.newArrayList(this.entitySlices[i]);
+            List<Entity> newList = Lists.newArrayList(entitySlice);
             Iterator<Entity> iter = newList.iterator();
             while (iter.hasNext()) {
                 Entity entity = iter.next();
                 // Spigot Start
-                if ( entity instanceof IInventory )
-                {
-                    for ( org.bukkit.entity.HumanEntity h : Lists.<org.bukkit.entity.HumanEntity>newArrayList( (List<org.bukkit.entity.HumanEntity>) ( (IInventory) entity ).getViewers() ) )
-                    {
-                        if ( h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity )
-                        {
-                           ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
+                if (entity instanceof IInventory) {
+                    for (org.bukkit.entity.HumanEntity h : Lists.<org.bukkit.entity.HumanEntity>newArrayList(((IInventory) entity).getViewers())) {
+                        if (h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity) {
+                            ((org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
                         }
                     }
                 }
@@ -981,7 +1026,7 @@ public class Chunk {
                 }
             }
 
-            this.world.c((Collection) newList);
+            this.world.c(newList);
             // CraftBukkit end
         }
 
@@ -991,40 +1036,111 @@ public class Chunk {
         this.q = true;
     }
 
-    public void a(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate) {
-        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.b - 2.0D) / 16.0D);
-        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.e + 2.0D) / 16.0D);
+    // IonSpigot start - Optimise Entity Collisions
+    public boolean collectEntitiesByAmount(Entity source, AxisAlignedBB axisalignedbb, List<Entity> entities,
+                                           Predicate<? super Entity> by, int amount) {
+        int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
+        int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
 
         i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
 
         for (int k = i; k <= j; ++k) {
             if (!this.entitySlices[k].isEmpty()) {
-                Iterator iterator = this.entitySlices[k].iterator();
+                if (collectEntities(source, axisalignedbb, this.entitySlices[k], entities, by, amount)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean collectEntities(Entity source, AxisAlignedBB axisalignedbb, List<Entity> slice,
+                                    List<Entity> entities, Predicate<? super Entity> by, int amount) {
+        for (int i = 0; i < slice.size(); ++i) {
+            int next = world.random.nextInt(slice.size());
+            Entity entity = slice.get(next);
+
+            if (entity.getBoundingBox().b(axisalignedbb) && entity != source && !entities.contains(entity)) {
+                if (by == null || by.apply(entity)) {
+                    entities.add(entity);
+                }
+
+                Entity[] passengers = entity.aB();
+
+                if (passengers != null) {
+                    for (Entity value : passengers) {
+                        if (value != source && value.getBoundingBox().b(axisalignedbb) && (by == null
+                            || by.apply(value)) && !entities.contains(entity)) {
+                            entities.add(value);
+                        }
+                    }
+                }
+
+                if (entities.size() >= amount) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    // IonSpigot end
+
+    /***
+     * adds entities to a list if they are within a box
+     *
+     */
+    public void getEntitiesInAABB(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate)
+    {
+        this.a(entity, axisalignedbb, list, predicate);
+    }
+
+    public void a(Entity entity, AxisAlignedBB axisalignedbb, List<Entity> list, Predicate<? super Entity> predicate)
+    {
+        int minSectionY = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
+        int maxSectionY = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
+
+        minSectionY = MathHelper.clamp(minSectionY, 0, this.entitySlices.length - 1);
+        maxSectionY = MathHelper.clamp(maxSectionY, 0, this.entitySlices.length - 1);
+
+        for (int sectionYIndex = minSectionY; sectionYIndex <= maxSectionY; ++sectionYIndex)
+        {
+            if (!this.entitySlices[sectionYIndex].isEmpty())
+            {
+                Iterator<Entity> iterator = this.entitySlices[sectionYIndex].iterator();
                 // PaperSpigot start - Don't search for inventories if we have none, and that is all we want
                 /*
-                 * We check if they want inventories by seeing if it is the static `IEntitySelector.setServerIp`
+                 * We check if they want inventories by seeing if it is the static `IEntitySelector.c`
                  *
                  * Make sure the inventory selector stays in sync.
                  * It should be the one that checks `var1 instanceof IInventory && var1.isAlive()`
                  */
-                if (predicate == IEntitySelector.c && inventoryEntityCounts[k] <= 0) continue;
+                if (predicate == IEntitySelector.c && inventoryEntityCounts[sectionYIndex] <= 0) continue;
                 // PaperSpigot end
-                while (iterator.hasNext()) {
-                    Entity entity1 = (Entity) iterator.next();
+                while (iterator.hasNext())
+                {
+                    Entity entityCheck = iterator.next();
 
-                    if (entity1.getBoundingBox().b(axisalignedbb) && entity1 != entity) {
-                        if (predicate == null || predicate.apply(entity1)) {
-                            list.add(entity1);
+                    if (entityCheck.getBoundingBox().b(axisalignedbb) && entityCheck != entity)
+                    {
+                        if (predicate == null || predicate.apply(entityCheck))
+                        {
+                            list.add(entityCheck);
                         }
 
-                        Entity[] aentity = entity1.aB();
+                        // ender dragon code
+                        Entity[] entitybody = entityCheck.aB();
 
-                        if (aentity != null) {
-                            for (int l = 0; l < aentity.length; ++l) {
-                                entity1 = aentity[l];
-                                if (entity1 != entity && entity1.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entity1))) {
-                                    list.add(entity1);
+                        if (entitybody != null)
+                        {
+                            for (int l = 0; l < entitybody.length; ++l)
+                            {
+                                entityCheck = entitybody[l];
+                                if (entityCheck != entity && entityCheck.getBoundingBox().b(axisalignedbb) && (predicate == null || predicate.apply(entityCheck)))
+                                {
+                                    list.add(entityCheck);
                                 }
                             }
                         }
@@ -1036,15 +1152,15 @@ public class Chunk {
     }
 
     public <T extends Entity> void a(Class<? extends T> oclass, AxisAlignedBB axisalignedbb, List<T> list, Predicate<? super T> predicate) {
-        int i = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.b - 2.0D) / 16.0D);
-        int j = gg.scala.spigot.util.MathHelper.floorD((axisalignedbb.e + 2.0D) / 16.0D);
+        int i = MathHelper.floor((axisalignedbb.b - 2.0D) / 16.0D);
+        int j = MathHelper.floor((axisalignedbb.e + 2.0D) / 16.0D);
 
         i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
 
         // PaperSpigot start
         int[] counts;
-        if (ItemStack.class.isAssignableFrom(oclass)) {
+        if (EntityItem.class.isAssignableFrom(oclass)) {
             counts = itemCounts;
         } else if (IInventory.class.isAssignableFrom(oclass)) {
             counts = inventoryEntityCounts;
@@ -1106,7 +1222,7 @@ public class Chunk {
             }
         }
 
-        net.minecraft.server.Chunk chunk;
+        Chunk chunk;
 
         if (flag3 && flag2 && flag6) {
             chunk = ichunkprovider.getOrCreateChunk(i - 1, j);
@@ -1167,9 +1283,19 @@ public class Chunk {
         return new BlockPosition(blockposition.getX(), this.f[k], blockposition.getZ());
     }
 
+    // Paper start
+    private boolean shouldRecheckGaps = false;
+    public void doGapCheck() {
+        if (shouldRecheckGaps) {
+            this.recheckGaps(false);
+            shouldRecheckGaps = false;
+        }
+    }
+    // Paper end
+
     public void b(boolean flag) {
         if (this.k && !this.world.worldProvider.o() && !flag) {
-            this.recheckGaps(this.world.isClientSide); // PaperSpigot - Asynchronous lighting updates
+            shouldRecheckGaps = true; // Paper
         }
 
         this.p = true;
@@ -1180,7 +1306,7 @@ public class Chunk {
         while (!this.w.isEmpty()) {
             BlockPosition blockposition = (BlockPosition) this.w.poll();
 
-            if (this.a(blockposition, net.minecraft.server.Chunk.EnumTileEntityState.CHECK) == null && this.getType(blockposition).isTileEntity()) {
+            if (this.a(blockposition, Chunk.EnumTileEntityState.CHECK) == null && this.getType(blockposition).isTileEntity()) {
                 TileEntity tileentity = this.i(blockposition);
 
                 this.world.setTileEntity(blockposition, tileentity);
@@ -1188,23 +1314,6 @@ public class Chunk {
             }
         }
 
-    }
-
-    /**
-     * PaperSpigot - Recheck gaps asynchronously.
-     */
-    public void recheckGaps(final boolean isClientSide) {
-        if (!world.paperSpigotConfig.useAsyncLighting) {
-            this.h(isClientSide);
-            return;
-        }
-
-        world.lightingExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                net.minecraft.server.Chunk.this.h(isClientSide);
-            }
-        });
     }
 
     public boolean isReady() {
@@ -1215,12 +1324,16 @@ public class Chunk {
          * We cannot unfortunately do this lighting stage during chunk gen as it appears to put a lot more noticeable load on the server, than when it is done at play time.
          * For now at least we will simply send all chunks, in accordance with pre 1.7 behaviour.
          */
-        return true;
+        // Paper Start
+        // if randomLightUpdates are disabled, we should always return true, otherwise chunks may never send
+        // to the client due to not being lit, otherwise retain standard behavior and only send properly lit chunks.
+        return !this.world.spigotConfig.randomLightUpdates || (this.isTicked() && this.done && this.lit);
+        // Paper End
         // Spigot End
     }
 
     public ChunkCoordIntPair j() {
-        return this.chunkCoords;
+        return this.chunkCoords; // InsanePaper-269 - Cache Chunk Coordinations
     }
 
     public boolean c(int i, int j) {
@@ -1245,7 +1358,7 @@ public class Chunk {
 
     public void a(ChunkSection[] achunksection) {
         if (this.sections.length != achunksection.length) {
-            c.warn("Could not set level chunk sections, array length is " + achunksection.length + " instead of " + this.sections.length);
+            Chunk.c.warn("Could not set level chunk sections, array length is " + achunksection.length + " instead of " + this.sections.length);
         } else {
             for (int i = 0; i < this.sections.length; ++i) {
                 this.sections[i] = achunksection[i];
@@ -1276,7 +1389,7 @@ public class Chunk {
 
     public void a(byte[] abyte) {
         if (this.e.length != abyte.length) {
-            c.warn("Could not set level chunk biomes, array length is " + abyte.length + " instead of " + this.e.length);
+            Chunk.c.warn("Could not set level chunk biomes, array length is " + abyte.length + " instead of " + this.e.length);
         } else {
             for (int i = 0; i < this.e.length; ++i) {
                 this.e[i] = abyte[i];
@@ -1342,10 +1455,7 @@ public class Chunk {
                 }
 
                 if (this.lit) {
-                    Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-
-                    while (iterator.hasNext()) {
-                        EnumDirection enumdirection = (EnumDirection) iterator.next();
+                    for (EnumDirection enumdirection : EnumDirection.EnumDirectionLimit.HORIZONTAL) {
                         int k = enumdirection.c() == EnumDirection.EnumAxisDirection.POSITIVE ? 16 : 1;
 
                         this.world.getChunkAtWorldCoords(this.blockPos.shift(enumdirection, k)).a(enumdirection.opposite());
@@ -1402,7 +1512,7 @@ public class Chunk {
         int l;
 
         for (l = k + 16 - 1; l > this.world.F() || l > 0 && !flag1; --l) {
-            blockposition_mutableblockposition.c(blockposition_mutableblockposition.getX(), l, blockposition_mutableblockposition.getZ());
+            blockposition_mutableblockposition.c(blockposition_mutableblockposition.getX(), l, blockposition_mutableblockposition.getZ()); // Nacho - deobfuscate setValues
             int i1 = this.b((BlockPosition) blockposition_mutableblockposition);
 
             if (i1 == 255 && blockposition_mutableblockposition.getY() < this.world.F()) {
@@ -1417,7 +1527,7 @@ public class Chunk {
         }
 
         for (l = blockposition_mutableblockposition.getY(); l > 0; --l) {
-            blockposition_mutableblockposition.c(blockposition_mutableblockposition.getX(), l, blockposition_mutableblockposition.getZ());
+            blockposition_mutableblockposition.c(blockposition_mutableblockposition.getX(), l, blockposition_mutableblockposition.getZ()); // Nacho - deobfuscate setValues
             if (this.getType(blockposition_mutableblockposition).r() > 0) {
                 this.world.x(blockposition_mutableblockposition);
             }
@@ -1440,7 +1550,7 @@ public class Chunk {
 
     public void a(int[] aint) {
         if (this.heightMap.length != aint.length) {
-            c.warn("Could not set level chunk heightmap, array length is " + aint.length + " instead of " + this.heightMap.length);
+            Chunk.c.warn("Could not set level chunk heightmap, array length is " + aint.length + " instead of " + this.heightMap.length);
         } else {
             for (int i = 0; i < this.heightMap.length; ++i) {
                 this.heightMap[i] = aint[i];
@@ -1503,4 +1613,16 @@ public class Chunk {
 
         private EnumTileEntityState() {}
     }
+
+    // FlamePaper start - Hopper item lookup optimization
+    public int getItemCount(BlockPosition blockPosition) {
+        int k = MathHelper.floor(blockPosition.getY() / 16.0D);
+
+        k = Math.max(0, k);
+        k = Math.min(this.entitySlices.length - 1, k);
+
+        return itemCounts[k];
+    }
+    // FlamePaper end - Hopper item lookup optimization
+
 }
