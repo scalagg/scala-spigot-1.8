@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(":sspigot-api")
-    implementation project(":sspigot-core")
+    implementation project(":api")
+    implementation project(":core")
 
     implementation "org.spigotmc:minecraft-server:1.8.8-SNAPSHOT"
 

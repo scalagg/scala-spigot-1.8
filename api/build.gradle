@@ -20,5 +20,5 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.30'
     implementation 'net.md-5:bungeecord-chat:1.16-R0.4'
 
-    compileOnly project(":sspigot-core")
+    compileOnly project(":core")
 }

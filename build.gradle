@@ -55,7 +55,7 @@ subprojects {
         exclude "**/*.kotlin_metadata"
         exclude "**/*.kotlin_module"
 
-        archiveFileName = "scala-spigot-${project.name.replace("sspigot-", "")}.jar"
+        archiveFileName = "scala-spigot-${project.name}.jar"
     }
 
     publishing {

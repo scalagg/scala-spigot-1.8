@@ -11,7 +11,7 @@ gradle.properties
 .DS_Store
 runtime/
 
-sspigot-server/runtime
+server/runtime
 
 # Maven
 log/
