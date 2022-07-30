@@ -71,6 +71,8 @@ public class Chunk {
     private PacketPlayOutMapChunk.ChunkMap chunkMap;
     private int emptySectionBits;
 
+    private final ChunkCoordIntPair chunkCoords; // PandaSpigot
+
     public PacketPlayOutMapChunk.ChunkMap getChunkMap(boolean groundUpContinuous, int primaryBitMask) {
         if (!world.paperSpigotConfig.cacheChunkMaps || !groundUpContinuous || (primaryBitMask != 0 && primaryBitMask != '\uffff')) {
             return PacketPlayOutMapChunk.a(this, groundUpContinuous, !world.worldProvider.o(), primaryBitMask);
@@ -119,8 +121,8 @@ public class Chunk {
                 return this.neighbors == Integer.MAX_VALUE >> 6;
             case 1:
                 final int mask =
-                        //       x        z   offset          x        z   offset          x         z   offset
-                        (0x1 << (1 * 5 +  1 + 12)) | (0x1 << (0 * 5 +  1 + 12)) | (0x1 << (-1 * 5 +  1 + 12)) |
+                    //       x        z   offset          x        z   offset          x         z   offset
+                    (0x1 << (1 * 5 +  1 + 12)) | (0x1 << (0 * 5 +  1 + 12)) | (0x1 << (-1 * 5 +  1 + 12)) |
                         (0x1 << (1 * 5 +  0 + 12)) | (0x1 << (0 * 5 +  0 + 12)) | (0x1 << (-1 * 5 +  0 + 12)) |
                         (0x1 << (1 * 5 + -1 + 12)) | (0x1 << (0 * 5 + -1 + 12)) | (0x1 << (-1 * 5 + -1 + 12));
                 return (this.neighbors & mask) == mask;
@@ -169,6 +171,8 @@ public class Chunk {
 
         this.blockPos = new BlockPosition(this.locX << 4, 0, this.locZ << 4);
         this.cachedArea = new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8);
+
+        this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // PandaSpigot
     }
 
     public org.bukkit.Chunk bukkitChunk;
@@ -883,13 +887,13 @@ public class Chunk {
             // CraftBukkit start
             // PaperSpigot start - Remove invalid mob spawner tile entities
         } else if (this.world.paperSpigotConfig.removeInvalidMobSpawnerTEs && tileentity instanceof TileEntityMobSpawner &&
-                CraftMagicNumbers.getMaterial(getType(blockposition)) != org.bukkit.Material.MOB_SPAWNER) {
+            CraftMagicNumbers.getMaterial(getType(blockposition)) != org.bukkit.Material.MOB_SPAWNER) {
             this.tileEntities.remove(blockposition);
             // PaperSpigot end
         } else {
             // Paper start
             ServerInternalException e = new ServerInternalException(
-                    "Attempted to place a tile entity (" + tileentity + ") at " + tileentity.position.getX() + ","
+                "Attempted to place a tile entity (" + tileentity + ") at " + tileentity.position.getX() + ","
                     + tileentity.position.getY() + "," + tileentity.position.getZ()
                     + " (" + CraftMagicNumbers.getMaterial(getType(blockposition)) + ") where there was no entity tile!\n" +
                     "Chunk coordinates: " + (this.locX * 16) + "," + (this.locZ * 16));
@@ -942,7 +946,7 @@ public class Chunk {
                 {
                     if ( h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity )
                     {
-                       ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
+                        ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
                     }
                 }
             }
@@ -964,7 +968,7 @@ public class Chunk {
                     {
                         if ( h instanceof org.bukkit.craftbukkit.entity.CraftHumanEntity )
                         {
-                           ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
+                            ( (org.bukkit.craftbukkit.entity.CraftHumanEntity) h).getHandle().closeInventory();
                         }
                     }
                 }
@@ -1216,7 +1220,7 @@ public class Chunk {
     }
 
     public ChunkCoordIntPair j() {
-        return new ChunkCoordIntPair(this.locX, this.locZ);
+        return this.chunkCoords;
     }
 
     public boolean c(int i, int j) {

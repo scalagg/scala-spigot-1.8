@@ -21,7 +21,8 @@ public class Main {
     public static boolean useConsole = true;
 
     public static void main(String[] args) {
-        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null) System.setProperty("jdk.nio.maxCachedBufferSize", "262144"); // PandaSpigot - cap per-thread NIO cache size
+        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null)
+            System.setProperty("jdk.nio.maxCachedBufferSize", "262144"); // PandaSpigot - cap per-thread NIO cache size
 
         OptionParser parser = new OptionParser() {
             {
@@ -181,6 +182,7 @@ public class Main {
                     System.out.println("Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions.");
                 }
 
+                System.setProperty("library.jansi.version", "ScalaSpigot"); // ScalaSpigot - set meaningless jansi version to prevent git builds from crashing on Windows
                 System.out.println("Libraries are loading, please wait...");
                 startup = System.nanoTime();
 

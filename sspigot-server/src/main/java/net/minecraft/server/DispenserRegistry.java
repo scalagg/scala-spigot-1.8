@@ -1,7 +1,6 @@
 package net.minecraft.server;
 
 import com.mojang.authlib.GameProfile;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.block.BlockDispenseEvent;
