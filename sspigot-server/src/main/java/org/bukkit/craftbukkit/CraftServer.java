@@ -702,8 +702,8 @@ public final class CraftServer implements Server {
         enablePlugins(PluginLoadOrder.STARTUP);
         enablePlugins(PluginLoadOrder.POSTWORLD);
 
-        getCommandMap().register("scalaspigot", new KnockbackCommand());
-        getCommandMap().register("scalaspigot", new PotionCommand());
+        getCommandMap().register("spigot", new KnockbackCommand());
+        getCommandMap().register("spigot", new PotionCommand());
     }
 
     private void loadIcon() {

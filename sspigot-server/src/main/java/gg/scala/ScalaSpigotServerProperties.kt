@@ -1,6 +1,6 @@
 package gg.scala
 
-import org.bukkit.craftbukkit.Main
+import org.bukkit.craftbukkit.help.HelpYamlReader
 import java.util.*
 
 /**
@@ -11,10 +11,9 @@ object ScalaSpigotServerProperties
 {
     private val properties = Properties()
         .apply {
-            val resource = Main::class.java
-                .getResourceAsStream("version.properties")!!
-
-            this.load(resource)
+            this.load(
+                HelpYamlReader.loadVersion()
+            )
         }
 
     val version by lazy {

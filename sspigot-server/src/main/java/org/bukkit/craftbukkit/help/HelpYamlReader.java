@@ -9,6 +9,7 @@ import org.bukkit.help.HelpTopic;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,11 @@ public class HelpYamlReader {
         helpYaml = YamlConfiguration.loadConfiguration(
                 new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/help.yml"), Charsets.UTF_8)
         );
+    }
+
+    public static InputStreamReader loadVersion()
+    {
+        return new InputStreamReader(HelpYamlReader.class.getClassLoader().getResourceAsStream("version.properties"), Charsets.UTF_8);
     }
 
     /**

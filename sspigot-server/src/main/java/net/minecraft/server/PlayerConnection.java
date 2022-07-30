@@ -2094,19 +2094,36 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					containeranvil.a("");
 				}
 			} else if (packetplayincustompayload.a().equals("REGISTER")) {
-				String channels = packetplayincustompayload.b().toString(com.google.common.base.Charsets.UTF_8);
-				for (String channel : channels.split("\0")) {
-					getPlayer().addChannel(channel);
+				// PandaSpigot start - Disconnect for payload errors
+				try {
+					String channels = packetplayincustompayload.b().toString(com.google.common.base.Charsets.UTF_8);
+					for (String channel : channels.split("\0")) {
+						getPlayer().addChannel(channel);
+					}
+				} catch (Exception ex) {
+					PlayerConnection.c.error("Couldn\'t register custom payload", ex);
+					this.disconnect("Invalid payload REGISTER!");
 				}
 			} else if (packetplayincustompayload.a().equals("UNREGISTER")) {
-				String channels = packetplayincustompayload.b().toString(com.google.common.base.Charsets.UTF_8);
-				for (String channel : channels.split("\0")) {
-					getPlayer().removeChannel(channel);
+				try {
+					String channels = packetplayincustompayload.b().toString(com.google.common.base.Charsets.UTF_8);
+					for (String channel : channels.split("\0")) {
+						getPlayer().removeChannel(channel);
+					}
+				} catch (Exception ex) {
+					PlayerConnection.c.error("Couldn\'t register custom payload", ex);
+					this.disconnect("Invalid payload UNREGISTER!");
 				}
 			} else {
-				byte[] data = new byte[packetplayincustompayload.b().readableBytes()];
-				packetplayincustompayload.b().readBytes(data);
-				server.getMessenger().dispatchIncomingMessage(player.getBukkitEntity(), packetplayincustompayload.a(), data);
+				try {
+					byte[] data = new byte[packetplayincustompayload.b().readableBytes()];
+					packetplayincustompayload.b().readBytes(data);
+					server.getMessenger().dispatchIncomingMessage(player.getBukkitEntity(), packetplayincustompayload.a(), data);
+				} catch (Exception ex) {
+					PlayerConnection.c.error("Couldn\'t register custom payload", ex);
+					this.disconnect("Invalid custom payload!");
+				}
+				// PandaSpigot end - Disconnect for payload errors
 			}
 		} finally {
 			if (packetplayincustompayload.b().refCnt() > 0) {

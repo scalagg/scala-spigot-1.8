@@ -38,8 +38,6 @@ object ScalaSpigot
 
     fun saveConfig(parent: File)
     {
-
-
         config.knockbackConfigs.clear()
         config.knockbackConfigs.addAll(KnockbackHandler.presets)
 
@@ -84,9 +82,7 @@ object ScalaSpigot
                 .also {
                     if (it)
                     {
-                        val newest = GSON.toJson(
-                            ScalaSpigotConfig()
-                        )
+                        val newest = GSON.toJson(config)
 
                         Files.write(
                             newest.toByteArray(), file

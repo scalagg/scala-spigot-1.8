@@ -21,7 +21,7 @@ public class SimpleHelpMap implements HelpMap {
     private final Map<String, HelpTopic> helpTopics;
     private final Map<Class, HelpTopicFactory<Command>> topicFactoryMap;
     private final CraftServer server;
-    private HelpYamlReader yaml;
+    public HelpYamlReader yaml;
 
     @SuppressWarnings("unchecked")
     public SimpleHelpMap(CraftServer server) {
