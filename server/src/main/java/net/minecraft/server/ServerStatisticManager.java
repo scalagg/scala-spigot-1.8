@@ -134,7 +134,7 @@ public class ServerStatisticManager extends StatisticManager {
                 try {
                     jsonobject1.add("progress", ((StatisticWrapper) entry.getValue()).b().a());
                 } catch (Throwable throwable) {
-                    b.warn(""'t save statistic " + ((Statistic) entry.getKey()).e() + ": error serializing progress", throwable);
+                    b.warn("Couldn't save statistic " + ((Statistic) entry.getKey()).e() + ": error serializing progress", throwable);
                 }
 
                 jsonobject.add(((Statistic) entry.getKey()).name, jsonobject1);
