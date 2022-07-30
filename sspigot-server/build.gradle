@@ -68,6 +68,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.0"
 }
 
+processResources {
+    filter { String line ->
+        line.replace("<version>", "${gitHash}")
+    }
+}
+
 shadowJar {
     manifest {
         attributes "Multi-Release": "true"

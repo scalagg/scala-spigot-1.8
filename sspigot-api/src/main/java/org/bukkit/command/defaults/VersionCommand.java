@@ -22,11 +22,6 @@ public class VersionCommand extends BukkitCommand {
     private VersionFetcher versionFetcher;
     private Component versionMessage;
 
-    public void setVersion() {
-        this.versionMessage = LegacyComponentSerializer.legacyAmpersand()
-                .deserialize("&fThis server is running ScalaSpigot version git-scala-spigot-1.8-\"unknown\" (MC: 1.8.8) (Implementing API version 1.8.8-R0.3-SNAPSHOT)");
-    }
-
     public VersionCommand(String name) {
         super(name);
 
@@ -54,8 +49,6 @@ public class VersionCommand extends BukkitCommand {
             return true;
         }
 
-        setVersion();
-
         if (args.length == 0) {
             // Paper start
             if (Bukkit.getVersion().startsWith("null") || versionMessage == null) { // running from ide?
@@ -69,8 +62,7 @@ public class VersionCommand extends BukkitCommand {
             }
 
             sender.sendMessage(
-                    LegacyComponentSerializer.legacySection()
-                            .serialize(versionMessage)
+                "This server is running ScalaSpigot version " + Bukkit.getVersion() + " (Implementing API version 1.8.8-R0.3-SNAPSHOT)"
             );
         } else {
             StringBuilder name = new StringBuilder();

@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
+import gg.scala.ScalaSpigotServerProperties;
 import gg.scala.server.command.KnockbackCommand;
 import gg.scala.server.command.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
@@ -88,7 +89,7 @@ public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
     // ScalaSpigot start
     private final String serverName = "ScalaSpigot";
-    private final String serverVersion = "DEV";
+    private final String serverVersion = ScalaSpigotServerProperties.INSTANCE.getVersion();
     // ScalaSpigot end
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
@@ -303,7 +304,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String getVersion() {
-        return "stable (MC: " + console.getVersion() + ")";
+        return ScalaSpigotServerProperties.INSTANCE.getVersion() + " (MC: " + console.getVersion() + ")";
     }
 
     @Override

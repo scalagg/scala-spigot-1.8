@@ -7,6 +7,21 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+
+    return stdout.toString().trim()
+}
+
+ext {
+    gitHash = getGitHash
+}
+
 allprojects {
     group "gg.scala.spigot"
     version "1.0.8"

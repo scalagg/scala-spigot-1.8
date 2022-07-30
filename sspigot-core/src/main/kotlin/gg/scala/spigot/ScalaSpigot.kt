@@ -9,6 +9,7 @@ import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
 import java.io.File
+import java.util.concurrent.CompletableFuture
 
 /**
  * @author GrowlyX
@@ -79,22 +80,44 @@ object ScalaSpigot
 
         if (!file.exists())
         {
-            file.createNewFile().also {
-                if (it)
-                {
-                    Files.write(GSON.toJson(config), file, Charsets.UTF_8)
+            file.createNewFile()
+                .also {
+                    if (it)
+                    {
+                        val newest = GSON.toJson(
+                            ScalaSpigotConfig()
+                        )
 
-                    Logger.send("Created scala-spigot.json.")
-                } else
-                {
-                    Logger.send("Failed to create scala-spigot.json, using default values.", Logger.LogLevel.SEVERE)
+                        Files.write(
+                            newest.toByteArray(), file
+                        )
+
+                        Logger.send("Created scala-spigot.json.")
+                    } else
+                    {
+                        Logger.send("Failed to create scala-spigot.json, using default values.", Logger.LogLevel.SEVERE)
+                    }
                 }
-            }
         }
 
         val reader = Files.newReader(file, Charsets.UTF_8)
         config = GSON.fromJson(reader, ScalaSpigotConfig::class.java)
 
         Logger.send("Loaded spigot configuration from scala-spigot.json.")
+
+        CompletableFuture
+            .runAsync {
+                val newest = GSON.toJson(reader)
+
+                val empty = ByteArray(0)
+                Files.write(empty, file)
+
+                Files.write(
+                    newest.toByteArray(), file
+                )
+            }
+            .thenRun {
+                Logger.send("Updated spigot configuration with latest values.")
+            }
     }
 }
