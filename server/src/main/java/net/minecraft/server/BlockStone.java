@@ -44,13 +44,13 @@ public class BlockStone extends Block {
 	}
 
 	public static enum EnumStoneVariant implements INamable {
-		STONE(0, MaterialMapColor.m, "stone");
-		/*GRANITE(1, MaterialMapColor.l, "granite"),
+		STONE(0, MaterialMapColor.m, "stone"),
+		GRANITE(1, MaterialMapColor.l, "granite"),
 		GRANITE_SMOOTH(2, MaterialMapColor.l, "smooth_granite", "graniteSmooth"),
 		DIORITE(3, MaterialMapColor.p, "diorite"),
 		DIORITE_SMOOTH(4, MaterialMapColor.p, "smooth_diorite", "dioriteSmooth"),
 		ANDESITE(5, MaterialMapColor.m, "andesite"),
-		ANDESITE_SMOOTH(6, MaterialMapColor.m, "smooth_andesite", "andesiteSmooth");*/
+		ANDESITE_SMOOTH(6, MaterialMapColor.m, "smooth_andesite", "andesiteSmooth");
 
 		private static final net.minecraft.server.BlockStone.EnumStoneVariant[] h = new net.minecraft.server.BlockStone.EnumStoneVariant[values().length];
 		private final int i;
