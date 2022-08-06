@@ -82,11 +82,7 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
 
-                        entityliving.setHealth(
-                            Math.max(entityliving.getHealth() - 0.5F, 0.0F)
-                        );
-
-//                        entityliving.damageEntity(DamageSource.FALL, 5.0F);
+                        entityliving.d(DamageSource.FALL, 5.0F);
                         CraftEventFactory.entityDamage = null;
                     }
                     // CraftBukkit end
@@ -107,9 +103,9 @@ public class EntityEnderPearl extends EntityProjectile {
         if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
-//            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
-//                this.lastValidTeleport = getBukkitEntity().getLocation();
-//            }
+            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
+                this.lastValidTeleport = getBukkitEntity().getLocation();
+            }
             AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(this.locX - 0.3, this.locY - 0.05, this.locZ - 0.3, this.locX + 0.3, this.locY + 1.62, this.locZ + 0.3);
             if (this.world.getCubes(this, clearTeleportBoundingBox).isEmpty()) {
                 this.lastValidTeleport = this.getBukkitEntity().getLocation();
