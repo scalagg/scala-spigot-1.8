@@ -51,9 +51,16 @@ public class EntityEnderPearl extends EntityProjectile {
                 if (entityplayer.playerConnection.a().g() && entityplayer.world == this.world && !entityplayer.isSleeping()) {
                     // CraftBukkit start - Fire PlayerTeleportEvent
                     org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
+
                     Location location = this.lastValidTeleport.clone();
+
                     location.setPitch(player.getLocation().getPitch());
                     location.setYaw(player.getLocation().getYaw());
+
+                    // ScalaSpigot Start - Fix an issue with
+                    // the player not landing on the ground, instead of going into the air.
+                    location.setY((int) location.getY());
+                    // ScalaSpigot End
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
                     Bukkit.getPluginManager().callEvent(teleEvent);

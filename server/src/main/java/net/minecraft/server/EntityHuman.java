@@ -1059,16 +1059,22 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    entity.g(
-                        -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
-                        preset.getExtraVertical(),
-                        MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
-                    );
+                    if (isSprinting()) {
+                        entity.g(
+                                -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
+                                preset.getExtraVertical(),
+                                MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
+                        );
+                    }
 
                     this.motX *= preset.getSlowdown();
                     this.motZ *= preset.getSlowdown();
 
-                    this.setSprinting(false);
+                    // ScalaSpigot Start - Reset the sprint when auto w tap is disabled.
+                    if (!preset.getAutoWTap()) {
+                        this.setSprinting(false);
+                    }
+                    // ScalaSpigot End
 
                     // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
