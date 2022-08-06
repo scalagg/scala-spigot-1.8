@@ -165,7 +165,13 @@ class KnockbackCommand : BukkitCommand("knockback")
                     {
                         val value = args[3]
                         field.isAccessible = true
-                        field.set(existing, value.toDouble())
+                        if (field.type == Boolean.Companion::class.java)
+                        {
+                            field.set(existing, value.toBoolean())
+                        } else
+                        {
+                            field.set(existing, value.toDouble())
+                        }
 
                         sender.sendMessage("${ChatColor.GREEN}Updated field ${ChatColor.WHITE}${field.name}${ChatColor.GREEN} to ${ChatColor.WHITE}${value}${ChatColor.GREEN} for preset ${ChatColor.YELLOW}${args[1]}${ChatColor.GREEN}.")
 
