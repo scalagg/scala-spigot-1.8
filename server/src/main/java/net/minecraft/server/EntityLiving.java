@@ -1798,6 +1798,12 @@ public abstract class EntityLiving extends Entity {
     }
 
     public Vec3D d(float f) {
+        // ScalaSpigot Start - Mouse delay fix (Server sided)
+        if (this instanceof EntityPlayer) {
+            return super.d(f);
+        }
+        // ScalaSpigot End
+
         if (f == 1.0F) {
             return this.f(this.pitch, this.aK);
         } else {
