@@ -95,7 +95,14 @@ public class PortalTravelAgent {
 
     public boolean b(Entity entity, float f) {
         // CraftBukkit start - Modularize portal search process and entity teleportation
-        BlockPosition found = this.findPortal(entity.locX, entity.locY, entity.locZ, 128);
+        // MinetickMod start
+        BlockPosition found = this.findPortal(entity.locX, entity.locY, entity.locZ, 10);
+
+        if (found == null) {
+            found = this.findPortal(entity.locX, entity.locY, entity.locZ, 128);
+        }
+        // MinetickMod end
+
         if (found == null) {
             return false;
         }
