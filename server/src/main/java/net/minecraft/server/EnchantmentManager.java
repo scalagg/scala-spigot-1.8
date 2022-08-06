@@ -164,6 +164,10 @@ public class EnchantmentManager {
             a((net.minecraft.server.EnchantmentManager.EnchantmentModifier) d, entityliving.bA());
         }
 
+        // MinetickMod start
+        EnchantmentManager.e.a = null;
+        EnchantmentManager.e.b = null;
+        // MinetickMod end
     }
 
     public static void b(EntityLiving entityliving, Entity entity) {
@@ -177,6 +181,10 @@ public class EnchantmentManager {
             a((net.minecraft.server.EnchantmentManager.EnchantmentModifier) e, entityliving.bA());
         }
 
+        // MinetickMod start
+        EnchantmentManager.e.a = null;
+        EnchantmentManager.e.b = null;
+        // MinetickMod end
     }
 
     public static int a(EntityLiving entityliving) {
