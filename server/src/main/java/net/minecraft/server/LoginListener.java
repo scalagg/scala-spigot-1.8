@@ -40,7 +40,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     private EntityPlayer l;
 
     private static final ExecutorService AUTHENTICATORS = Executors.newCachedThreadPool(
-            r -> new Thread(r, "User Authenticator #" + b.incrementAndGet())
+            runnable -> new Thread(runnable, "User Authenticator #" + b.incrementAndGet())
     );
 
     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {

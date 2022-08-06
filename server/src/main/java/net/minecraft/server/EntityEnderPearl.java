@@ -81,7 +81,12 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
-                        entityliving.damageEntity(DamageSource.FALL, 5.0F);
+
+                        entityliving.setHealth(
+                            Math.max(entityliving.getHealth() - 0.5F, 0.0F)
+                        );
+
+//                        entityliving.damageEntity(DamageSource.FALL, 5.0F);
                         CraftEventFactory.entityDamage = null;
                     }
                     // CraftBukkit end
