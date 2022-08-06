@@ -871,11 +871,26 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         SpigotTimings.timeUpdateTimer.startTiming();
 
         // Send time updates to everyone, it will get the right time from the world the player is in.
-        for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
-            final EntityPlayer entityplayer = this.getPlayerList().players.get(i);
+        // PandaSpigot start - optimize time updates
+        for (final WorldServer world : this.worlds) {
+            final boolean doDaylight = world.getGameRules().getBoolean("doDaylightCycle");
+            final long dayTime = world.getDayTime();
+            final long worldTime = world.getTime();
+            final PacketPlayOutUpdateTime worldSyncedPacket = new PacketPlayOutUpdateTime(worldTime, dayTime, doDaylight);
 
-            entityplayer.playerConnection.sendPacket(new PacketPlayOutUpdateTime(entityplayer.world.getTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle")));
+            for (EntityHuman human : world.players) {
+                if (!(human instanceof EntityPlayer) || (this.ticks + human.getId()) % 20 != 0) {
+                    continue;
+                }
+
+                // Check if the players time is currently synced with the world if not, we will sync it.
+                EntityPlayer player = (EntityPlayer) human;
+                final long playerTime = player.getPlayerTime();
+                PacketPlayOutUpdateTime packet = (playerTime == worldTime) ? worldSyncedPacket : new PacketPlayOutUpdateTime(worldTime, playerTime, doDaylight);
+                player.playerConnection.sendPacket(packet);
+            }
         }
+        // PandaSpigot end
 
         SpigotTimings.timeUpdateTimer.stopTiming();
 
