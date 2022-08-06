@@ -14,4 +14,5 @@ open class KnockbackPreset(
     var slowdown: Double = 0.6,
     var rodVerticalMultiplier: Double = 0.0,
     var rodHorizontalMultiplier: Double = 0.0,
+    var autoWTap: Boolean = false
 ) : Preset
