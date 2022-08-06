@@ -165,7 +165,7 @@ class KnockbackCommand : BukkitCommand("knockback")
                     {
                         val value = args[3]
                         field.isAccessible = true
-                        if (field.type == Boolean.Companion::class.java)
+                        if (field.type == Boolean::class.java)
                         {
                             field.set(existing, value.toBoolean())
                         } else
