@@ -262,6 +262,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     public void close(IChatBaseComponent ichatbasecomponent) {
         this.preparing = false;
+        this.packetQueue.clear();
 
         if (this.channel.isOpen()) {
             this.channel.close();
