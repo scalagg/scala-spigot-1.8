@@ -2739,7 +2739,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public void b(Collection<Entity> collection) {
-        org.spigotmc.AsyncCatcher.catchOp( "entity world add"); // Spigot
+//        org.spigotmc.AsyncCatcher.catchOp( "entity world add"); // Spigot
         // CraftBukkit start
         // this.entityList.addAll(collection);
         Iterator iterator = collection.iterator();

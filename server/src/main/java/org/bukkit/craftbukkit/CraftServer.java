@@ -935,10 +935,16 @@ public final class CraftServer implements Server {
             }
         } else {
             ChunkProviderServer chunkProviderServer = handle.chunkProviderServer;
-            ChunkRegionLoader regionLoader = (ChunkRegionLoader) chunkProviderServer.chunkLoader;
+            // ScalaSpigot start - Fix SlimeWorldManager chunk loaders attempting to be cast to ChunkRegionLoader if save != true
+            IChunkLoader regionLoader = chunkProviderServer.chunkLoader;
 
-            regionLoader.b.clear();
-            regionLoader.c.clear();
+            if (regionLoader instanceof ChunkRegionLoader) {
+                final ChunkRegionLoader chunkRegionLoader = (ChunkRegionLoader) regionLoader;
+
+                chunkRegionLoader.b.clear();
+                chunkRegionLoader.c.clear();
+            }
+            // ScalaSpigot end
 
             try {
                 FileIOThread.a().b();
