@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import org.bukkit.Material;
+
 import java.io.IOException;
 
 /**

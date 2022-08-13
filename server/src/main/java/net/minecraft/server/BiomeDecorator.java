@@ -15,9 +15,9 @@ public class BiomeDecorator {
 	protected WorldGenerator g;
 	protected WorldGenerator h;
 	protected WorldGenerator i;
-	/*protected WorldGenerator j;
+	protected WorldGenerator j;
 	protected WorldGenerator k;
-	protected WorldGenerator l;*/
+	protected WorldGenerator l;
 	protected WorldGenerator m;
 	protected WorldGenerator n;
 	protected WorldGenerator o;
@@ -79,12 +79,12 @@ public class BiomeDecorator {
 			this.c = var4;
 			this.h = new WorldGenMinable(Blocks.DIRT.getBlockData(), this.d.I);
 			this.i = new WorldGenMinable(Blocks.GRAVEL.getBlockData(), this.d.M);
-			//this.j = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
-			//		.EnumStoneVariant.GRANITE), this.d.Q);
-			//this.k = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
-			//		.EnumStoneVariant.DIORITE), this.d.U);
-			//this.l = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
-			//      .EnumStoneVariant.ANDESITE), this.d.Y);
+			this.j = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
+					.EnumStoneVariant.GRANITE), this.d.Q);
+			this.k = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
+					.EnumStoneVariant.DIORITE), this.d.U);
+			this.l = new WorldGenMinable(Blocks.STONE.getBlockData().set(BlockStone.VARIANT, BlockStone
+			      .EnumStoneVariant.ANDESITE), this.d.Y);
 			this.m = new WorldGenMinable(Blocks.COAL_ORE.getBlockData(), this.d.ac);
 			this.n = new WorldGenMinable(Blocks.IRON_ORE.getBlockData(), this.d.ag);
 			this.o = new WorldGenMinable(Blocks.GOLD_ORE.getBlockData(), this.d.ak);
@@ -338,9 +338,9 @@ public class BiomeDecorator {
 	protected void a() {
 		this.a(this.d.J, this.h, this.d.K, this.d.L);
 		this.a(this.d.N, this.i, this.d.O, this.d.P);
-		/*this.a(this.d.V, this.k, this.d.W, this.d.X);
-		this.a(this.d.getPort, this.j, this.d.S, this.d.T);
-		this.a(this.d.Z, this.l, this.d.aa, this.d.ab);*/
+		this.a(this.d.V, this.k, this.d.W, this.d.X);
+		this.a(this.d.V, this.j, this.d.S, this.d.T);
+		this.a(this.d.Z, this.l, this.d.aa, this.d.ab);
 		this.a(this.d.ad, this.m, this.d.ae, this.d.af);
 		this.a(this.d.ah, this.n, this.d.ai, this.d.aj);
 		this.a(this.d.al, this.o, this.d.am, this.d.an);
