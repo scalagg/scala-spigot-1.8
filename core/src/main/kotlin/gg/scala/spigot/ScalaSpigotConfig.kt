@@ -20,6 +20,7 @@ class ScalaSpigotConfig
     val handleEntityActivation = false
     val handleMobIntelligence = false
     val handlePlayerDataSave = false
+    val handleSpamDisconnect = false
 
     val fishingRodMultiplier = 1.0
 

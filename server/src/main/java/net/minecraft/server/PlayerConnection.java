@@ -1007,27 +1007,30 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				}
 			}
 
-			if (counted && chatSpamField.addAndGet(this, 20) > 60 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) { // Spigot
-				if (!isSync) {
-					Waitable waitable = new Waitable() {
-						@Override
-						protected Object evaluate() {
-							net.minecraft.server.PlayerConnection.this.disconnect("disconnect.spam");
-							return null;
+			if (ScalaSpigot.INSTANCE.getConfig().getHandleSpamDisconnect())
+			{
+				if (counted && chatSpamField.addAndGet(this, 20) > 60 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) { // Spigot
+					if (!isSync) {
+						Waitable waitable = new Waitable() {
+							@Override
+							protected Object evaluate() {
+								net.minecraft.server.PlayerConnection.this.disconnect("disconnect.spam");
+								return null;
+							}
+						};
+
+						this.minecraftServer.processQueue.add(waitable);
+
+						try {
+							waitable.get();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						} catch (ExecutionException e) {
+							throw new RuntimeException(e);
 						}
-					};
-
-					this.minecraftServer.processQueue.add(waitable);
-
-					try {
-						waitable.get();
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					} catch (ExecutionException e) {
-						throw new RuntimeException(e);
+					} else {
+						this.disconnect("disconnect.spam");
 					}
-				} else {
-					this.disconnect("disconnect.spam");
 				}
 			}
 		}
@@ -1957,9 +1960,12 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 	public void a(PacketPlayInTabComplete packetplayintabcomplete) {
 		PlayerConnectionUtils.ensureMainThread(packetplayintabcomplete, this, this.player.u());
 
-		if (chatSpamField.addAndGet(this, 10) > 500 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) {
-			this.disconnect("disconnect.spam");
-			return;
+		if (ScalaSpigot.INSTANCE.getConfig().getHandleSpamDisconnect())
+		{
+			if (chatSpamField.addAndGet(this, 10) > 500 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) {
+				this.disconnect("disconnect.spam");
+				return;
+			}
 		}
 
 		ArrayList arraylist = Lists.newArrayList();
