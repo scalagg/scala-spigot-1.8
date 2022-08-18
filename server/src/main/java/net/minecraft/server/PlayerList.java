@@ -57,7 +57,9 @@ public abstract class PlayerList {
     private CraftServer cserver;
 
     private final Map<String,EntityPlayer> playersByName = new org.spigotmc.CaseInsensitiveMap<>();
-    public CopyOnWriteArrayList<EntityPlayer> players = new CopyOnWriteArrayList<>(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+    public CopyOnWriteArrayList<EntityPlayer> players = new CopyOnWriteArrayList<>();
+
+    private Comparator<EntityPlayer> sorter;
 
     // ScalaSpigot start
     public void sortPlayerList(
