@@ -18,6 +18,7 @@ class PotionCommand : BukkitCommand("potion")
     init
     {
         aliases = listOf("pot", "pots", "potions")
+        permission = "scalaspigot.command.potion"
     }
 
     override fun execute(

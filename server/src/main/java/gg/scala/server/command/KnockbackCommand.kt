@@ -17,6 +17,7 @@ class KnockbackCommand : BukkitCommand("knockback")
     init
     {
         aliases = listOf("kb")
+        permission = "scalaspigot.command.knockback"
     }
 
     override fun execute(
