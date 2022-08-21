@@ -89,11 +89,6 @@ public abstract class Command {
         Validate.notNull(args, "Arguments cannot be null");
         Validate.notNull(alias, "Alias cannot be null");
 
-        if (!sender.hasPermission(this.permission))
-        {
-            return ImmutableList.of();
-        }
-
         if (args.length == 0) {
             return ImmutableList.of();
         }
