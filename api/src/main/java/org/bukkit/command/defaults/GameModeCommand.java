@@ -57,6 +57,8 @@ public class GameModeCommand extends VanillaCommand {
                     mode = GameMode.ADVENTURE;
                 } else if (modeArg.equalsIgnoreCase("spectator") || modeArg.equalsIgnoreCase("sp")) {
                     mode = GameMode.SPECTATOR;
+                } else if (modeArg.equalsIgnoreCase("watcher")) {
+                    mode = GameMode.WATCHER;
                 } else {
                     mode = GameMode.SURVIVAL;
                 }
