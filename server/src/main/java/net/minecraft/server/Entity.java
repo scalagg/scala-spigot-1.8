@@ -1629,7 +1629,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 			this.vehicle = null;
 		} else {
-			if ((this.bukkitEntity instanceof LivingEntity) && (entity.getBukkitEntity() instanceof Vehicle) && entity.world.isChunkLoaded((int) entity.locX >> 4, (int) entity.locZ >> 4, true)) {
+			if ((this.bukkitEntity instanceof LivingEntity) && (entity.getBukkitEntity() instanceof Vehicle) && entity.world.isChunkLoaded(MathHelper.floor(entity.locX) >> 4, MathHelper.floor(entity.locZ) >> 4, true)) { // MinetickMod - fix rounding error
 				VehicleExitEvent exitEvent = null;
 
 				if (this.vehicle != null && this.vehicle.getBukkitEntity() instanceof Vehicle) {
