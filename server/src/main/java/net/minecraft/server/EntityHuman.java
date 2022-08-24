@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import net.jafama.FastMath;
 import org.bukkit.Bukkit;
@@ -1366,8 +1367,11 @@ public abstract class EntityHuman extends EntityLiving {
 
     }
 
+    private final int interval = ScalaSpigot.INSTANCE
+        .getConfig().getPlayerTimeStatisticsInterval();
+
     public void b(Statistic statistic) {
-        this.a(statistic, 20);
+        this.a(statistic, this.interval);
     }
 
     public void a(Statistic statistic, int i) {

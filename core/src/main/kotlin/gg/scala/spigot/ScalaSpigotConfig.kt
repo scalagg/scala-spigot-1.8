@@ -22,6 +22,7 @@ class ScalaSpigotConfig
     val handleSpamDisconnect = false
 
     val fishingRodMultiplier = 1.0
+    val playerTimeStatisticsInterval = 20
 
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
