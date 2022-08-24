@@ -3,6 +3,7 @@ package net.minecraft.server;
 import co.aikar.timings.SpigotTimings;
 import co.aikar.timings.Timing;
 import com.eatthepath.uuid.FastUUID;
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -493,7 +494,12 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 	public void move(double d0, double d1, double d2) {
 		if (this.loadChunks) loadChunks(); // PaperSpigot - Load chunks
-		if (this.noclip) {
+
+		// FlamePaper start - Disable Unloaded Chunk Movement
+		if (!((ChunkProviderServer) world.chunkProvider).isChunkLoaded((int) locX >> 4, (int) locZ >> 4) && ScalaSpigot.INSTANCE.getConfig().getDisableUnloadedChunkMovements()) {
+			this.a(this.getBoundingBox().c(d0, d1, d2));
+			this.recalcPosition();
+		} else if (this.noclip) { // FlamePaper end - Disable Unloaded Chunk Movement
 			this.a(this.getBoundingBox().c(d0, d1, d2));
 			this.recalcPosition();
 		} else {

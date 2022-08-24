@@ -10,8 +10,7 @@ import gg.scala.spigot.preset.potion.PotionPreset
 class ScalaSpigotConfig
 {
     val kickForInvalidArmAnimation = true
-    val hidePlayersFromTabList = false
-    val smoothTeleportation = true
+    val disableUnloadedChunkMovements = true
 
     val doDayCycle = true
 

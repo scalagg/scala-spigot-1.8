@@ -278,13 +278,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						this.server.getPluginManager().callEvent(event);
 
 						if (event.isCancelled()) {
-							// PandaSpigot start - Smooth teleportation
-							if (ScalaSpigot.INSTANCE.getConfig().getSmoothTeleportation()) {
-								this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), 0, 0, TELEPORT_NO_ROT));
-							} else {
-								// PandaSpigot end
-								this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
-							}
+// PandaSpigot end
+							this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
 							return;
 						}
 
@@ -527,15 +522,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 	}
 
 	private void internalTeleport(double d0, double d1, double d2, float f, float f1, Set set) {
-		// PandaSpigot start - Smooth teleportation
-		if (ScalaSpigot.INSTANCE.getConfig().getSmoothTeleportation() && set.isEmpty()) {
-			// if yaw & pitch are same, send a relative teleport
-			if (this.player.yaw == f && this.player.pitch == f1) {
-				set = TELEPORT_NO_ROT; // provided set is probably immutable
-				f = 0;
-				f1 = 0;
-			}
-		}
 		// PandaSpigot end
 		if (Float.isNaN(f)) {
 			f = 0;
