@@ -157,13 +157,7 @@ public class EntityTrackerEntry {
                         this.v = 0;
                         // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
                         if (this.tracker instanceof EntityPlayer) {
-                            // No need to create a whole new list every teleport
-                            Iterator<EntityPlayer> iterator = trackedPlayers.iterator();
-                            while (iterator.hasNext()) {
-                                EntityPlayer next = iterator.next();
-                                this.updatePlayer(next);
-                            }
-//                            this.scanPlayers(new java.util.ArrayList(this.trackedPlayers));
+                            this.scanPlayers(new java.util.ArrayList(this.tracker.world.players)); // [SportPaper-0203] Fix Teleport Invisibility this.trackedPlayers -> this.tracker.world.players
                         }
                         // CraftBukkit end
                         object = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
