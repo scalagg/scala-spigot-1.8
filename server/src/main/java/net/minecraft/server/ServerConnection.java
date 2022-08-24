@@ -63,6 +63,16 @@ public class ServerConnection {
     private final List<ChannelFuture> g = Collections.synchronizedList(Lists.<ChannelFuture>newArrayList());
     private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
 
+    // Paper start - prevent blocking on adding a new network manager while the server is ticking
+    private final List<NetworkManager> pending = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
+    private void addPending() {
+        synchronized (pending) {
+            this.h.addAll(pending); // Paper - OBFHELPER - List of network managers
+            pending.clear();
+        }
+    }
+    // Paper end
+
     public ServerConnection(MinecraftServer minecraftserver) {
         this.f = minecraftserver;
         this.d = true;
@@ -94,7 +104,7 @@ public class ServerConnection {
 
 			        NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
 
-			        net.minecraft.server.ServerConnection.this.h.add(networkmanager);
+                    pending.add(networkmanager); // Paper
 			        channel.pipeline().addLast("packet_handler", networkmanager);
 			        networkmanager.a((new HandshakeListener(net.minecraft.server.ServerConnection.this.f, networkmanager)));
 		        }
@@ -120,6 +130,7 @@ public class ServerConnection {
 
     public void c() {
         synchronized (this.h) {
+            addPending(); // Paper
             Iterator iterator = this.h.iterator();
 
             while (iterator.hasNext()) {
