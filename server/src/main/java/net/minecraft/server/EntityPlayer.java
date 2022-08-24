@@ -25,7 +25,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     public final List<ChunkCoordIntPair> chunkCoordIntPairQueue = Lists.newLinkedList();
     public final java.util.Deque<Integer> removeQueue = new java.util.ArrayDeque<>(); // PandaSpigot
     private final ServerStatisticManager bK;
-    public String locale = "en_US"; // Spigot
+    public String locale = null; // PAIL: private -> public // Paper - default to null
     public PlayerConnection playerConnection;
     public double d;
     public double e;
