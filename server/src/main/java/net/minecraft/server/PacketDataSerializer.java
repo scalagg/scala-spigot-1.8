@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.base.Charsets;
+import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.*;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -158,7 +159,7 @@ public class PacketDataSerializer extends ByteBuf {
             return null;
         } else {
             this.readerIndex(i);
-            return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(64000L));
+            return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(ScalaSpigot.INSTANCE.getConfig().getNbtReadLimiter()));
         }
     }
 
