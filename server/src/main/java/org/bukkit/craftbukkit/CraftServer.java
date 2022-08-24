@@ -73,9 +73,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitWorker;
 import org.bukkit.util.StringUtil;
 import org.bukkit.util.permissions.DefaultPermissions;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
+import org.yaml.snakeyaml.representer.Representer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -103,7 +106,10 @@ public final class CraftServer implements Server {
     protected final DedicatedPlayerList playerList;
     private final Map<String, World> worlds = new LinkedHashMap<>();
     private YamlConfiguration configuration;
-    private final Yaml yaml = new Yaml(new SafeConstructor());
+    // KigPaper start - CVE-2017-18640
+    private final LoaderOptions loaderOptions = new LoaderOptions();
+    private final Yaml yaml = new Yaml(new SafeConstructor(), new Representer(), new DumperOptions(), loaderOptions);
+    // KigPaper end
     private final Map<UUID, OfflinePlayer> offlinePlayers = new MapMaker().makeMap();
     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
     private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
@@ -136,6 +142,8 @@ public final class CraftServer implements Server {
     }
 
     public CraftServer(MinecraftServer console, PlayerList playerList) {
+        loaderOptions.setMaxAliasesForCollections(32); // KigPaper - CVE-2017-18640
+
         this.console = console;
         this.playerList = (DedicatedPlayerList) playerList;
         this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, EntityPlayer::getBukkitEntity));
