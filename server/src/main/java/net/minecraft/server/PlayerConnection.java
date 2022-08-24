@@ -11,6 +11,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -146,7 +147,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 	}
 
 	public void disconnect(ChatMessage chatMessage) {
-		this.disconnect(chatMessage.getText());
+		this.disconnect(ChatColor.RED + "You have been kicked for spamming!");
 	}
 
 	public void disconnect(String s) {
