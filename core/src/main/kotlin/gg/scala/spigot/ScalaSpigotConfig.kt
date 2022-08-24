@@ -21,6 +21,9 @@ class ScalaSpigotConfig
     val handlePlayerDataSave = false
     val handleSpamDisconnect = false
 
+    val optimizeTntMovement = true
+    val optimizeLiquidExplosions = true
+
     val fishingRodMultiplier = 1.0
     val playerTimeStatisticsInterval = 20
 
