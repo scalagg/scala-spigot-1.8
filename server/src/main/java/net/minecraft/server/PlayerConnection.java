@@ -1,18 +1,14 @@
 package net.minecraft.server;
 
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import gg.scala.server.NotchUtil;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.filter.EventFilterHandler;
-import gg.scala.spigot.mock.AirClickEvent;
-import gg.scala.spigot.mock.LeftClickBlockEvent;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -64,7 +60,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 	private long j;
 	private long k;
 	private volatile int chatThrottle;
-	private static final AtomicIntegerFieldUpdater chatSpamField = AtomicIntegerFieldUpdater.newUpdater(net.minecraft.server.PlayerConnection.class, "chatThrottle");
+	private static final AtomicIntegerFieldUpdater<PlayerConnection> chatSpamField = AtomicIntegerFieldUpdater.newUpdater(net.minecraft.server.PlayerConnection.class, "chatThrottle");
 	private int m;
 	private IntHashMap<Short> n = new IntHashMap();
 	private double o;
@@ -147,6 +143,10 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 	public NetworkManager a() {
 		return this.networkManager;
+	}
+
+	public void disconnect(ChatMessage chatMessage) {
+		this.disconnect(chatMessage.getText());
 	}
 
 	public void disconnect(String s) {
@@ -1000,7 +1000,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						Waitable waitable = new Waitable() {
 							@Override
 							protected Object evaluate() {
-								net.minecraft.server.PlayerConnection.this.disconnect("disconnect.spam");
+								disconnect(new ChatMessage("disconnect.spam", new Object[0]));
 								return null;
 							}
 						};
@@ -1015,7 +1015,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 							throw new RuntimeException(e);
 						}
 					} else {
-						this.disconnect("disconnect.spam");
+						disconnect(new ChatMessage("disconnect.spam", new Object[0]));
 					}
 				}
 			}
@@ -1943,27 +1943,52 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		}
 	}
 
-	public void a(PacketPlayInTabComplete packetplayintabcomplete) {
-		PlayerConnectionUtils.ensureMainThread(packetplayintabcomplete, this, this.player.u());
-
+	// Paper start - async tab completion
+	public void a(PacketPlayInTabComplete packet) {
 		if (ScalaSpigot.INSTANCE.getConfig().getHandleSpamDisconnect())
 		{
 			if (chatSpamField.addAndGet(this, 10) > 500 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) {
-				this.disconnect("disconnect.spam");
+				minecraftServer.postToMainThread(() -> this.disconnect(new ChatMessage("disconnect.spam", new Object[0])));
 				return;
 			}
 		}
 
-		ArrayList arraylist = Lists.newArrayList();
-		Iterator iterator = this.minecraftServer.tabCompleteCommand(this.player, packetplayintabcomplete.a(), packetplayintabcomplete.b()).iterator();
+		com.destroystokyo.paper.event.server.AsyncTabCompleteEvent event;
 
-		while (iterator.hasNext()) {
-			String s = (String) iterator.next();
+		java.util.List<String> completions = new ArrayList<>();
+		BlockPosition blockpos = packet.b();
+		String buffer = packet.a();
+		boolean isCommand = buffer.startsWith("/");
 
-			arraylist.add(s);
+		event = new com.destroystokyo.paper.event.server.AsyncTabCompleteEvent(
+			this.getPlayer(), completions, buffer, isCommand,
+			blockpos != null ? new Location(this.getPlayer().getWorld(), blockpos.getX(), blockpos.getY(), blockpos.getZ()) : null
+		);
+
+		event.callEvent();
+		completions = event.isCancelled() ? com.google.common.collect.ImmutableList.of() : event.getCompletions();
+
+		if (!event.isHandled()) {
+			// If the event isn't handled, we can assume that we have no completions, and so we'll ask the server
+			Waitable<java.util.List<String>> syncCompletions = new Waitable<java.util.List<String>>() {
+				@Override
+				protected java.util.List<String> evaluate() {
+					return minecraftServer.tabCompleteCommand(player, buffer, blockpos);
+				}
+			};
+
+			server.getServer().processQueue.add(syncCompletions);
+
+			try {
+				completions = syncCompletions.get();
+			} catch (InterruptedException | ExecutionException e1) {
+				e1.printStackTrace();
+			}
+
+			this.player.playerConnection.sendPacket(new PacketPlayOutTabComplete(completions.toArray(new String[0])));
+		} else if (!event.isCancelled()) {
+			this.player.playerConnection.sendPacket(new PacketPlayOutTabComplete(completions.toArray(new String[0])));
 		}
-
-		this.player.playerConnection.sendPacket(new PacketPlayOutTabComplete((String[]) arraylist.toArray(new String[arraylist.size()])));
 	}
 
 	public void a(PacketPlayInSettings packetplayinsettings) {

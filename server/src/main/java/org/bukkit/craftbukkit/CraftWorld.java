@@ -41,6 +41,7 @@ import org.github.paperspigot.exception.ServerInternalException;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class CraftWorld implements World {
     public static final int CUSTOM_DIMENSION_OFFSET = 10;
@@ -125,6 +126,20 @@ public class CraftWorld implements World {
         getChunkAtAsync(location.getBlockX() >> 4, location.getBlockZ() >> 4, callback);
     }
     // PaperSpigot end
+
+    public CompletableFuture<Chunk> getChunkAtAsync(int x, int z) {
+        CompletableFuture<Chunk> future = new CompletableFuture<>();
+        CraftWorld.this.getChunkAtAsync(x, z, future::complete);
+        return future;
+    }
+
+    public CompletableFuture<Chunk> getChunkAtAsync(Location location) {
+        return getChunkAtAsync(location.getBlockX(), location.getBlockZ());
+    }
+
+    public CompletableFuture<Chunk> getChunkAtAsync(Block block) {
+        return getChunkAtAsync(block.getX(), block.getZ());
+    }
 
     public Chunk getChunkAt(int x, int z) {
         return this.world.chunkProviderServer.getChunkAt(x, z).bukkitChunk;

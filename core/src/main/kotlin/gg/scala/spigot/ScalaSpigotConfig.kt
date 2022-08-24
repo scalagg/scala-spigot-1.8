@@ -21,6 +21,7 @@ class ScalaSpigotConfig
     val handlePlayerDataSave = false
     val handleSpamDisconnect = false
     val adaptiveChunkGarbageCollection = false
+    val hidePlayersFromTabList = false
 
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
