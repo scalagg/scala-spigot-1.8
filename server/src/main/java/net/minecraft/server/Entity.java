@@ -1022,8 +1022,20 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		}
 	}
 
+	// Migot start
+	private boolean isInLava;
+	private int lastLavaCheck = Integer.MIN_VALUE;
+	// Migot end
+
 	public boolean ab() {
-		return this.world.a(this.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
+		int currentTick = MinecraftServer.currentTick;
+
+		if (this.lastLavaCheck != currentTick) {
+			this.lastLavaCheck = currentTick;
+			this.isInLava = this.world.a(this.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
+		}
+
+		return this.isInLava;
 	}
 
 	public void a(float f, float f1, float f2) {
