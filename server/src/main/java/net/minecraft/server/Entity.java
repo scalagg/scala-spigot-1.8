@@ -2035,7 +2035,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	}
 
 	public void teleportTo(Location exit, boolean portal) {
-		if (true) {
+		if (!this.dead) {
 			WorldServer worldserver = ((CraftWorld) getBukkitEntity().getLocation().getWorld()).getHandle();
 			WorldServer worldserver1 = ((CraftWorld) exit.getWorld()).getHandle();
 			int i = worldserver1.dimension;
