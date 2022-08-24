@@ -1392,7 +1392,14 @@ public class CraftWorld implements World {
     public void processChunkGC() {
         chunkGCTickCount++;
 
-        if (chunkLoadCount >= server.chunkGCLoadThresh && server.chunkGCLoadThresh > 0) {
+        // FlamePaper start - Adaptative chunk GC
+        int playerCount = getPlayers().size();
+        int viewDistance = getHandle().getServer().getViewDistance();
+        int viewChunks = ((viewDistance * 2) + 1);
+        int chunkGCLoadThreshold = ScalaSpigot.INSTANCE.getConfig().getAdaptiveChunkGarbageCollection() ? (world.keepSpawnInMemory ? 256 : 0) + playerCount * (viewChunks * viewChunks) : server.chunkGCLoadThresh;
+
+        if (chunkLoadCount > chunkGCLoadThreshold && chunkGCLoadThreshold > 0) {
+            // FlamePaper end - Adaptative chunk GC
             chunkLoadCount = 0;
         } else if (chunkGCTickCount >= server.chunkGCPeriod && server.chunkGCPeriod > 0) {
             chunkGCTickCount = 0;

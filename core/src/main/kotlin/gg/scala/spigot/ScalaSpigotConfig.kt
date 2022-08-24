@@ -20,6 +20,7 @@ class ScalaSpigotConfig
     val handleMobIntelligence = false
     val handlePlayerDataSave = false
     val handleSpamDisconnect = false
+    val adaptiveChunkGarbageCollection = false
 
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
