@@ -742,7 +742,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
                 ByteBuf buffer = Base64.encode(bytebuf);
 
-                serverping.setFavicon("data:image/png;base64," + buffer.toString(Charsets.UTF_8));
+                serverping.setFavicon("data:image/png;base64," + buffer.toString(Charsets.UTF_8).replace("\n", ""));
             } catch (Exception exception) {
                 LOGGER.error("Couldn't load server icon", exception);
             } finally {
