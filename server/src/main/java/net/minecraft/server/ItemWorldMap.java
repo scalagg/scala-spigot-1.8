@@ -69,9 +69,9 @@ public class ItemWorldMap extends ItemWorldMapBase {
                             int k2 = (j / i + k1 - 64) * i;
                             int l2 = (k / i + l1 - 64) * i;
                             HashMultiset hashmultiset = HashMultiset.create();
-                            Chunk chunk = world.getChunkAtWorldCoords(new BlockPosition(k2, 0, l2));
+                            Chunk chunk = world.getChunkIfLoaded(k2, l2); // NeonPaper - Maps shouldn't load chunks
 
-                            if (!chunk.isEmpty()) {
+                            if (chunk != null && !chunk.isEmpty()) { // NeonPaper - Maps shouldn't load chunks
                                 int i3 = k2 & 15;
                                 int j3 = l2 & 15;
                                 int k3 = 0;
