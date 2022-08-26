@@ -67,6 +67,8 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     private boolean openedBook;
 
+    private static boolean enableExplicitFlush = Boolean.getBoolean("paper.explicit-flush"); // PandaSpigot - Disable explicit flushing
+
     public static Channel getChannel(final net.minecraft.server.NetworkManager nm) {
         return nm.channel;
     }
@@ -253,7 +255,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             ((IUpdatePlayerListBox) this.m).c();
         }
 
-        this.channel.flush();
+        if (enableExplicitFlush) this.channel.eventLoop().execute(() -> this.channel.flush()); // PandaSpigot - we don't need to explicit flush here, but allow opt-in in case issues are found to a better version
     }
 
     public SocketAddress getSocketAddress() {
