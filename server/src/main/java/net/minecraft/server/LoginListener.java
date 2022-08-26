@@ -283,7 +283,6 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                 }
             }
             // CraftBukkit end
-            c.info("Attempting login handle for " + net.minecraft.server.LoginListener.this.i.getName() + "...");
             net.minecraft.server.LoginListener.this.g = net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT;
         }
     }

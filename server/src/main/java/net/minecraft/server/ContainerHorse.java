@@ -79,7 +79,7 @@ public class ContainerHorse extends Container {
     }
 
     public boolean a(EntityHuman entityhuman) {
-        return this.a.a(entityhuman) && this.f.isAlive() && this.f.g((Entity) entityhuman) < 8.0F;
+        return this.a.a(entityhuman) && (this.f.isAlive() && this.f.valid) && this.f.g((Entity) entityhuman) < 8.0F; // NeonPaper! - Fix MC-161754
     }
 
     public ItemStack b(EntityHuman entityhuman, int i) {

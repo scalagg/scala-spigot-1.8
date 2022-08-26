@@ -1137,8 +1137,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			return;
 		}
 
-		if (org.spigotmc.SpigotConfig.logCommands)
-			c.info(this.player.getName() + " issued server command: " + s);
+		c.info(this.player.getName() + " issued server command: " + s);
 		// ScalaSpigot end
 
 		try {
@@ -1147,7 +1146,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				return;
 			}
 		} catch (org.bukkit.command.CommandException ex) {
-			player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
+			player.sendMessage(org.bukkit.ChatColor.RED + "Something went terribly wrong while performing this command.");
 			java.util.logging.Logger.getLogger(net.minecraft.server.PlayerConnection.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 			SpigotTimings.playerCommandTimer.stopTiming();
 			return;
