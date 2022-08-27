@@ -943,9 +943,27 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
             // Tick trackers
             worldserver.timings.tracker.startTiming();
-
-            if (this.getPlayerList().getPlayerCount() != 0) // Tuinity
-                worldserver.getTracker().updatePlayers();
+            // PandaSpigot start - controlled flush for entity tracker packets
+            List<NetworkManager> disabledFlushes = new ArrayList<>(worldserver.players.size());
+            for (EntityHuman player : worldserver.players) {
+                if (!(player instanceof EntityPlayer)) continue; // skip non-player entities
+                PlayerConnection connection = ((EntityPlayer) player).playerConnection;
+                if (connection != null) {
+                    connection.networkManager.disableAutomaticFlush();
+                    disabledFlushes.add(connection.networkManager);
+                }
+            }
+            try {
+                // PandaSpigot end
+                if (this.getPlayerList().getPlayerCount() != 0) // Tuinity
+                    worldserver.getTracker().updatePlayers();
+                // PandaSpigot start - controlled flush for entity tracker packets
+            } finally {
+                for (NetworkManager networkManager : disabledFlushes) {
+                    networkManager.enableAutomaticFlush();
+                }
+            }
+            // PandaSpigot end
 
             worldserver.timings.tracker.stopTiming();
 
