@@ -586,6 +586,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public SocketAddress getRawAddress() {
+        // PandaSpigot start - This can be null in the case of a Unix domain socket, so if it is, fake something
+        if (this.channel.remoteAddress() == null) {
+            return new java.net.InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), 0);
+        }
+        // PandaSpigot end
         return this.channel.remoteAddress();
     }
 

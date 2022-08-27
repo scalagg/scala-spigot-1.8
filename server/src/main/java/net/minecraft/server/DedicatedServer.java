@@ -135,22 +135,47 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         int i = this.propertyManager.getInt("gamemode", WorldSettings.EnumGamemode.SURVIVAL.getId());
         this.r = WorldSettings.a(i);
 
-        InetAddress inetaddress = null;
 
-        if (this.getServerIp().length() > 0) {
-            inetaddress = InetAddress.getByName(this.getServerIp());
-        }
+        // PandaSpigot start - Unix domain socket support
+        // PandaSpigot - Move SpigotConfig to load earlier, so that we can check IP forwarding status here.
+        // Spigot start
+        this.a((PlayerList) (new DedicatedPlayerList(this)));
 
-        if (this.getPort() < 0) {
-            this.setPort(this.propertyManager.getInt("server-port", 25565));
-        }
-
-        // Register player list (which starts CraftServer)
-        this.a(new DedicatedPlayerList(this));
-
-        // Load Spigot settings
         org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
         org.spigotmc.SpigotConfig.registerCommands();
+
+        // Spigot end
+        java.net.SocketAddress bindAddress;
+        if (this.getServerIp().startsWith("unix:")) {
+            if (!io.netty.channel.epoll.Epoll.isAvailable()) {
+                DedicatedServer.LOGGER.fatal("**** INVALID CONFIGURATION!");
+                DedicatedServer.LOGGER.fatal("You are trying to use a Unix domain socket but you're not on a supported OS.");
+                return false;
+            }
+
+            if (!org.spigotmc.SpigotConfig.bungee) {
+                DedicatedServer.LOGGER.info("**** PROXY MODE");
+                DedicatedServer.LOGGER.info("We are enable proxy (bungeecord) mode as a unix address was given.");
+
+                org.spigotmc.SpigotConfig.bungee = true;
+            }
+
+            bindAddress = new io.netty.channel.unix.DomainSocketAddress(this.getServerIp().substring("unix:".length()));
+        } else {
+            // PandaSpigot end
+            InetAddress inetaddress = null;
+
+            if (this.getServerIp().length() > 0) {
+                inetaddress = InetAddress.getByName(this.getServerIp());
+            }
+
+            if (this.getPort() < 0) {
+                this.setPort(this.propertyManager.getInt("server-port", 25565));
+            }
+
+            bindAddress = new java.net.InetSocketAddress(inetaddress, this.getPort());
+            // PandaSpigot end
+        }
 
         // Load PaperSpigot settings
         org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("spigot-settings"));
@@ -167,7 +192,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         if (!org.spigotmc.SpigotConfig.lateBind) {
             try {
-                this.aq().a(inetaddress, this.getPort());
+                this.aq().bind(bindAddress); // PandaSpigot - Unix domain socket support
             } catch (IOException ioexception) {
                 LOGGER.warn("** FAILED TO BIND PORT **");
                 LOGGER.warn("The exception was: {}", ioexception.toString());
@@ -254,7 +279,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
             if (org.spigotmc.SpigotConfig.lateBind) {
                 try {
-                    this.aq().a(inetaddress, this.getPort());
+                    this.aq().bind(bindAddress); // PandaSpigot - Unix domain socket support
                 } catch (IOException ioexception) {
                     LOGGER.warn("**** FAILED TO BIND TO PORT!");
                     LOGGER.warn("The exception was: {}", ioexception.toString());

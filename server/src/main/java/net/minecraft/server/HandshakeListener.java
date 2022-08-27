@@ -32,30 +32,32 @@ public class HandshakeListener implements PacketHandshakingInListener {
 
             // CraftBukkit start - Connection throttle
             try {
-                long currentTime = System.currentTimeMillis();
-                long connectionThrottle = MinecraftServer.getServer().server.getConnectionThrottle();
-                InetAddress address = ((java.net.InetSocketAddress) this.b.getSocketAddress()).getAddress();
+                if (!(this.b.channel.localAddress() instanceof io.netty.channel.unix.DomainSocketAddress)) { // PandaSpigot - the connection throttle is useless when you have a Unix domain socket
+                    long currentTime = System.currentTimeMillis();
+                    long connectionThrottle = MinecraftServer.getServer().server.getConnectionThrottle();
+                    InetAddress address = ((java.net.InetSocketAddress) this.b.getSocketAddress()).getAddress();
 
-                synchronized (throttleTracker) {
-                    if (throttleTracker.containsKey(address) && !"127.0.0.1".equals(address.getHostAddress()) && currentTime - throttleTracker.get(address) < connectionThrottle) {
+                    synchronized (throttleTracker) {
+                        if (throttleTracker.containsKey(address) && !"127.0.0.1".equals(address.getHostAddress()) && currentTime - throttleTracker.get(address) < connectionThrottle) {
+                            throttleTracker.put(address, currentTime);
+                            chatcomponenttext = new ChatComponentText("Connection throttled! Please wait before reconnecting.");
+                            this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext));
+                            this.b.close(chatcomponenttext);
+                            return;
+                        }
+
                         throttleTracker.put(address, currentTime);
-                        chatcomponenttext = new ChatComponentText("Connection throttled! Please wait before reconnecting.");
-                        this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext));
-                        this.b.close(chatcomponenttext);
-                        return;
-                    }
+                        throttleCounter++;
+                        if (throttleCounter > 200) {
+                            throttleCounter = 0;
 
-                    throttleTracker.put(address, currentTime);
-                    throttleCounter++;
-                    if (throttleCounter > 200) {
-                        throttleCounter = 0;
-
-                        // Cleanup stale entries
-                        java.util.Iterator iter = throttleTracker.entrySet().iterator();
-                        while (iter.hasNext()) {
-                            java.util.Map.Entry<InetAddress, Long> entry = (java.util.Map.Entry) iter.next();
-                            if (entry.getValue() > connectionThrottle) {
-                                iter.remove();
+                            // Cleanup stale entries
+                            java.util.Iterator iter = throttleTracker.entrySet().iterator();
+                            while (iter.hasNext()) {
+                                java.util.Map.Entry<InetAddress, Long> entry = (java.util.Map.Entry) iter.next();
+                                if (entry.getValue() > connectionThrottle) {
+                                    iter.remove();
+                                }
                             }
                         }
                     }
@@ -107,8 +109,10 @@ public class HandshakeListener implements PacketHandshakingInListener {
                 // if (org.spigotmc.SpigotConfig.bungee) { // PandaSpigot - comment out, we check above!
                     String[] split = packethandshakinginsetprotocol.hostname.split("\00");
                     if ( split.length == 3 || split.length == 4 ) {
+                        // PandaSpigot start - Unix domain socket support
+                        java.net.SocketAddress socketAddress = b.getSocketAddress();
                         packethandshakinginsetprotocol.hostname = split[0];
-                        b.l = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) b.getSocketAddress()).getPort());
+                        b.l = new java.net.InetSocketAddress(split[1], socketAddress instanceof java.net.InetSocketAddress ? ((java.net.InetSocketAddress) socketAddress).getPort() : 0);
                         b.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString( split[2] );
                     } else
                     {
