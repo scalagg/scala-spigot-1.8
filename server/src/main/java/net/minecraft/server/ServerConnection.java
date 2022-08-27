@@ -10,6 +10,7 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -78,6 +79,9 @@ public class ServerConnection {
         this.d = true;
     }
 
+
+    private static final boolean DISABLE_FLUSH_CONSOLIDATION = Boolean.getBoolean("Paper.disableFlushConsolidate"); // PandaSpigot
+
     public void a(InetAddress inetaddress, int i) throws IOException {
         synchronized (this.g) {
             Class oclass;
@@ -100,12 +104,16 @@ public class ServerConnection {
                         // Ignore
                     }
 
+                    if (!DISABLE_FLUSH_CONSOLIDATION)
+                        channel.pipeline().addFirst(new FlushConsolidationHandler()); // PandaSpigot
+
 			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 
 			        NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
 
                     pending.add(networkmanager); // Paper
 			        channel.pipeline().addLast("packet_handler", networkmanager);
+                    networkmanager.isPending = false; // PandaSpigot
 			        networkmanager.a((new HandshakeListener(net.minecraft.server.ServerConnection.this.f, networkmanager)));
 		        }
 	        }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());

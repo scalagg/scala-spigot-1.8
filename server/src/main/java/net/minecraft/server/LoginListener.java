@@ -5,8 +5,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -127,7 +127,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                     public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error
                         this.a(future);
                     }
-                });
+                }, new GenericFutureListener[0]);
             }
 
             this.networkManager.handle(new PacketLoginOutSuccess(this.i));
