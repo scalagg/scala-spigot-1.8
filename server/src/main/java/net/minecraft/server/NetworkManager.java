@@ -105,7 +105,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     // PandaSpigot end
 
 
-
     private static final boolean ENABLE_EXPLICIT_FLUSH = Boolean.getBoolean("paper.explicit-flush"); // PandaSpigot - Disable explicit flushing
 
     public static Channel getChannel(final net.minecraft.server.NetworkManager nm) {
@@ -342,12 +341,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             }
             // PandaSpigot end
         } else {
-            this.channel.eventLoop().execute(new Runnable() {
+            Runnable command = new Runnable() { // PandaSpigot - optimize packets that are not flushed
                 public void run() {
                     if (packetProtocol != channelProtocol) {
                         net.minecraft.server.NetworkManager.this.a(packetProtocol);
                     }
-
 
                     // PandaSpigot start
                     if (!isConnected()) {
@@ -371,7 +369,18 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
                     }
                     // PandaSpigot end
                 }
-            });
+                // PandaSpigot start - optimize packets that are not flushed
+            };
+
+            if (!flush) {
+                // create a LazyRunnable that when executed, calls command.run()
+                io.netty.util.concurrent.AbstractEventExecutor.LazyRunnable run = command::run;
+                this.channel.eventLoop().execute(run);
+            } else {
+                // if flushing, just schedule like normal
+                this.channel.eventLoop().execute(command);
+            }
+            // PandaSpigot end
         }
 
     }
@@ -474,7 +483,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     }
 
-    public boolean isConnected() { return this.g(); } // PandaSpigot - OBFHELPER
+    public boolean isConnected() {
+        return this.g();
+    } // PandaSpigot - OBFHELPER
 
     public boolean c() {
         return this.channel instanceof LocalChannel || this.channel instanceof LocalServerChannel;
@@ -565,8 +576,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             this.b = agenericfuturelistener;
         }
 
-        public Packet getPacket() { return this.a; } // PandaSpigot - OBFHELPER
-        public GenericFutureListener<? extends Future<? super Void>>[] getGenericFutureListeners() { return this.b; } // PandaSpigot - OBFHELPER
+        public Packet getPacket() {
+            return this.a;
+        } // PandaSpigot - OBFHELPER
+
+        public GenericFutureListener<? extends Future<? super Void>>[] getGenericFutureListeners() {
+            return this.b;
+        } // PandaSpigot - OBFHELPER
     }
 
     public SocketAddress getRawAddress() {

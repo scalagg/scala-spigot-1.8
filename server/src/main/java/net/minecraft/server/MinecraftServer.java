@@ -953,6 +953,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                     disabledFlushes.add(connection.networkManager);
                 }
             }
+
             try {
                 // PandaSpigot end
                 if (this.getPlayerList().getPlayerCount() != 0) // Tuinity
