@@ -98,10 +98,12 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         this.setPositionRotation(blockposition, 0.0F, 0.0F);
 
         if (Bukkit.isPrimaryThread()) {
-            while (!worldserver.getCubes(this, this.getBoundingBox()).isEmpty() && this.locY < 255.0D) {
-                this.setPosition(this.locX, this.locY + 1.0D, this.locZ);
-            }
+
         }
+
+        while (!worldserver.getCubes(this, this.getBoundingBox()).isEmpty() && this.locY < 255.0D) {
+            this.setPosition(this.locX, this.locY + 1.0D, this.locZ);
+        } // test
 
         // CraftBukkit start
         this.displayName = this.getName();

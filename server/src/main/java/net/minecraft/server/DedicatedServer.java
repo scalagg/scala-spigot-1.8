@@ -139,7 +139,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // PandaSpigot start - Unix domain socket support
         // PandaSpigot - Move SpigotConfig to load earlier, so that we can check IP forwarding status here.
         // Spigot start
-        this.a((PlayerList) (new DedicatedPlayerList(this)));
+        this.a(new DedicatedPlayerList(this));
 
         org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
         org.spigotmc.SpigotConfig.registerCommands();
