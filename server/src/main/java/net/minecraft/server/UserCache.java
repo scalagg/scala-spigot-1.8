@@ -10,9 +10,6 @@ import com.google.gson.*;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.JsonList;
-import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
