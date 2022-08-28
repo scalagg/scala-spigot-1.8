@@ -14,12 +14,6 @@ import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.server.CrashReport;
-import net.minecraft.server.HandshakeListener;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.NetworkManager;
-import net.minecraft.server.*;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
