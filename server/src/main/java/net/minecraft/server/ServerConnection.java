@@ -99,7 +99,7 @@ public class ServerConnection {
                     }
 
                     if (!DISABLE_FLUSH_CONSOLIDATION)
-                        channel.pipeline().addFirst(new FlushConsolidationHandler()); // PandaSpigot
+                        channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
 
 			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 
