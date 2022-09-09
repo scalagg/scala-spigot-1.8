@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.scoreboard;
 
+import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -17,6 +18,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
 
     public CraftScoreboardManager(MinecraftServer minecraftserver, Scoreboard scoreboardServer) {
         mainScoreboard = new CraftScoreboard(scoreboardServer);
+        mainScoreboard.registeredGlobally = true; // PandaSpigot
         server = minecraftserver;
         scoreboards.add(mainScoreboard);
     }
@@ -28,9 +30,21 @@ public final class CraftScoreboardManager implements ScoreboardManager {
     public CraftScoreboard getNewScoreboard() {
         org.spigotmc.AsyncCatcher.catchOp("scoreboard creation"); // Spigot
         CraftScoreboard scoreboard = new CraftScoreboard(new ScoreboardServer(server));
-        scoreboards.add(scoreboard);
+        // PandaSpigot start
+        if (ScalaSpigot.INSTANCE.getConfig().getTrackPluginScoreboards()) {
+            scoreboard.registeredGlobally = true;
+            scoreboards.add(scoreboard);
+        }
+        // PandaSpigot end
         return scoreboard;
     }
+
+    // PandaSpigot start
+    public void registerScoreboardForVanilla(CraftScoreboard scoreboard) {
+        org.spigotmc.AsyncCatcher.catchOp("scoreboard registration");
+        this.scoreboards.add(scoreboard);
+    }
+    // PandaSpigot end
 
     // CraftBukkit method
     public CraftScoreboard getPlayerBoard(CraftPlayer player) {

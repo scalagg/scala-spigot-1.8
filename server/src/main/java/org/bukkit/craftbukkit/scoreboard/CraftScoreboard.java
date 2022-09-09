@@ -18,6 +18,7 @@ import java.util.Collection;
 
 public final class CraftScoreboard implements org.bukkit.scoreboard.Scoreboard {
     final Scoreboard board;
+    boolean registeredGlobally = false; // PandaSpigot
 
     CraftScoreboard(Scoreboard board) {
         this.board = board;
@@ -30,6 +31,12 @@ public final class CraftScoreboard implements org.bukkit.scoreboard.Scoreboard {
         Validate.isTrue(board.getObjective(name) == null, "An objective of name '" + name + "' already exists");
 
         CraftCriteria craftCriteria = CraftCriteria.getFromBukkit(criteria);
+        // PandaSpigot start
+        if (craftCriteria.criteria != net.minecraft.server.IScoreboardCriteria.b && !this.registeredGlobally) {
+            net.minecraft.server.MinecraftServer.getServer().server.getScoreboardManager().registerScoreboardForVanilla(this);
+            this.registeredGlobally = true;
+        }
+        // PandaSpigot end
         ScoreboardObjective objective = board.registerObjective(name, craftCriteria.criteria);
         return new CraftObjective(this, objective);
     }

@@ -902,9 +902,9 @@ public abstract class EntityLiving extends Entity {
             final KnockbackPreset preset = getKnockbackPreset();
             double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
 
-            this.motX /= preset.getFriction();
+//            this.motX /= preset.getFriction();
             this.motY /= preset.getFriction();
-            this.motZ /= preset.getFriction();
+//            this.motZ /= preset.getFriction();
 
             this.motX -= d0 / magnitude * preset.getHorizontal();
             this.motY += preset.getVertical();
