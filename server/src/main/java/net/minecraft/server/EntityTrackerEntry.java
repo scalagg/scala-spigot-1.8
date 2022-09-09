@@ -187,17 +187,23 @@ public class EntityTrackerEntry {
                     } else {
                         PacketPlayOutEntityTeleport teleportPacket = null;
 
-                        for (java.util.Map.Entry<EntityPlayer, Boolean> viewer : trackedPlayerMap.entrySet()) {
-                            if (viewer.getValue()) {
-                                viewer.setValue(false);
-                                if (teleportPacket == null) {
-                                    teleportPacket = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
+                        // ScalaSpigot start - temp fix for crash?
+                        try {
+                            for (java.util.Map.Entry<EntityPlayer, Boolean> viewer : trackedPlayerMap.entrySet()) {
+                                if (viewer.getValue()) {
+                                    viewer.setValue(false);
+                                    if (teleportPacket == null) {
+                                        teleportPacket = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
+                                    }
+                                    viewer.getKey().playerConnection.sendPacket(teleportPacket);
+                                } else {
+                                    viewer.getKey().playerConnection.sendPacket((Packet) object);
                                 }
-                                viewer.getKey().playerConnection.sendPacket(teleportPacket);
-                            } else {
-                                viewer.getKey().playerConnection.sendPacket((Packet) object);
                             }
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
                         }
+                        // ScalaSpigot end
                     }
                     // PaperSpigot end
                 }

@@ -14,12 +14,6 @@ import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.server.CrashReport;
-import net.minecraft.server.HandshakeListener;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.NetworkManager;
-import net.minecraft.server.*;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -110,7 +104,7 @@ public class ServerConnection {
                     }
 
                     if (!DISABLE_FLUSH_CONSOLIDATION)
-                        channel.pipeline().addFirst(new FlushConsolidationHandler()); // PandaSpigot
+                        channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
 
 			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 

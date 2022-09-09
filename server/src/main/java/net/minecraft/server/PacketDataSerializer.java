@@ -226,8 +226,13 @@ public class PacketDataSerializer extends ByteBuf {
             throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + j + " > " + (i * 4) + ")");
         if (j < 0)
             throw new DecoderException("The received encoded string buffer length is less than zero! Weird string!");
-        String s = toString(readerIndex(), j, StandardCharsets.UTF_8);
-        readerIndex(readerIndex() + j);
+
+        // PandaSpigot start - Switch from readBytes().array() to readBytes(byte[]) as we could be dealing with a DirectByteBuf
+        byte[] b = new byte[j];
+        this.readBytes(b);
+        String s = new String(b, Charsets.UTF_8);
+        // PandaSpigot end
+        
         if (s.length() > i)
             throw new DecoderException("The received string length is longer than maximum allowed (" + j + " > " + i + ")");
         // Nacho end
