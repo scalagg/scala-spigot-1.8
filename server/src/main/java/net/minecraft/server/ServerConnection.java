@@ -77,6 +77,11 @@ public class ServerConnection {
     private static final boolean DISABLE_FLUSH_CONSOLIDATION = Boolean.getBoolean("Paper.disableFlushConsolidate"); // PandaSpigot
 
     public void a(InetAddress inetaddress, int i) throws IOException {
+        bind(new java.net.InetSocketAddress(inetaddress, i));
+    }
+
+    public void bind(java.net.SocketAddress address) throws IOException {
+        // PandaSpigot end
         synchronized (this.g) {
             Class oclass;
             LazyInitVar lazyinitvar;
@@ -110,7 +115,7 @@ public class ServerConnection {
                     networkmanager.isPending = false; // PandaSpigot
 			        networkmanager.a((new HandshakeListener(net.minecraft.server.ServerConnection.this.f, networkmanager)));
 		        }
-	        }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
+	        }).group((EventLoopGroup) lazyinitvar.c()).localAddress(address)).bind().syncUninterruptibly()); // PandaSpigot - Unix domain socket support
         }
     }
 

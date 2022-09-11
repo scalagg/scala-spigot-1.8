@@ -14,6 +14,7 @@ class ScalaSpigotConfig
 
     val doDayCycle = true
 
+    val trackPluginScoreboards = false
     val automaticChunkUnload = true
     val handleBlockOperations = false
     val handleEntityActivation = false
@@ -28,9 +29,6 @@ class ScalaSpigotConfig
 
     val fishingRodMultiplier = 1.0
     val playerTimeStatisticsInterval = 20
-
-    // https://github.com/TitanVale/TitaniumMC/blob/6d124af19debe401b4c9d34579b6daaa6f77ea19/patches/server/0079-Implement-Nacho-Prevent-most-NBT-related-overflow-ex.patch#L40
-    val nbtReadLimiter = 50000L
 
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
