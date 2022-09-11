@@ -25,7 +25,7 @@ public abstract class EntityInsentient extends EntityLiving {
     protected NavigationAbstract navigation;
     public PathfinderGoalSelector goalSelector;
     public PathfinderGoalSelector targetSelector;
-    private WeakReference<EntityLiving> goalTarget;
+    private EntityLiving goalTarget;
     private EntitySenses bk;
     private ItemStack[] equipment = new ItemStack[5];
     public float[] dropChances = new float[5];
@@ -86,11 +86,7 @@ public abstract class EntityInsentient extends EntityLiving {
     }
 
     public EntityLiving getGoalTarget() {
-        try {
-            return this.goalTarget.get();
-        } catch (Exception ignored) {
-            return null;
-        }
+        return this.goalTarget;
     }
 
     public void setGoalTarget(EntityLiving entityliving) {
@@ -123,7 +119,7 @@ public abstract class EntityInsentient extends EntityLiving {
                 entityliving = null;
             }
         }
-        this.goalTarget = new WeakReference<>(entityliving);
+        this.goalTarget = entityliving;
         // CraftBukkit end
     }
 
