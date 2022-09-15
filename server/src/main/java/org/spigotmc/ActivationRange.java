@@ -1,7 +1,5 @@
 package org.spigotmc;
 
-import co.aikar.timings.SpigotTimings;
-
 import gg.scala.spigot.ScalaSpigot;
 import net.minecraft.server.*;
 
@@ -77,8 +75,6 @@ public class ActivationRange
             return;
         }
 
-        SpigotTimings.entityActivationCheckTimer.startTiming();
-
 	    final int miscActivationRange = world.spigotConfig.miscActivationRange;
 	    final int animalActivationRange = world.spigotConfig.animalActivationRange;
 	    final int monsterActivationRange = world.spigotConfig.monsterActivationRange;
@@ -112,7 +108,6 @@ public class ActivationRange
                 }
             }
         }
-        SpigotTimings.entityActivationCheckTimer.stopTiming();
     }
 
     /**
@@ -227,10 +222,8 @@ public class ActivationRange
      */
     public static boolean checkIfActive(Entity entity)
     {
-        SpigotTimings.checkIfActiveTimer.startTiming();
         // Never safe to skip fireworks or entities not yet added to chunk
         if ( !entity.isAddedToChunk() || entity instanceof EntityFireworks || entity.loadChunks ) { // PaperSpigot
-            SpigotTimings.checkIfActiveTimer.stopTiming();
             return true;
         }
 
@@ -262,7 +255,6 @@ public class ActivationRange
         {
             isActive = false;
         }
-        SpigotTimings.checkIfActiveTimer.stopTiming();
         return isActive;
     }
 }

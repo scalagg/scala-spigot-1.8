@@ -31,7 +31,6 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 import org.github.paperspigot.PaperSpigotConfig;
-import co.aikar.timings.SpigotTimings;
 
 import java.io.IOException;
 import java.util.*;
@@ -1123,8 +1122,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 	}
 
 	private void handleCommand(String s) {
-		SpigotTimings.playerCommandTimer.startTiming();
-
 		CraftPlayer player = this.getPlayer();
 
 		PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, s, new LazyPlayerSet());
@@ -1133,7 +1130,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		// ScalaSpigot start - logging a separate message if the
 		// command process was cancelled on PlayerCommandPreprocessEvent.
 		if (event.isCancelled()) {
-			SpigotTimings.playerCommandTimer.stopTiming();
 			return;
 		}
 
@@ -1141,18 +1137,12 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		// ScalaSpigot end
 
 		try {
-			if (this.server.dispatchCommand(event.getPlayer(), event.getMessage().substring(1))) {
-				SpigotTimings.playerCommandTimer.stopTiming();
-				return;
-			}
+			this.server.dispatchCommand(event.getPlayer(), event.getMessage().substring(1));
 		} catch (org.bukkit.command.CommandException ex) {
 			player.sendMessage(org.bukkit.ChatColor.RED + "Something went terribly wrong while performing this command.");
 			java.util.logging.Logger.getLogger(net.minecraft.server.PlayerConnection.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-			SpigotTimings.playerCommandTimer.stopTiming();
 			return;
 		}
-
-		SpigotTimings.playerCommandTimer.stopTiming();
 	}
 
 	public void a(PacketPlayInArmAnimation packetplayinarmanimation) {

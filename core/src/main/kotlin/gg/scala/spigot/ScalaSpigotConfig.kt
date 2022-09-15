@@ -16,6 +16,7 @@ class ScalaSpigotConfig
 
     val trackPluginScoreboards = false
     val automaticChunkUnload = true
+    val armorStandTicking = false
     val handleBlockOperations = false
     val handleEntityActivation = false
     val handleMobIntelligence = false

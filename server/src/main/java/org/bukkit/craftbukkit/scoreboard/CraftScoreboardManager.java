@@ -101,18 +101,13 @@ public final class CraftScoreboardManager implements ScoreboardManager {
     public Collection<ScoreboardScore> getScoreboardScores(IScoreboardCriteria criteria, String name, Collection<ScoreboardScore> collection) {
         // Tuinity start - add timings for scoreboard search
         // plugins leaking scoreboards will make this very expensive, let server owners debug it easily
-        co.aikar.timings.SpigotTimings.scoreboardScoreSearch.startTimingIfSync();
-        try {
-            // Tuinity end - add timings for scoreboard search
-            for (final CraftScoreboard scoreboard : scoreboards) {
-                final Scoreboard board = scoreboard.board;
+        // Tuinity end - add timings for scoreboard search
+        for (final CraftScoreboard scoreboard : scoreboards) {
+            final Scoreboard board = scoreboard.board;
 
-                for (final ScoreboardObjective objective : board.getObjectivesForCriteria(criteria)) {
-                    collection.add(board.getPlayerScoreForObjective(name, objective));
-                }
+            for (final ScoreboardObjective objective : board.getObjectivesForCriteria(criteria)) {
+                collection.add(board.getPlayerScoreForObjective(name, objective));
             }
-        } finally { // Tuinity start - add timings for scoreboard search
-            co.aikar.timings.SpigotTimings.scoreboardScoreSearch.stopTimingIfSync();
         }
         // Tuinity end - add timings for scoreboard search
 

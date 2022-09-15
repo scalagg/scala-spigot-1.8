@@ -30,7 +30,6 @@ SimpleCommandMap implements CommandMap {
         register("bukkit", new VersionCommand("version"));
         register("bukkit", new ReloadCommand("reload"));
         register("bukkit", new PluginsCommand("plugins"));
-        register("bukkit", new co.aikar.timings.TimingsCommand("timings")); // Spigot
     }
 
     public void setFallbackCommands() {
@@ -59,7 +58,6 @@ SimpleCommandMap implements CommandMap {
      * {@inheritDoc}
      */
     public boolean register(String label, String fallbackPrefix, Command command) {
-        command.timings = co.aikar.timings.TimingsManager.getCommandTiming(fallbackPrefix, command); // Spigot
         label = label.toLowerCase().trim();
         fallbackPrefix = fallbackPrefix.toLowerCase().trim();
         boolean registered = register(label, command, false, fallbackPrefix);
@@ -135,25 +133,7 @@ SimpleCommandMap implements CommandMap {
             return false;
         }
 
-        if (target.timings == null) {
-            target.execute(sender, sentCommandLabel, Arrays_copyOfRange(args, 1, args.length));
-        } else {
-            try {
-                target.timings.startTiming(); // Spigot
-                // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)
-                target.execute(sender, sentCommandLabel, Arrays_copyOfRange(args, 1, args.length));
-                target.timings.stopTiming(); // Spigot
-            } catch (CommandException ex) {
-                target.timings.stopTiming(); // Spigot
-                throw ex;
-            } catch (Throwable ex) {
-                target.timings.stopTiming();
-                String msg = "Unhandled exception executing '" + commandLine + "' in " + target;
-                server.getPluginManager().callEvent(
-                        new ServerExceptionEvent(new ServerCommandException(ex, target, sender, args))); // Paper
-                throw new CommandException(msg, ex);
-            }
-        }
+        target.execute(sender, sentCommandLabel, Arrays_copyOfRange(args, 1, args.length));
 
         // return true as command was handled
         return true;

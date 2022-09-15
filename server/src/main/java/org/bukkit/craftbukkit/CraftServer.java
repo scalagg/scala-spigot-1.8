@@ -258,7 +258,6 @@ public final class CraftServer implements Server {
             DefaultPermissions.registerCorePermissions();
             CraftDefaultPermissions.registerCorePermissions();
             helpMap.initializeCommands();
-            co.aikar.timings.Timings.reset(); // Spigot
         }
     }
 

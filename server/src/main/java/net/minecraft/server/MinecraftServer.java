@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import co.aikar.timings.SpigotTimings;
 import com.destroystokyo.paper.tick.ReentrantIAsyncHandler;
 import com.destroystokyo.paper.tick.TasksPerTick;
 import com.google.common.base.Charsets;
@@ -19,12 +18,10 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import joptsimple.OptionSet;
-import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.event.server.ServerStopEvent;
 import org.spigotmc.SpigotConfig;
 
@@ -507,8 +504,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             Bukkit.getPluginManager()
                 .callEvent(new ServerStopEvent());
 
-            SpigotTimings.stopServer();
-
             if (this.server != null) {
                 this.server.disablePlugins();
             }
@@ -763,7 +758,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
     // PandaSpigot start - Modern tick loop
     protected void A(java.util.function.BooleanSupplier shouldKeepTicking) throws ExceptionWorldConflict { // CraftBukkit - added throws
-        co.aikar.timings.TimingsManager.FULL_SERVER_TICK.startTiming(); // Spigot
         long i = System.nanoTime();
 
         isOversleep = true;
@@ -799,7 +793,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         if (SpigotConfig.autoSave)
         {
             if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
-                SpigotTimings.worldSaveTimer.startTiming();
                 this.methodProfiler.a("save");
                 this.playerList.savePlayers();
 
@@ -808,7 +801,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 server.playerCommandState = false;
 
                 this.methodProfiler.b();
-                SpigotTimings.worldSaveTimer.stopTiming();
             }
 
             if (this.autoSaveOrdered) {
@@ -830,12 +822,9 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         this.methodProfiler.b();
         this.methodProfiler.b();
         org.spigotmc.WatchdogThread.tick();
-
-        co.aikar.timings.TimingsManager.FULL_SERVER_TICK.stopTiming();
     }
 
     public void tickServer() {
-        SpigotTimings.minecraftSchedulerTimer.startTiming();
         this.methodProfiler.a("jobs");
 
         FutureTask<?> entry;
@@ -845,30 +834,19 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             SystemUtils.a(entry, LOGGER);
         }
 
-        SpigotTimings.minecraftSchedulerTimer.stopTiming();
-
         this.methodProfiler.c("levels");
 
         // Tick main heartbeat
-        SpigotTimings.bukkitSchedulerTimer.startTiming();
         this.server.getScheduler().mainThreadHeartbeat(this.ticks);
-        SpigotTimings.bukkitSchedulerTimer.stopTiming();
 
         // Tick process queue
-        SpigotTimings.processQueueTimer.startTiming();
 
         while (!processQueue.isEmpty()) {
             processQueue.remove().run();
         }
 
-        SpigotTimings.processQueueTimer.stopTiming();
-
         // Tick chunks
-        SpigotTimings.chunkIOTickTimer.startTiming();
         org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.tick();
-        SpigotTimings.chunkIOTickTimer.stopTiming();
-
-        SpigotTimings.timeUpdateTimer.startTiming();
 
         // Send time updates to everyone, it will get the right time from the world the player is in.
         // PandaSpigot start - optimize time updates
@@ -892,8 +870,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         }
         // PandaSpigot end
 
-        SpigotTimings.timeUpdateTimer.stopTiming();
-
         int i;
 
         for (i = 0; i < this.worlds.size(); ++i) {
@@ -905,9 +881,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             CrashReport crashreport;
 
             try {
-                worldserver.timings.doTick.startTiming();
                 worldserver.doTick(this.ticks);
-                worldserver.timings.doTick.stopTiming();
             } catch (Throwable throwable) {
                 try {
                     crashreport = CrashReport.a(throwable, "Exception ticking world");
@@ -922,9 +896,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
             try {
                 if (this.ticks % NORMAL_TICK_TIME == 0) {
-                    worldserver.timings.tickEntities.startTiming();
                     worldserver.tickEntities();
-                    worldserver.timings.tickEntities.stopTiming();
                 }
             } catch (Throwable throwable1) {
                 try {
@@ -942,7 +914,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             this.methodProfiler.a("tracker");
 
             // Tick trackers
-            worldserver.timings.tracker.startTiming();
             // PandaSpigot start - controlled flush for entity tracker packets
             List<NetworkManager> disabledFlushes = new ArrayList<>(worldserver.players.size());
             for (EntityHuman player : worldserver.players) {
@@ -966,8 +937,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             }
             // PandaSpigot end
 
-            worldserver.timings.tracker.stopTiming();
-
             this.methodProfiler.b();
             this.methodProfiler.b();
 
@@ -977,25 +946,18 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
         // Tick connections
         this.methodProfiler.c("connection");
-        SpigotTimings.connectionTimer.startTiming(); // Spigot
         this.aq().c();
-        SpigotTimings.connectionTimer.stopTiming(); // Spigot
 
         // Tick players
         this.methodProfiler.c("players");
-        SpigotTimings.playerListTimer.startTiming(); // Spigot
         this.playerList.tick();
-        SpigotTimings.playerListTimer.stopTiming(); // Spigot
 
         // Tick tickables
         this.methodProfiler.c("tickables");
-        SpigotTimings.tickablesTimer.startTiming();
 
         for (i = 0; i < this.p.size(); ++i) {
             this.p.get(i).c();
         }
-
-        SpigotTimings.tickablesTimer.stopTiming();
 
         this.methodProfiler.b();
     }

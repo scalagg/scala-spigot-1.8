@@ -9,7 +9,6 @@ public class FormattedCommandAlias extends Command {
 
     public FormattedCommandAlias(String alias, String[] formatStrings) {
         super(alias);
-        timings = co.aikar.timings.TimingsManager.getCommandTiming("minecraft", this); // Spigot
         this.formatStrings = formatStrings;
     }
 

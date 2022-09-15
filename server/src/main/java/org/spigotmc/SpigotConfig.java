@@ -1,7 +1,5 @@
 package org.spigotmc;
 
-import co.aikar.timings.Timings;
-import co.aikar.timings.TimingsManager;
 import com.google.common.base.Throwables;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraft.server.AttributeRanged;
@@ -189,21 +187,6 @@ public class SpigotConfig {
         }
 
         bungee = getBoolean("settings.bungeecord", false);
-    }
-
-    private static void timings() {
-        boolean timings = getBoolean("timings.enabled", true);
-        boolean verboseTimings = getBoolean("timings.verbose", true);
-        TimingsManager.privacy = getBoolean("timings.server-name-privacy", false);
-        TimingsManager.hiddenConfigs = getList("timings.hidden-config-entries", Arrays.asList("database", "settings.bungeecord-addresses"));
-        int timingHistoryInterval = getInt("timings.history-interval", 300);
-        int timingHistoryLength = getInt("timings.history-length", 3600);
-
-
-        Timings.setVerboseTimingsEnabled(verboseTimings);
-        Timings.setTimingsEnabled(timings);
-        Timings.setHistoryInterval(timingHistoryInterval * 20);
-        Timings.setHistoryLength(timingHistoryLength * 20);
     }
 
     private static void nettyThreads() {

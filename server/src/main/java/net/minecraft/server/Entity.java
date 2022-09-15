@@ -1,7 +1,5 @@
 package net.minecraft.server;
 
-import co.aikar.timings.SpigotTimings;
-import co.aikar.timings.Timing;
 import com.eatthepath.uuid.FastUUID;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
@@ -155,8 +153,6 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	public boolean inUnloadedChunk = false; // PaperSpigot - Remove entities in unloaded chunks
 	public boolean loadChunks = false; // PaperSpigot - Entities can load chunks they move through and keep them loaded
 
-	// Spigot start
-	public Timing tickTimer = SpigotTimings.getEntityTimings(this); // Spigot
 	public final byte activationType = org.spigotmc.ActivationRange.initializeEntityActivationType(this);
 	public final boolean defaultActivationState;
 	public long activatedTick = Integer.MIN_VALUE;
