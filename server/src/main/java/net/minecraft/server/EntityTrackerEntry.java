@@ -1,12 +1,11 @@
 package net.minecraft.server;
 
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 
 // CraftBukkit start
 // CraftBukkit end
@@ -46,7 +45,16 @@ public class EntityTrackerEntry {
     public Set<EntityPlayer> trackedPlayers = trackedPlayerMap.keySet();
     // PaperSpigot end
 
-    public EntityTrackerEntry(Entity entity, int i, int j, boolean flag) {
+    // MineHQ start
+    private List<EntityPlayer> toRemove = new ArrayList<>();
+    private EntityTracker entityTracker;
+    private int addRemoveRate;
+    private int addRemoveCooldown;
+    private boolean withinNoTrack = false;
+    // MineHQ end
+
+    public EntityTrackerEntry(EntityTracker entityTracker, Entity entity, int i, int j, boolean flag) {
+        this.entityTracker = entityTracker; // MineHQ
         this.tracker = entity;
         this.b = i;
         this.c = j;
@@ -58,6 +66,19 @@ public class EntityTrackerEntry {
         this.xRot = gg.scala.spigot.util.MathHelper.d(entity.pitch * 256.0F / 360.0F);
         this.i = gg.scala.spigot.util.MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
         this.y = entity.onGround;
+
+        // MineHQ start
+        if (ScalaSpigot.INSTANCE.getConfig().getDisableTracking()) {
+            this.addRemoveRate = 100;
+        } else if (this.tracker instanceof EntityArrow || this.tracker instanceof EntityProjectile) {
+            this.addRemoveRate = 5; // projectile things
+        } else if (this.tracker instanceof EntityPlayer) {
+            this.addRemoveRate = 5; // players
+        } else {
+            this.addRemoveRate = 10; // default
+        }
+        this.addRemoveCooldown = this.tracker.getId() % addRemoveRate;
+        // MineHQ end
     }
 
     public boolean equals(Object object) {
@@ -68,6 +89,85 @@ public class EntityTrackerEntry {
         return this.tracker.getId();
     }
 
+    // MineHQ start
+    public void update() {
+        this.withinNoTrack = this.withinNoTrack();
+        if (--this.addRemoveCooldown <= 0) {
+            this.removeFarPlayers();
+            this.addNearPlayers();
+            this.addRemoveCooldown = this.addRemoveRate;
+        }
+
+        this.track(null);
+    }
+
+    private void removeFarPlayers() {
+        if (this.withinNoTrack) {
+            toRemove.addAll(this.trackedPlayers);
+            processToRemove();
+            return;
+        }
+
+        for (EntityPlayer entityplayer : (Collection<EntityPlayer>) trackedPlayers) {
+            double d0 = entityplayer.locX - this.tracker.locX;
+            double d1 = entityplayer.locZ - this.tracker.locZ;
+            int range = this.getRange();
+
+            if (!(d0 >= (double) (-range) && d0 <= (double) range && d1 >= (double) (-range) && d1 <= (double) range) || withinNoTrack()) {
+                toRemove.add(entityplayer);
+            }
+        }
+
+        this.processToRemove();
+    }
+
+    public void processToRemove() {
+        for (EntityPlayer entityPlayer : toRemove) {
+            entityPlayer.d(this.tracker);
+            this.trackedPlayers.remove(entityPlayer);
+        }
+
+        toRemove.clear();
+    }
+
+    public void addNearPlayers() {
+        addNearPlayers(false);
+    }
+
+    private void addNearPlayers(boolean updateCooldown) {
+        if (this.withinNoTrack) return;
+        if (updateCooldown) this.addRemoveCooldown = addRemoveRate;
+
+        this.tracker.world.playerMap.forEachNearby(
+            this.tracker.locX, this.tracker.locY, this.tracker.locZ,
+            this.getRange(), false, addNearPlayersConsumer
+        );
+    }
+
+    private boolean withinNoTrack() {
+        return this.withinNoTrack(this.tracker);
+    }
+
+    private boolean withinNoTrack(Entity entity) {
+        if (!(entity instanceof EntityPlayer)) return false; // ensure all non-players are always tracked
+        double xDistSqrd = entity.locX * entity.locX;
+        double zDistSqrd = entity.locZ * entity.locZ;
+
+        int noTrackDistanceSqrd = entityTracker.getNoTrackDistance() * entityTracker.getNoTrackDistance();
+        return noTrackDistanceSqrd != 0 && xDistSqrd <= noTrackDistanceSqrd && zDistSqrd <= noTrackDistanceSqrd;
+    }
+
+    private final Consumer<EntityPlayer> addNearPlayersConsumer = entityPlayer -> {
+        if (
+            !ScalaSpigot.INSTANCE.getConfig().getDisableTracking() ||
+                tracker.passenger == entityPlayer
+        )
+        {
+            updatePlayer(entityPlayer);
+        }
+    };
+    // MineHQ end
+
     public void track(List<EntityHuman> list) {
         this.n = false;
         if (!this.isMoving || this.tracker.e(this.q, this.r, this.s) > 16.0D) {
@@ -76,7 +176,7 @@ public class EntityTrackerEntry {
             this.s = this.tracker.locZ;
             this.isMoving = true;
             this.n = true;
-            this.scanPlayers(list);
+//            this.scanPlayers(list);
         }
 
         if (this.w != this.tracker.vehicle || this.tracker.vehicle != null && this.m % 60 == 0) {
@@ -154,11 +254,11 @@ public class EntityTrackerEntry {
                     } else {
                         this.y = this.tracker.onGround;
                         this.v = 0;
-                        // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
-                        if (this.tracker instanceof EntityPlayer) {
-                            this.scanPlayers(new java.util.ArrayList(this.tracker.world.players)); // [SportPaper-0203] Fix Teleport Invisibility this.trackedPlayers -> this.tracker.world.players
-                        }
-                        // CraftBukkit end
+//                        // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
+//                        if (this.tracker instanceof EntityPlayer) {
+//                            this.scanPlayers(new java.util.ArrayList(this.tracker.world.players)); // [SportPaper-0203] Fix Teleport Invisibility this.trackedPlayers -> this.tracker.world.players
+//                        }
+//                        // CraftBukkit end
                         object = new PacketPlayOutEntityTeleport(this.tracker.getId(), i, j, k, (byte) l, (byte) i1, this.tracker.onGround);
                     }
                 }
@@ -369,11 +469,13 @@ public class EntityTrackerEntry {
 
             if (this.c(entityplayer)) {
                 if (!isPlayerEntityTracked && (this.e(entityplayer) || this.tracker.attachedToPlayer)) {
+                    if (this.tracker instanceof EntityPlayer && withinNoTrack()) return; // MineHQ
+
                     if (!entityplayer.getBukkitEntity().canSeeEntity(this.tracker.getBukkitEntity())) {
                         return;
                     }
 
-                    entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId()));
+//                    entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId()));
                     // CraftBukkit end
                     this.trackedPlayerMap.put(entityplayer, true); // PaperBukkit
                     Packet packet = this.c();
@@ -467,23 +569,37 @@ public class EntityTrackerEntry {
     }
 
     public boolean c(EntityPlayer entityplayer) {
-        // CraftBukkit start - this.*Loc / 30 -> this.tracker.loc*
+        // MineHQ start - this.tracker.locN / 32 -> this.tracker.locN
         double d0 = entityplayer.locX - this.tracker.locX;
         double d1 = entityplayer.locZ - this.tracker.locZ;
-        // CraftBukkit end
+        // MineHQ end
+        int range = this.getRange();
 
-        return d0 >= (double) (-this.b) && d0 <= (double) this.b && d1 >= (double) (-this.b) && d1 <= (double) this.b && this.tracker.a(entityplayer);
+        return d0 >= (double) (-range) && d0 <= (double) range && d1 >= (double) (-range) && d1 <= (double) range && this.tracker.a(entityplayer);
     }
 
     private boolean e(EntityPlayer entityplayer) {
         return entityplayer.u().getPlayerChunkMap().a(entityplayer, this.tracker.ae, this.tracker.ag);
     }
 
-    public void scanPlayers(List<EntityHuman> list) {
-        for (EntityHuman entityHuman : list) {
-            this.updatePlayer((EntityPlayer) entityHuman);
+//    public void scanPlayers(List<EntityHuman> list) {
+//        for (EntityHuman entityHuman : list) {
+//            this.updatePlayer((EntityPlayer) entityHuman);
+//        }
+//    }
+
+    // MineHQ start
+    public int getRange() {
+        if (this.tracker.passenger == null) {
+            return this.b;
         }
+
+        return Math.max(
+            this.b,
+            org.spigotmc.TrackingRange.getEntityTrackingRange(this.tracker.passenger, 0)
+        );
     }
+    // MineHQ end
 
     private Packet c() {
         if (this.tracker.dead) {
@@ -598,13 +714,10 @@ public class EntityTrackerEntry {
     public void clear(EntityPlayer entityplayer, boolean sendDestroy) {
         org.spigotmc.AsyncCatcher.catchOp( "player tracker clear"); // Spigot
 
-        if (this.trackedPlayers.contains(entityplayer)) {
-            this.trackedPlayers.remove(entityplayer);
-
+        if (this.trackedPlayers.remove(entityplayer)) {
             if (sendDestroy) {
                 entityplayer.d(this.tracker);
             }
         }
-
     }
 }

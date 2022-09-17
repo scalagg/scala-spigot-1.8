@@ -68,6 +68,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     private float pluginRainPosition;
     private float pluginRainPositionPrevious;
 
+    // Manny start
+    public int playerMapX;
+    public int playerMapZ;
+    // Manny end
     public List<EntityPotion> potions = new ArrayList<>(); // IonSpigot - Lag Compensated Potions
 
     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
@@ -212,16 +216,16 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             this.activeContainer = this.defaultContainer;
         }
 
-        while (!this.removeQueue.isEmpty()) {
+        /*while (!this.removeQueue.isEmpty()) {
             int i = Math.min(this.removeQueue.size(), Integer.MAX_VALUE);
             int[] aint = new int[i];
 //            Iterator iterator = this.removeQueue.iterator();
             int j = 0;
 
-/*            while (iterator.hasNext() && j < i) {
+*//*            while (iterator.hasNext() && j < i) {
                 aint[j++] = ((Integer) iterator.next()).intValue();
                 iterator.remove();
-            }*/
+            }*//*
 
             Integer integer;
             while (j < i && (integer = this.removeQueue.poll()) != null) {
@@ -230,7 +234,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             // PandaSpigot end
 
             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(aint));
-        }
+        }*/
 
         if (!this.chunkCoordIntPairQueue.isEmpty()) {
             ArrayList arraylist = Lists.newArrayList();
@@ -271,12 +275,12 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                     this.a(tileentity);
                 }
 
-                iterator2 = arraylist.iterator();
+                /*iterator2 = arraylist.iterator();
 
                 while (iterator2.hasNext()) {
                     chunk = (Chunk) iterator2.next();
                     this.u().getTracker().a(this, chunk);
-                }
+                }*/
             }
         }
 
@@ -934,12 +938,12 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         this.bM = -1.0F;
         this.bN = -1;
 
-        // this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue); // PandaSpigot
-        // PandaSpigot start
-        if (this.removeQueue != ((EntityPlayer) entityhuman).removeQueue) {
-            this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
-        }
-        // PandaSpigot end
+//        // this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue); // PandaSpigot
+//        // PandaSpigot start
+//        if (this.removeQueue != ((EntityPlayer) entityhuman).removeQueue) {
+//            this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
+//        }
+//        // PandaSpigot end
     }
 
     protected void a(MobEffect mobeffect) {
@@ -1069,12 +1073,13 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     }
 
     public void d(Entity entity) {
-        if (entity instanceof EntityHuman) {
-            this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entity.getId()));
-        } else {
-            this.removeQueue.add(Integer.valueOf(entity.getId()));
-        }
+//        if (entity instanceof EntityHuman) {
+//            this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entity.getId()));
+//        } else {
+//            this.removeQueue.add(Integer.valueOf(entity.getId()));
+//        }
 
+        this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(new int[] { entity.getId() })); // MineHQ
     }
 
     protected void B() {
@@ -1085,7 +1090,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             super.B();
         }
 
-        this.u().getTracker().a(this);
+//        this.u().getTracker().a(this);
     }
 
     public Entity C() {

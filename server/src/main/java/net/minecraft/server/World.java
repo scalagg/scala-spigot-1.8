@@ -1,10 +1,12 @@
 package net.minecraft.server;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import gg.scala.server.PlayerMap;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.MathHelper;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
@@ -103,6 +105,10 @@ public abstract class World implements IBlockAccess {
     private boolean M;
     private final WorldBorder N;
     int[] H;
+
+    // Manny start
+    public final PlayerMap playerMap = new PlayerMap();
+    // Manny end
 
     // CraftBukkit start Added the following
     private final CraftWorld world;
@@ -1052,6 +1058,7 @@ public abstract class World implements IBlockAccess {
                 EntityHuman entityhuman = (EntityHuman) entity;
 
                 this.players.add(entityhuman);
+                this.playerMap.add((EntityPlayer) entityhuman); // Manny
                 this.everyoneSleeping();
             }
 
@@ -1090,6 +1097,7 @@ public abstract class World implements IBlockAccess {
         entity.die();
         if (entity instanceof EntityHuman) {
             this.players.remove(entity);
+            this.playerMap.remove((EntityPlayer) entity); // Manny
             this.worldMaps.removeTrackedPlayer((EntityHuman) entity);
             // Spigot start
             for ( Object o : worldMaps.c )
@@ -1119,6 +1127,7 @@ public abstract class World implements IBlockAccess {
         entity.die();
         if (entity instanceof EntityHuman) {
             this.players.remove(entity);
+            this.playerMap.remove((EntityPlayer) entity); // Manny
             this.everyoneSleeping();
         }
 
@@ -2844,6 +2853,12 @@ public abstract class World implements IBlockAccess {
     }
 
     public EntityHuman findNearbyPlayer(double d0, double d1, double d2, double d3) {
+        // Manny start
+        if (0 <= d3 && d3 <= 64) {
+            return this.playerMap.getNearestPlayer(d0, d1, d2, d3);
+        }
+        // Manny end
+
         double d4 = -1.0D;
         EntityHuman entityhuman = null;
 
@@ -2868,6 +2883,23 @@ public abstract class World implements IBlockAccess {
         return entityhuman;
     }
 
+    // Manny start
+    private static final Function<EntityHuman, Double> invisibilityFunction = entityHuman -> {
+
+        if (entityHuman.isInvisible()) {
+            float f = entityHuman.bE();
+
+            if (f < 0.1F) {
+                f = 0.1F;
+            }
+
+            return (double) (0.7F * f);
+        }
+
+        return null;
+    };
+    // Manny end
+
     public boolean isPlayerNearby(double d0, double d1, double d2, double d3) {
         for (int i = 0; i < this.players.size(); ++i) {
             EntityHuman entityhuman = (EntityHuman) this.players.get(i);
@@ -2890,6 +2922,11 @@ public abstract class World implements IBlockAccess {
     }
 
     public EntityHuman findNearbyPlayerWhoAffectsSpawning(double d0, double d1, double d2, double d3) {
+        // Manny start
+        if (0 <= d3  && d3 <= 64.0) {
+            return this.playerMap.getNearbyPlayer(d0, d1, d2, d3, true);
+        }
+        // Manny end
         double d4 = -1.0D;
         EntityHuman entityhuman = null;
 

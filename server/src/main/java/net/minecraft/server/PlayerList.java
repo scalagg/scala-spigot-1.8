@@ -348,7 +348,7 @@ public abstract class PlayerList {
     }
 
     public void d(EntityPlayer entityplayer) {
-        entityplayer.u().getPlayerChunkMap().movePlayer(entityplayer);
+        entityplayer.world.playerMap.move(entityplayer); // Manny
     }
 
     public String disconnect(EntityPlayer entityplayer) { // CraftBukkit - return string

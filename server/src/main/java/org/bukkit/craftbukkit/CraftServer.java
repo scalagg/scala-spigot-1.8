@@ -12,6 +12,7 @@ import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
 import gg.scala.ScalaSpigotServerProperties;
 import gg.scala.server.command.KnockbackCommand;
+import gg.scala.server.command.NoTrackCommand;
 import gg.scala.server.command.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.KotlinBridge;
@@ -705,6 +706,7 @@ public final class CraftServer implements Server {
         enablePlugins(PluginLoadOrder.POSTWORLD);
 
         getCommandMap().register("spigot", new KnockbackCommand());
+        getCommandMap().register("spigot", new NoTrackCommand());
         getCommandMap().register("spigot", new PotionCommand());
     }
 

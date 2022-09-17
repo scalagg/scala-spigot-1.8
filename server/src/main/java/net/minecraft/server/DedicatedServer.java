@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.destroystokyo.paper.console.PaperConsole;
 import com.google.common.collect.Lists;
 import gg.scala.server.command.KnockbackCommand;
+import gg.scala.server.command.NoTrackCommand;
 import gg.scala.server.command.PotionCommand;
 import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
@@ -186,6 +187,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         ScalaSpigot.INSTANCE.initialLoad();
 
         server.getCommandMap().register("spigot", new KnockbackCommand());
+        server.getCommandMap().register("spigot", new NoTrackCommand());
         server.getCommandMap().register("spigot", new PotionCommand());
 
         this.a(MinecraftEncryption.b());

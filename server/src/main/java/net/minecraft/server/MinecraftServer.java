@@ -12,6 +12,7 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import gg.scala.minetick.AutoSaveJob;
+import gg.scala.server.threads.ThreadingManager;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -147,6 +148,10 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         return server;
     }
 
+    // Poweruser start
+    private ThreadingManager threadingManager;
+    // Poweruser end
+
     public MinecraftServer(OptionSet options, Proxy proxy, File file1, Thread thread) {
         super("Server");
         this.nextTickTime = getMillis();
@@ -156,6 +161,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         io.netty.util.ResourceLeakDetector.setEnabled(false);
 
         this.e = proxy;
+        this.threadingManager = new ThreadingManager(); // Poweruser
         l = this;
         this.Z = new UserCache(this, file1);
         this.b = this.h();
@@ -536,6 +542,8 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 LOGGER.info("Saving usercache.json");
                 this.Z.c();
             }
+
+            this.threadingManager.shutdown(); // Poweruser
         }
     }
 
