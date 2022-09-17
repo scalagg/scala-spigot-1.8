@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
