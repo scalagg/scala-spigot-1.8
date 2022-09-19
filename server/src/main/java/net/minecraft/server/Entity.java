@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.eatthepath.uuid.FastUUID;
+import gg.scala.ScalaSpigotService;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;
@@ -106,6 +107,20 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	private double as;
 	public boolean ad;
 	private boolean needsRemoval = false;
+
+	private Boolean isImportant;
+
+	private boolean isPassengerImportant() {
+		return this.passenger != null && this.passenger.isImportantEntity();
+	}
+
+	public boolean isImportantEntity() {
+		if (this.isImportant == null) {
+			this.isImportant = ScalaSpigotService.isImportantEntity(this);
+		}
+
+		return this.isImportant || this.isPassengerImportant();
+	}
 
 	// PaperSpigot start - EAR: Fix bug with teleporting entities
 	public boolean isAddedToChunk() {

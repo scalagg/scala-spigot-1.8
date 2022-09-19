@@ -24,6 +24,7 @@ class ScalaSpigotConfig
     val handleSpamDisconnect = false
     val adaptiveChunkGarbageCollection = false
     val hidePlayersFromTabList = false
+    val multiThreadedWorlds = true
 
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
