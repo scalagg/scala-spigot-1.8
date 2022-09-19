@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import gg.scala.ScalaSpigotService;
 import org.github.paperspigot.exception.ServerInternalException;
 
 import java.io.*;
@@ -99,10 +100,10 @@ public class PersistentCollection {
                     NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
                     nbttagcompound1.set("data", nbttagcompound);
-                    FileOutputStream fileoutputstream = new FileOutputStream(file);
 
-                    NBTCompressedStreamTools.a(nbttagcompound1, (OutputStream) fileoutputstream);
-                    fileoutputstream.close();
+                    ScalaSpigotService.saveNBTFileStatic(
+                        (NBTTagCompound) (nbttagcompound1.clone()), file
+                    );
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
