@@ -11,6 +11,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import gg.scala.ScalaSpigotService;
 import gg.scala.minetick.AutoSaveJob;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
@@ -536,6 +537,8 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 LOGGER.info("Saving usercache.json");
                 this.Z.c();
             }
+
+            ScalaSpigotService.shutdown();
         }
     }
 
