@@ -985,18 +985,23 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				this.minecraftServer.getPlayerList().sendMessage(chatmessage1, false);
 			}
 
-			boolean counted = true;
+			// ScalaSpigot start - remove spam exclusions
+			/*boolean counted = true;
 
 			for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
 				if (exclude != null && s.startsWith(exclude)) {
 					counted = false;
 					break;
 				}
-			}
+			}*/
 
 			if (ScalaSpigot.INSTANCE.getConfig().getHandleSpamDisconnect())
 			{
-				if (counted && chatSpamField.addAndGet(this, 20) > 60 && !this.minecraftServer.getPlayerList().isOp(this.player.getProfile())) { // Spigot
+				if (
+					chatSpamField.addAndGet(this, 20) > 60 &&
+						!this.minecraftServer.getPlayerList().isOp(this.player.getProfile())
+				) { // Spigot
+					// ScalaSpigot end
 					if (!isSync) {
 						Waitable waitable = new Waitable() {
 							@Override

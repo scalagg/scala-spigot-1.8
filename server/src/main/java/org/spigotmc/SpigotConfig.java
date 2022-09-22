@@ -231,11 +231,15 @@ public class SpigotConfig {
         playerShuffle = getInt("settings.player-shuffle", 0);
     }
 
+    // ScalaSpigot start - remove spam exclusions
+    /*
     public static List<String> spamExclusions;
 
     private static void spamExclusions() {
         spamExclusions = getList("commands.spam-exclusions", Arrays.asList(new String[]{"/skill"}));
     }
+    */
+    // ScalaSpigot end
 
     public static boolean silentCommandBlocks;
 
