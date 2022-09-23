@@ -948,6 +948,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
             this.chunkProvider.saveChunks(flag, iprogressupdate);
             // CraftBukkit - ArrayList -> Collection
+            /*
             Collection arraylist = this.chunkProviderServer.a();
             Iterator iterator = arraylist.iterator();
 
@@ -958,7 +959,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
                     this.chunkProviderServer.queueUnload(chunk.locX, chunk.locZ);
                 }
             }
-
+             */
         }
     }
 
