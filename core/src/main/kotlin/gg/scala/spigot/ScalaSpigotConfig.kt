@@ -25,6 +25,7 @@ class ScalaSpigotConfig
     val adaptiveChunkGarbageCollection = false
     val hidePlayersFromTabList = false
     val blockBreakDesyncFix = true
+    val doArmorStandEntityLookups = true
 
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
