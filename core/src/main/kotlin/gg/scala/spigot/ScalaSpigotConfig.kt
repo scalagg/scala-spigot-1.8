@@ -31,6 +31,7 @@ class ScalaSpigotConfig
 
     val fishingRodMultiplier = 1.0
     val playerTimeStatisticsInterval = 20
+    val trackerUpdateDistance = 1
     val nbtReadLimit = 50000L
 
     val knockbackConfigs = mutableListOf<KnockbackPreset>()

@@ -1,6 +1,9 @@
 package net.minecraft.server;
 
 import com.google.common.collect.Lists;
+import gg.scala.spigot.ScalaSpigot;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -24,11 +27,48 @@ public class PlayerChunkMap {
     public PlayerChunkMap(WorldServer worldserver, int viewDistance /* Spigot */) {
         this.world = worldserver;
         this.a(viewDistance); // Spigot
+        this.trackerUpdateDistanceSquared = Math.pow(
+            ScalaSpigot.INSTANCE.getConfig().getTrackerUpdateDistance(), 2
+        ); // Paper
     }
 
     public WorldServer a() {
         return this.world;
     }
+
+    // Paper end
+
+    // Paper start - Reduce entity tracker updates on move
+    private double trackerUpdateDistanceSquared;
+    private final Int2ObjectMap<Int2ObjectMap<EntityTracker>> playerTrackedEntities = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Queue<Integer>> playerTrackedEntitiesRemoveQueue = new Int2ObjectOpenHashMap<>();
+
+    void flushRemoveQueue(EntityPlayer entityplayer) {
+        Queue<Integer> removeQueue = getPlayerTrackedEntityMapRemoveQueue(entityplayer.getId());
+        Int2ObjectMap<EntityTracker> entityMap = getPlayerTrackedEntityMap(entityplayer.getId());
+        for (Integer id = removeQueue.poll(); id != null; id = removeQueue.poll()) {
+            entityMap.remove(id);
+        }
+    }
+
+    void flushRemoveQueues() {
+        for (Int2ObjectMap.Entry<Queue<Integer>> entry : playerTrackedEntitiesRemoveQueue.int2ObjectEntrySet()) {
+            Int2ObjectMap<EntityTracker> entityMap = getPlayerTrackedEntityMap(entry.getKey());
+            Queue<Integer> removeQueue = entry.getValue();
+            for (Integer id = removeQueue.poll(); id != null; id = removeQueue.poll()) {
+                entityMap.remove(id);
+            }
+        }
+    }
+
+    Int2ObjectMap<EntityTracker> getPlayerTrackedEntityMap(int id) {
+        return playerTrackedEntities.computeIfAbsent(id, i -> new Int2ObjectOpenHashMap<>());
+    }
+
+    Queue<Integer> getPlayerTrackedEntityMapRemoveQueue(int id) {
+        return playerTrackedEntitiesRemoveQueue.computeIfAbsent(id, i -> new java.util.ArrayDeque<>());
+    }
+    // Paper end
 
     public void flush() {
         long i = this.world.getTime();

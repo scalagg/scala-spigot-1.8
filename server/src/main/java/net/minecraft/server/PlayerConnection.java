@@ -279,7 +279,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						this.server.getPluginManager().callEvent(event);
 
 						if (event.isCancelled()) {
-// PandaSpigot end
+							// PandaSpigot end
 							this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
 							return;
 						}
@@ -1895,7 +1895,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 			TileEntitySign tileentitysign = (TileEntitySign) tileentity;
 
-			if (!tileentitysign.b() || tileentitysign.c() != this.player) {
+			if (!tileentitysign.b() || !tileentitysign.signEditor.equals(this.player.getUniqueID())) {
 				this.minecraftServer.warning("Player " + this.player.getName() + " just tried to change non-editable sign");
 				this.sendPacket(new PacketPlayOutUpdateSign(tileentity.world, updateSignPacket.a(), tileentitysign.lines));
 				return;
