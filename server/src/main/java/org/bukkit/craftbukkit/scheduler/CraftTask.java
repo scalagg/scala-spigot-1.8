@@ -8,6 +8,11 @@ import org.bukkit.scheduler.BukkitTask;
 public class CraftTask implements BukkitTask, Runnable { // Spigot
 
     private volatile CraftTask next = null;
+    public static final int ERROR = 0;
+    public static final int NO_REPEATING = -1;
+    public static final int CANCEL = -2;
+    public static final int PROCESS_FOR_FUTURE = -3;
+    public static final int DONE_FOR_FUTURE = -4;
     /**
      * -1 means no repeating <br>
      * -2 means cancel <br>
