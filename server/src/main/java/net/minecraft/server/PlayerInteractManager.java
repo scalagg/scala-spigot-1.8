@@ -192,6 +192,7 @@ public class PlayerInteractManager {
                 int i = (int) (f * 10.0F);
 
                 this.world.c(this.player.getId(), blockposition, i);
+                this.player.playerConnection.sendPacket(new PacketPlayOutBlockChange(world, blockposition)); // Paper - MC-54026 - backport from 1.13
                 this.k = i;
             }
         }
