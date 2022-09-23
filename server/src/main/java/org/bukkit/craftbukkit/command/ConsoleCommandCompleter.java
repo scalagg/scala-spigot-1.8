@@ -45,10 +45,13 @@ public class ConsoleCommandCompleter implements Completer {
         try {
             List<String> offers = waiter.get(); // wait until completions get processed on main thread
 
-            for (String offer : offers) {
-                if (offer.isEmpty()) continue;
+            if (offers != null && offers.size() > 0)
+            {
+                for (String offer : offers) {
+                    if (offer.isEmpty()) continue;
 
-                candidates.add(new Candidate(offer));
+                    candidates.add(new Candidate(offer));
+                }
             }
         } catch (ExecutionException e) {
             this.server.server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
