@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.destroystokyo.paper.console.PaperConsole;
 import com.google.common.collect.Lists;
+import gg.scala.ScalaSpigotServerProperties;
 import gg.scala.server.command.KnockbackCommand;
 import gg.scala.server.command.PotionCommand;
 import gg.scala.server.command.SpigotReloadCommand;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.util.Waitable;
@@ -185,6 +187,9 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         // Load ScalaSpigot
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
         ScalaSpigot.INSTANCE.initialLoad();
+
+        // Configure version
+        LOGGER.info("Running " + Bukkit.getName() + " version built on " + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/\"" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
 
         server.getCommandMap().register("spigot", new KnockbackCommand());
         server.getCommandMap().register("spigot", new SpigotReloadCommand());

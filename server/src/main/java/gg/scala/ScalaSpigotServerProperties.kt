@@ -19,4 +19,8 @@ object ScalaSpigotServerProperties
     val version by lazy {
         this.properties.getProperty("version")
     }
+
+    val branch by lazy {
+        this.properties.getProperty("branch")
+    }
 }
