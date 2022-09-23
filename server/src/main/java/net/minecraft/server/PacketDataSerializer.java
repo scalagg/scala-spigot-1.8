@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.base.Charsets;
+import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -164,7 +165,7 @@ public class PacketDataSerializer extends ByteBuf {
         } else {
             this.readerIndex(i);
             try {
-                return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(50000L));
+                return NBTCompressedStreamTools.a((DataInput) (new ByteBufInputStream(this)), new NBTReadLimiter(ScalaSpigot.INSTANCE.getConfig().getNbtReadLimit()));
             } catch (IOException ioexception) {
                 throw new EncoderException(ioexception);
             }
@@ -232,7 +233,7 @@ public class PacketDataSerializer extends ByteBuf {
         this.readBytes(b);
         String s = new String(b, Charsets.UTF_8);
         // PandaSpigot end
-        
+
         if (s.length() > i)
             throw new DecoderException("The received string length is longer than maximum allowed (" + j + " > " + i + ")");
         // Nacho end

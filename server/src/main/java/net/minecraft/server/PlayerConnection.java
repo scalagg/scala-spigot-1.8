@@ -31,6 +31,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 import org.github.paperspigot.PaperSpigotConfig;
+import org.spigotmc.SpigotConfig;
 
 import java.io.IOException;
 import java.util.*;
@@ -623,6 +624,23 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 						this.sendPacket(new PacketPlayOutBlockChange(worldserver, blockposition)); // Paper - Fix block break desync
 					return;
 				} else if (blockposition.getY() >= this.minecraftServer.getMaxBuildHeight()) {
+					int chunkX = blockposition.getX() >> 4;
+					int chunkZ = blockposition.getZ() >> 4;
+
+					if (
+						ScalaSpigot.INSTANCE.getConfig().getBlockBreakDesyncFix() &&
+						worldserver.isChunkLoaded(chunkX, chunkZ >> 4, true)
+					) { // Paper - Fix block break desync - Don't send for unloaded chunks
+						// Titanium start - fix for Nocom exploit (I think)
+						int deltaX = chunkX - player.getChunkX();
+						int deltaZ = chunkZ - player.getChunkZ();
+						int distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+						final int viewDistance = Bukkit.getViewDistance();
+						if (distanceSquared <= (viewDistance * viewDistance)) {
+							// Titanium end
+							this.sendPacket(new PacketPlayOutBlockChange(worldserver, blockposition)); // Paper - Fix block break desync
+						}
+					}
 					return;
 				} else {
 					if (packetplayinblockdig.c() == PacketPlayInBlockDig.EnumPlayerDigType.START_DESTROY_BLOCK) {

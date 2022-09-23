@@ -24,18 +24,15 @@ class ScalaSpigotConfig
     val handleSpamDisconnect = false
     val adaptiveChunkGarbageCollection = false
     val hidePlayersFromTabList = false
-    val multiThreadedWorlds = true
+    val blockBreakDesyncFix = true
 
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
 
     val fishingRodMultiplier = 1.0
     val playerTimeStatisticsInterval = 20
+    val nbtReadLimit = 50000L
 
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
-
-    val disabledEvents = mutableListOf(
-        "AirClickEvent"
-    )
 }
