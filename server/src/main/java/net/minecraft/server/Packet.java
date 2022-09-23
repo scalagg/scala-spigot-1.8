@@ -42,4 +42,10 @@ public interface Packet<T extends PacketListener> {
      */
     default java.util.List<Packet<?>> getExtraPackets() { return null; }
     // PandaSpigot end
+
+    // Paper start
+    default boolean packetTooLarge(NetworkManager manager) {
+        return false;
+    }
+    // Paper end
 }
