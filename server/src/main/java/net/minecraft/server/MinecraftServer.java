@@ -13,6 +13,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import gg.scala.ScalaSpigotService;
 import gg.scala.minetick.AutoSaveJob;
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -39,7 +40,6 @@ import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
@@ -534,12 +534,16 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 this.n.e();
             }
 
-            if (org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly) {
+            ScalaSpigotService.shutdown();
+
+            if (ScalaSpigot.INSTANCE.getConfig().getUserCacheSaveOnShutdown()) {
                 LOGGER.info("Saving usercache.json");
                 this.Z.c();
             }
 
-            ScalaSpigotService.shutdown();
+            if (!this.Z.terminate()) {
+                MinecraftServer.LOGGER.warn("ScalaSpigot was unable to save the User Cache properly.");
+            }
         }
     }
 

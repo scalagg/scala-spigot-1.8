@@ -264,18 +264,6 @@ public class SpigotConfig {
         replaceCommands = new HashSet<>((List<String>) getList("commands.replace-commands", Arrays.asList("setblock", "summon", "testforblock", "tellraw")));
     }
 
-    public static int userCacheCap;
-
-    private static void userCacheCap() {
-        userCacheCap = getInt("settings.user-cache-size", 1000);
-    }
-
-    public static boolean saveUserCacheOnStopOnly;
-
-    private static void saveUserCacheOnStopOnly() {
-        saveUserCacheOnStopOnly = getBoolean("settings.save-user-cache-on-stop-only", false);
-    }
-
     public static int intCacheLimit;
 
     private static void intCacheLimit() {

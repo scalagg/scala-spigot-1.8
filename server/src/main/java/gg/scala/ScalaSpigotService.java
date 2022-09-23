@@ -42,14 +42,12 @@ public class ScalaSpigotService {
     {
         NBT_FILE_SAVER.shutdown();
 
-        while (!NBT_FILE_SAVER.isTerminated()) {
-            try {
-                if (!NBT_FILE_SAVER.awaitTermination(3, TimeUnit.MINUTES)) {
-                    MinecraftServer.LOGGER.warn("ScalaSpigot is still waiting for NBT Files to be saved.");
-                }
-            } catch (InterruptedException e) {
-
+        try {
+            if (!NBT_FILE_SAVER.awaitTermination(5, TimeUnit.SECONDS)) {
+                MinecraftServer.LOGGER.warn("ScalaSpigot was unable to complete NBT file save processes.");
             }
+        } catch (InterruptedException e) {
+
         }
     }
 

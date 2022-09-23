@@ -27,6 +27,9 @@ class ScalaSpigotConfig
     val blockBreakDesyncFix = true
     val doArmorStandEntityLookups = true
 
+    val userCacheSaveOnShutdown = true
+    val userCacheCacheCap = 1000
+
     val optimizeTntMovement = true
     val optimizeLiquidExplosions = true
 

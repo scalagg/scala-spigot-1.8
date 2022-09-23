@@ -4,26 +4,33 @@ import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.*;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class UserCache {
 
+    private static final ExecutorService SCHEDULER = Executors.newSingleThreadExecutor();
+
     public static final SimpleDateFormat a = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-    private final Map<String, net.minecraft.server.UserCache.UserCacheEntry> c = Maps.newHashMap();
-    private final Map<UUID, net.minecraft.server.UserCache.UserCacheEntry> d = Maps.newHashMap();
+    private final Map<String, net.minecraft.server.UserCache.UserCacheEntry> c = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<UUID, net.minecraft.server.UserCache.UserCacheEntry> d = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Deque<GameProfile> e = new java.util.concurrent.LinkedBlockingDeque<GameProfile>(); // CraftBukkit
     private final MinecraftServer f;
     protected final Gson b;
@@ -79,7 +86,7 @@ public class UserCache {
         this.a(gameprofile, null);
     }
 
-    private void a(GameProfile gameprofile, Date date) {
+    private synchronized void a(GameProfile gameprofile, Date date) {
         UUID uuid = gameprofile.getId();
 
         if (date == null) {
@@ -90,12 +97,10 @@ public class UserCache {
             date = calendar.getTime();
         }
 
-        String s = gameprofile.getName().toLowerCase(Locale.ROOT);
         net.minecraft.server.UserCache.UserCacheEntry usercache_usercacheentry = new net.minecraft.server.UserCache.UserCacheEntry(gameprofile, date, null);
+        net.minecraft.server.UserCache.UserCacheEntry usercache_usercacheentry1 = (net.minecraft.server.UserCache.UserCacheEntry) this.d.get(uuid);
 
-        if (this.d.containsKey(uuid)) {
-            net.minecraft.server.UserCache.UserCacheEntry usercache_usercacheentry1 = (net.minecraft.server.UserCache.UserCacheEntry) this.d.get(uuid);
-
+        if (usercache_usercacheentry1 != null) { // Paper
             this.c.remove(usercache_usercacheentry1.a().getName().toLowerCase(Locale.ROOT));
             this.e.remove(gameprofile);
         }
@@ -103,10 +108,11 @@ public class UserCache {
         this.c.put(gameprofile.getName().toLowerCase(Locale.ROOT), usercache_usercacheentry);
         this.d.put(uuid, usercache_usercacheentry);
         this.e.addFirst(gameprofile);
-        if( !org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly ) this.c(); // Spigot - skip saving if disabled
+        if( !ScalaSpigot.INSTANCE.getConfig().getUserCacheSaveOnShutdown() ) this.c(); // Spigot - skip saving if disabled
     }
 
-    public GameProfile getProfile(String s) {
+    @Nullable
+    public synchronized GameProfile getProfile(String s) { // Paper - synchronize
         String s1 = s.toLowerCase(Locale.ROOT);
         net.minecraft.server.UserCache.UserCacheEntry usercache_usercacheentry = (net.minecraft.server.UserCache.UserCacheEntry) this.c.get(s1);
 
@@ -131,7 +137,7 @@ public class UserCache {
             }
         }
 
-        if( !org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly ) this.c(); // Spigot - skip saving if disabled
+        if( !ScalaSpigot.INSTANCE.getConfig().getUserCacheSaveOnShutdown() ) this.c(); // Spigot - skip saving if disabled
         return usercache_usercacheentry == null ? null : usercache_usercacheentry.a();
     }
 
@@ -194,22 +200,43 @@ public class UserCache {
 
     }
 
-    public void c() {
-        String s = this.b.toJson(this.a(org.spigotmc.SpigotConfig.userCacheCap));
-        BufferedWriter bufferedwriter = null;
+    public boolean terminate() {
+        SCHEDULER.shutdown();
 
         try {
-            bufferedwriter = Files.newWriter(this.g, Charsets.UTF_8);
-            bufferedwriter.write(s);
-            return;
-        } catch (FileNotFoundException filenotfoundexception) {
-            return;
-        } catch (IOException ioexception) {
-            ;
-        } finally {
-            IOUtils.closeQuietly(bufferedwriter);
+            return SCHEDULER.awaitTermination(10L, TimeUnit.SECONDS);
+        } catch (InterruptedException exception) {
+            MinecraftServer.LOGGER.error("Failed to terminate UserCache scheduler", exception);
+            return false;
         }
+    }
 
+    public void c() {
+        c(true);
+    }
+
+    public void c(boolean asyncSave) {
+        final Runnable saver = () -> {
+            final String serialized = this.b.toJson(
+                this.a(ScalaSpigot.INSTANCE.getConfig().getUserCacheCacheCap())
+            );
+
+            try {
+                Files.write(
+                    serialized.getBytes(StandardCharsets.UTF_8), this.g
+                );
+            } catch (IOException exception) {
+                MinecraftServer.LOGGER.error(
+                    "Failed to save user cache", exception
+                );
+            }
+        };
+
+        if (asyncSave) {
+            SCHEDULER.submit(saver);
+        } else {
+            saver.run();
+        }
     }
 
     private List<net.minecraft.server.UserCache.UserCacheEntry> a(int i) {

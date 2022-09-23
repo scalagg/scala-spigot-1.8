@@ -234,7 +234,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         // CraftBukkit end
         if (ScalaSpigot.INSTANCE.getConfig().getAutomaticChunkUnload()) {
-//            timings.doChunkUnload.startTiming(); // Spigot
             this.methodProfiler.c("chunkSource");
 
             // Only unload if chunkProvider isn't null
@@ -260,31 +259,24 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         // Tick scheduled blocks
         this.methodProfiler.c("tickPending");
-//        timings.scheduledBlocks.startTiming();
         this.a(false);
-//        timings.scheduledBlocks.stopTiming();
 
         if (ScalaSpigot.INSTANCE.getConfig().getHandleBlockOperations())
         {
             // Tick current blocks
             this.methodProfiler.c("tickBlocks");
-//            timings.chunkTicks.startTiming();
             this.h();
-//            timings.chunkTicks.stopTiming();
         }
 
         // Tick chunk map
         this.methodProfiler.c("chunkMap");
-//        timings.doChunkMap.startTiming();
         this.manager.flush();
-//        timings.doChunkMap.stopTiming();
 
         // Tick sounds
         this.methodProfiler.b();
-//        timings.doSounds.startTiming();
+
         this.ak();
         this.getWorld().processChunkGC();
-//        timings.doChunkGC.stopTiming();
     }
 
     public BiomeBase.BiomeMeta a(EnumCreatureType enumcreaturetype, BlockPosition blockposition) {
