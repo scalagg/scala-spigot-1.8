@@ -52,6 +52,12 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     }
 
     public void c() {
+        // Paper start - Do not allow logins while the server is shutting down
+        if (!MinecraftServer.getServer().isRunning()) {
+            this.disconnect(org.spigotmc.SpigotConfig.restartMessage);
+            return;
+        }
+        // Paper end
         if (this.g == net.minecraft.server.LoginListener.EnumProtocolState.READY_TO_ACCEPT) {
             this.b();
         } else if (this.g == net.minecraft.server.LoginListener.EnumProtocolState.e) {
