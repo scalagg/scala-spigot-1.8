@@ -72,4 +72,15 @@ public class CraftFish extends AbstractProjectile implements Fish {
     public void _INVALID_setShooter(LivingEntity shooter) {
         setShooter(shooter);
     }
+
+
+    // Paper start
+    @Override
+    public void remove() {
+        super.remove();
+        if (getHandle().owner != null) {
+            getHandle().owner.hookedFish = null;
+        }
+    }
+    // Paper end
 }
