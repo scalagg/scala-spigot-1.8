@@ -658,8 +658,10 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             } catch (Throwable throwable1) {
                 LOGGER.error("Exception stopping the server", throwable1);
             } finally {
+                org.apache.logging.log4j.LogManager.shutdown(); // Paper
+
                 try {
-                    net.minecrell.terminalconsole.TerminalConsoleAppender.close();
+//                    net.minecrell.terminalconsole.TerminalConsoleAppender.close();
                 } catch (Exception ignored) {
                 }
 

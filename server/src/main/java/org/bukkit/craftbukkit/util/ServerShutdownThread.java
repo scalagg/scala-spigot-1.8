@@ -17,8 +17,9 @@ public class ServerShutdownThread extends Thread {
         } catch (ExceptionWorldConflict ex) {
             ex.printStackTrace();
         } finally {
+            org.apache.logging.log4j.LogManager.shutdown(); // Paper
             try {
-                net.minecrell.terminalconsole.TerminalConsoleAppender.close(); // Paper - Use TerminalConsoleAppender
+//                net.minecrell.terminalconsole.TerminalConsoleAppender.close(); // Paper - Use TerminalConsoleAppender
             } catch (Exception e) {
             }
         }
