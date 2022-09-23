@@ -13,6 +13,7 @@ import com.mojang.authlib.GameProfile;
 import gg.scala.ScalaSpigotServerProperties;
 import gg.scala.server.command.KnockbackCommand;
 import gg.scala.server.command.PotionCommand;
+import gg.scala.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
@@ -706,6 +707,7 @@ public final class CraftServer implements Server {
 
         getCommandMap().register("spigot", new KnockbackCommand());
         getCommandMap().register("spigot", new PotionCommand());
+        getCommandMap().register("spigot", new SpigotReloadCommand());
     }
 
     private void loadIcon() {

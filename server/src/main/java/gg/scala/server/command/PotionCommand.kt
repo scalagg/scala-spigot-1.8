@@ -18,7 +18,7 @@ class PotionCommand : BukkitCommand("potion")
     init
     {
         aliases = listOf("pot", "pots", "potions")
-        permission = "scalaspigot.command.potion"
+        permission = Bukkit.getName().lowercase() + ".command.potion"
     }
 
     override fun execute(
@@ -27,7 +27,7 @@ class PotionCommand : BukkitCommand("potion")
         args: Array<String>
     ): Boolean
     {
-        if (!sender.hasPermission("scalaspigot.command.potion"))
+        if (!sender.hasPermission(Bukkit.getName().lowercase() + ".command.potion"))
         {
             sender.sendMessage("${ChatColor.RED}You do not have permission to perform this command!")
             return true

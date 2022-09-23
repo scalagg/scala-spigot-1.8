@@ -17,7 +17,7 @@ class KnockbackCommand : BukkitCommand("knockback")
     init
     {
         aliases = listOf("kb")
-        permission = "scalaspigot.command.knockback"
+        permission = Bukkit.getName().lowercase() + ".command.knockback"
     }
 
     override fun execute(
@@ -26,7 +26,7 @@ class KnockbackCommand : BukkitCommand("knockback")
         args: Array<String>
     ): Boolean
     {
-        if (!sender.hasPermission("scalaspigot.command.knockback"))
+        if (!sender.hasPermission(Bukkit.getName().lowercase() + ".command.knockback"))
         {
             sender.sendMessage("${ChatColor.RED}You do not have permission to perform this command!")
             return true

@@ -49,7 +49,9 @@ object ScalaSpigot
     }
 
     @JvmOverloads
-    fun reloadConfig(silently: Boolean = false, parent: File): Boolean
+    fun reloadConfig(
+        parent: File, silently: Boolean = false
+    ): Boolean
     {
         if (!silently)
         {
