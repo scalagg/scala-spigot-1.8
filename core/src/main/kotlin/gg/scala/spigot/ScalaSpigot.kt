@@ -103,13 +103,10 @@ object ScalaSpigot
 
         CompletableFuture
             .runAsync {
-                val newest = GSON.toJson(reader)
-
-                val empty = ByteArray(0)
-                Files.write(empty, file)
+                val configSnapshot = GSON.toJson(config)
 
                 Files.write(
-                    newest.toByteArray(), file
+                    configSnapshot.toByteArray(), file
                 )
             }
             .thenRun {
