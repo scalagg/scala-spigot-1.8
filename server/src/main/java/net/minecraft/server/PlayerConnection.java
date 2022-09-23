@@ -1579,7 +1579,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 				if (packetplayinwindowclick.c() == 2) {
 					click = ClickType.MIDDLE;
 
-					if (packetplayinwindowclick.b() == -999) {
+					if (packetplayinwindowclick.b() < 0) { // Paper - GH-404
 						action = InventoryAction.NOTHING;
 					} else {
 						Slot slot = this.player.activeContainer.getSlot(packetplayinwindowclick.b());
