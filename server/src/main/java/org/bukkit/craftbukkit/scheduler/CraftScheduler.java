@@ -7,7 +7,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
-import org.github.paperspigot.ServerSchedulerReportingWrapper;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerSchedulerException;
 
@@ -68,8 +67,8 @@ public class CraftScheduler implements BukkitScheduler {
     final ConcurrentHashMap<Integer, CraftTask> runners = new ConcurrentHashMap<Integer, CraftTask>(); // Paper
     volatile int currentTick = -1; // Paper
     //private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("Craft Scheduler Thread - %1$d").build()); // Spigot // Paper - moved to AsyncScheduler
-    private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
-    private CraftAsyncDebugger debugTail = debugHead;
+//    private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+//    private CraftAsyncDebugger debugTail = debugHead;
     private static final int RECENT_TICKS;
 
     // Paper start
@@ -420,7 +419,7 @@ public class CraftScheduler implements BukkitScheduler {
                 }
                 parsePending();
             } else {
-                debugTail = debugTail.setNext(new CraftAsyncDebugger(currentTick + RECENT_TICKS, task.getOwner(), task.getTaskClass()));
+//                debugTail = debugTail.setNext(new CraftAsyncDebugger(currentTick + RECENT_TICKS, task.getOwner(), task.getTaskClass()));
                 task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Scala"); // Paper // ScalaSpigot
                 // We don't need to parse pending
                 // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
@@ -435,7 +434,7 @@ public class CraftScheduler implements BukkitScheduler {
         }
         pending.addAll(temp);
         temp.clear();
-        debugHead = debugHead.getNextHead(currentTick);
+//        debugHead = debugHead.getNextHead(currentTick);
     }
 
     protected void addTask(final CraftTask task) {
@@ -498,10 +497,11 @@ public class CraftScheduler implements BukkitScheduler {
 
     @Override
     public String toString() {
-        int debugTick = currentTick;
-        StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
-        debugHead.debugTo(string);
-        return string.append('}').toString();
+        return "";
+//        int debugTick = currentTick;
+//        StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
+//        debugHead.debugTo(string);
+//        return string.append('}').toString();
     }
 
     @Deprecated
