@@ -35,6 +35,10 @@ class ScalaSpigotConfig
     val trackerUpdateDistance = 1
     val nbtReadLimit = 50000L
 
+    val userAuthenticatorCorePoolLimit = 0
+    val userAuthenticatorThreadLimit = 16
+    val userAuthenticatorKeepAliveTime = 60L
+
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
 }

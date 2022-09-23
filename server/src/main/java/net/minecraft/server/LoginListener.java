@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
+import gg.scala.spigot.ScalaSpigot;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -25,7 +26,6 @@ import java.util.logging.Level;
 
 public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBox {
 
-    private static final AtomicInteger b = new AtomicInteger(0);
     private static final Logger c = MinecraftServer.LOGGER;
     private static final Random random = new Random();
     public final NetworkManager networkManager;
@@ -39,9 +39,18 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
     private SecretKey loginKey;
     private EntityPlayer l;
 
-    private static final ExecutorService AUTHENTICATORS = Executors.newCachedThreadPool(
-            runnable -> new Thread(runnable, "User Authenticator #" + b.incrementAndGet())
-    );
+    private static final java.util.concurrent.ExecutorService AUTHENTICATORS = new java.util.concurrent.ThreadPoolExecutor(
+        ScalaSpigot.INSTANCE.getConfig().getUserAuthenticatorCorePoolLimit(),
+        ScalaSpigot.INSTANCE.getConfig().getUserAuthenticatorThreadLimit(),
+        ScalaSpigot.INSTANCE.getConfig().getUserAuthenticatorKeepAliveTime(),
+        java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.SynchronousQueue<>(),
+        new com.google.common.util.concurrent.ThreadFactoryBuilder()
+            .setNameFormat("User Authenticator #%d")
+            .setUncaughtExceptionHandler((thread, throwable) -> {
+                MinecraftServer.LOGGER.error("Exception caught on user authenticator: " + thread.getName(), throwable);
+            })
+            .build()
+    );// Paper - Cache authenticator threads
 
     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {
         this.g = net.minecraft.server.LoginListener.EnumProtocolState.HELLO;
@@ -200,7 +209,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                 try {
                     String s = (new BigInteger(MinecraftEncryption.a(LoginListener.this.j, LoginListener.this.server.Q().getPublic(), LoginListener.this.loginKey))).toString(16);
 
-                    LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
+                    LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
                     if (LoginListener.this.i != null) {
                         // CraftBukkit start - fire PlayerPreLoginEvent
                         if (!networkManager.g()) {
@@ -214,7 +223,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                         LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                     } else {
                         LoginListener.this.disconnect("Failed to verify username!");
-                        LoginListener.c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+                        LoginListener.c.error("Username '" + gameprofile.getName() + "' tried to join with an invalid session"); // CraftBukkit - fix null pointer
                     }
                 } catch (AuthenticationUnavailableException authenticationunavailableexception) {
                     if (LoginListener.this.server.T()) {
@@ -223,7 +232,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                         LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                     } else {
                         LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
-                        LoginListener.c.error("Couldn\'t verify username because servers are unavailable");
+                        LoginListener.c.error("Couldn't verify username because servers are unavailable");
                     }
                     // CraftBukkit start - catch all exceptions
                 } catch (Exception exception) {
