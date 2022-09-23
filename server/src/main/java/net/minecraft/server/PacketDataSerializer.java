@@ -243,7 +243,7 @@ public class PacketDataSerializer extends ByteBuf {
     public PacketDataSerializer a(String s) {
         byte[] abyte = s.getBytes(Charsets.UTF_8);
 
-        if (abyte.length > 32767) {
+        if (abyte.length > 44767) {
             throw new EncoderException("String too big (was " + s.length() + " bytes encoded, max " + 32767 + ")");
         } else {
             this.b(abyte.length); // Nacho - deobfuscate writeVarInt
