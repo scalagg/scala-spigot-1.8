@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -233,11 +234,11 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         }
 
         if (!this.chunkCoordIntPairQueue.isEmpty()) {
-            ArrayList arraylist = Lists.newArrayList();
+            ArrayList<Chunk> arraylist = Lists.newArrayList();
             Iterator iterator1 = this.chunkCoordIntPairQueue.iterator();
             ArrayList arraylist1 = Lists.newArrayList();
 
-            Chunk chunk;
+            Chunk chunk = null;
 
             while (iterator1.hasNext() && arraylist.size() < this.world.spigotConfig.maxBulkChunk) { // Spigot
                 ChunkCoordIntPair chunkcoordintpair = (ChunkCoordIntPair) iterator1.next();
@@ -263,6 +264,13 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                     this.playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(arraylist));
                 }
 
+                // Nacho - if there are a lot of entities, we end up scanning the WHOLE list of entities multiple times
+                // Which isn't the best if we have 100 players doing that
+                // So instead of updating all entities by chunk, we update all entities at once with a hashset of chunks
+                // This means we don't have to pass over the list x chunks
+
+                // o(chunk * entityList) => o(entitylist)
+                /*
                 Iterator iterator2 = arraylist1.iterator();
 
                 while (iterator2.hasNext()) {
@@ -276,6 +284,24 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 while (iterator2.hasNext()) {
                     chunk = (Chunk) iterator2.next();
                     this.u().getTracker().a(this, chunk);
+                }
+                */
+                // Nacho - end
+
+                LongOpenHashSet chunkPosSet = new LongOpenHashSet(arraylist.size());
+                for (Chunk newChunk : arraylist) {
+                    chunkPosSet.add(
+                        this.chunkToLong(newChunk.locX, newChunk.locZ)
+                    );
+                }
+
+                Iterator<EntityTrackerEntry> trackerEntryIterator = this.u().getTracker().c.iterator();
+                while (trackerEntryIterator.hasNext()) {
+                    EntityTrackerEntry entitytrackerentry = trackerEntryIterator.next();
+
+                    if (entitytrackerentry.tracker != this && chunkPosSet.contains(this.chunkToLong(entitytrackerentry.tracker.ae, entitytrackerentry.tracker.ag))) {
+                        entitytrackerentry.updatePlayer(this);
+                    }
                 }
             }
         }
@@ -294,6 +320,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             }
         }
 
+    }
+
+    private long chunkToLong(int chunkX, int chunkZ) {
+        return ((long) chunkX << 32L) + chunkZ - -2147483648L;
     }
 
     public void l() {
