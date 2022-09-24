@@ -524,12 +524,14 @@ public final class CraftServer implements Server {
 
     @Override
     public boolean getAllowEnd() {
-        return this.configuration.getBoolean("settings.allow-end");
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureEnd();
     }
 
     @Override
     public boolean getAllowNether() {
-        return this.getConfigBoolean("allow-nether", true);
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureNether();
     }
 
     public boolean getWarnOnOverload() {

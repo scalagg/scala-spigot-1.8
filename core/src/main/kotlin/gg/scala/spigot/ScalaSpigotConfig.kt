@@ -47,6 +47,13 @@ class ScalaSpigotConfig
 
     val autoInstalledPlugins = AutoInstalledPlugins()
 
+    data class DimensionSettings(
+        var configureEnd: Boolean = false,
+        var configureNether: Boolean = false,
+    )
+
+    val dimensionSettings = DimensionSettings()
+
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()
 }
