@@ -46,9 +46,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     public boolean joining = true;
     public boolean collidesWithEntities = true;
     public int viewDistance;
-    // Paper start - Reduce entity tracker updates on move
-    public Vec3D lastTrackedPosition = new Vec3D(0, 0, 0);
-    public long lastTrackedTick;
     // CraftBukkit start - Add per-player time and weather.
     public long timeOffset = 0;
     public boolean relativeTime = true;

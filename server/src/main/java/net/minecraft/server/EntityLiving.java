@@ -795,12 +795,7 @@ public abstract class EntityLiving extends Entity {
 
                     if (entity != null) {
                         double d0 = entity.locX - this.locX;
-
-                        double d1;
-
-                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
-                            d0 = (Math.random() - Math.random()) * 0.01D;
-                        }
+                        double d1 = entity.locZ - this.locZ;
 
                         this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
                         this.a(entity, f, d0, d1, damagesource);
@@ -896,40 +891,38 @@ public abstract class EntityLiving extends Entity {
     }
 
     public void a(Entity entity, float f, double d0, double d1, DamageSource damageSource) {
-        if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
-            this.ai = true;
+        this.ai = true;
 
-            final KnockbackPreset preset = getKnockbackPreset();
-            double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
+        final KnockbackPreset preset = getKnockbackPreset();
+        double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
 
 //            this.motX /= preset.getFriction();
-            this.motY /= preset.getFriction();
+        this.motY /= preset.getFriction();
 //            this.motZ /= preset.getFriction();
 
-            this.motX -= d0 / magnitude * preset.getHorizontal();
-            this.motY += preset.getVertical();
-            this.motZ -= d1 / magnitude * preset.getHorizontal();
+        this.motX -= d0 / magnitude * preset.getHorizontal();
+        this.motY += preset.getVertical();
+        this.motZ -= d1 / magnitude * preset.getHorizontal();
 
-            if (damageSource instanceof EntityDamageSourceIndirect) {
-                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
+        if (damageSource instanceof EntityDamageSourceIndirect) {
+            final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
 
-                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
-                    if (preset.getRodHorizontalMultiplier() != 0)
-                    {
-                        this.motX *= preset.getRodHorizontalMultiplier();
-                        this.motZ *= preset.getRodHorizontalMultiplier();
-                    }
+            if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
+                if (preset.getRodHorizontalMultiplier() != 0)
+                {
+                    this.motX *= preset.getRodHorizontalMultiplier();
+                    this.motZ *= preset.getRodHorizontalMultiplier();
+                }
 
-                    if (preset.getRodVerticalMultiplier() != 0)
-                    {
-                        this.motY *= preset.getRodVerticalMultiplier();
-                    }
+                if (preset.getRodVerticalMultiplier() != 0)
+                {
+                    this.motY *= preset.getRodVerticalMultiplier();
                 }
             }
+        }
 
-            if (this.motY > preset.getVerticalLimit()) {
-                this.motY = preset.getVerticalLimit();
-            }
+        if (this.motY > preset.getVerticalLimit()) {
+            this.motY = preset.getVerticalLimit();
         }
     }
 
