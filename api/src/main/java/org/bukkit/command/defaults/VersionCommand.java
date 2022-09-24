@@ -29,6 +29,9 @@ public class VersionCommand extends BukkitCommand {
         this.usageMessage = "/version [plugin name]";
         this.setPermission("bukkit.command.version");
         this.setAliases(Arrays.asList("ver", "about"));
+
+        // configure lazily loaded version value
+        Bukkit.getVersion();
     }
 
     public void setVersionMessage(Component versionMessage) {
@@ -50,17 +53,6 @@ public class VersionCommand extends BukkitCommand {
         }
 
         if (args.length == 0) {
-            // Paper start
-            if (Bukkit.getVersion().startsWith("null") || versionMessage == null) { // running from ide?
-                setVersionMessage(Component.text("Unknown version, custom build?", net.kyori.adventure.text.format.NamedTextColor.YELLOW));
-
-                sender.sendMessage(
-                        LegacyComponentSerializer.legacySection()
-                                .serialize(versionMessage)
-                );
-                return true;
-            }
-
             sender.sendMessage(
                 "This server is running ScalaSpigot version " + Bukkit.getVersion() + " (Implementing API version 1.8.8-R0.3-SNAPSHOT)"
             );
