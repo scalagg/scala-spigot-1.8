@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
+import io.papermc.paper.util.maplist.ObjectMapList;
 import net.minecraft.server.BiomeBase;
 import net.minecraft.server.Block;
 import net.minecraft.server.BlockPosition;
@@ -158,7 +159,7 @@ public class Chunk {
         this.heightMap = new int[256];
 
         for (int k = 0; k < this.entitySlices.length; ++k) {
-            this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList<>(); // Spigot
+            this.entitySlices[k] = new ObjectMapList<>(); // Spigot
         }
 
         Arrays.fill(this.f, -999);
