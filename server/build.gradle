@@ -68,6 +68,8 @@ dependencies {
     compileOnly "org.projectlombok:lombok:1.18.24"
     annotationProcessor "org.projectlombok:lombok:1.18.24"
 
+    implementation "io.sentry:sentry:6.4.2"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
 }

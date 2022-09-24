@@ -8,7 +8,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.MathHelper;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
-import me.suicidalkids.ion.movement.MovementCache;
+import gg.scala.spigot.movement.MovementCache;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.CraftServer;

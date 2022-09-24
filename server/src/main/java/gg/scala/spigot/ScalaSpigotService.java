@@ -1,4 +1,4 @@
-package gg.scala;
+package gg.scala.spigot;
 
 import net.minecraft.server.*;
 
@@ -16,18 +16,6 @@ public class ScalaSpigotService {
         .newSingleThreadExecutor(
             new ScalaSpigotThreadFactory(Thread.NORM_PRIORITY - 2, "NBTFileSaver")
         );
-
-//    private static final ExecutorService WORLD_TICKER = Executors
-//        .newCachedThreadPool(
-//            new ScalaSpigotThreadFactory(Thread.NORM_PRIORITY + 2, "WorldTicker")
-//        );
-
-
-//    public static Future<?> tickWorld(WorldServer worldServer) {
-//        return WORLD_TICKER.submit(
-//            worldServer.getWorldTicker()
-//        );
-//    }
 
     public static boolean isImportantEntity(Entity entity) {
         return (entity instanceof EntityArrow || entity instanceof EntityPlayer ||

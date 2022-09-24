@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.console;
+package gg.scala.spigot.console;
 
 import net.minecraft.server.DedicatedServer;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
@@ -8,10 +8,10 @@ import org.jline.reader.LineReaderBuilder;
 
 import java.nio.file.Paths;
 
-public class PaperConsole extends SimpleTerminalConsole {
+public class ScalaSpigotConsole extends SimpleTerminalConsole {
     private final DedicatedServer server;
 
-    public PaperConsole(DedicatedServer server) {
+    public ScalaSpigotConsole(DedicatedServer server) {
         this.server = server;
     }
 

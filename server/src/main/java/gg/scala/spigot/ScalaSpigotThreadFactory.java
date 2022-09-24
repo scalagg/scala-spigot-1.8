@@ -1,4 +1,4 @@
-package gg.scala;
+package gg.scala.spigot;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;

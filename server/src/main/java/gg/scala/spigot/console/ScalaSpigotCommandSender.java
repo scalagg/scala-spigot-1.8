@@ -1,7 +1,6 @@
-package com.destroystokyo.paper.console;
+package gg.scala.spigot.console;
 
 import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.command.CraftConsoleCommandSender;
 
@@ -9,7 +8,7 @@ import org.bukkit.craftbukkit.command.CraftConsoleCommandSender;
  * @author GrowlyX
  * @since 12/28/2021
  */
-public class TerminalConsoleCommandSender extends CraftConsoleCommandSender {
+public class ScalaSpigotCommandSender extends CraftConsoleCommandSender {
 
     private static final Logger LOGGER = MinecraftServer.LOGGER;
 

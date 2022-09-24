@@ -47,6 +47,13 @@ class ScalaSpigotConfig
 
     val autoInstalledPlugins = AutoInstalledPlugins()
 
+    data class SentrySettings(
+        var initialize: Boolean = false,
+        var dsn: String = ""
+    )
+
+    val sentrySettings = SentrySettings()
+
     data class DimensionSettings(
         var configureEnd: Boolean = false,
         var configureNether: Boolean = false,

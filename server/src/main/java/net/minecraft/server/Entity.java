@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
 import com.eatthepath.uuid.FastUUID;
-import gg.scala.ScalaSpigotService;
+import gg.scala.spigot.ScalaSpigotService;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
 import org.bukkit.Bukkit;

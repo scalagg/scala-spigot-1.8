@@ -1,7 +1,8 @@
 package net.minecraft.server;
 
-import com.destroystokyo.paper.tick.ReentrantIAsyncHandler;
-import com.destroystokyo.paper.tick.TasksPerTick;
+import gg.scala.spigot.collections.CachedSizeConcurrentLinkedQueue;
+import gg.scala.spigot.tickloop.ReentrantIAsyncHandler;
+import gg.scala.spigot.tickloop.TasksPerTick;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
@@ -11,8 +12,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import gg.scala.ScalaSpigotService;
-import gg.scala.minetick.AutoSaveJob;
+import gg.scala.spigot.ScalaSpigotService;
+import gg.scala.spigot.autosave.AutoSaveJob;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.cleaner.LogCleanup;
 import io.netty.buffer.ByteBuf;
@@ -64,7 +65,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public final RollingAverage tps15 = new RollingAverage(60 * 15);
     protected final ICommandHandler b;
     protected final Proxy e;
-    protected final Queue<FutureTask<?>> j = new com.destroystokyo.paper.utils.CachedSizeConcurrentLinkedQueue<>();
+    protected final Queue<FutureTask<?>> j = new CachedSizeConcurrentLinkedQueue<>();
     private final MojangStatisticsGenerator n = new MojangStatisticsGenerator("net/minecraft/server", this, az());
     private final List<IUpdatePlayerListBox> p = Lists.newArrayList();
     private final ServerPing r = new ServerPing();

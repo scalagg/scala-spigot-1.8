@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.console.ScalaSpigotCommandSender;
 import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -71,7 +72,7 @@ public abstract class PlayerList {
 
     public PlayerList(MinecraftServer minecraftserver) {
         this.cserver = minecraftserver.server = new CraftServer(minecraftserver, this);
-        minecraftserver.console = new com.destroystokyo.paper.console.TerminalConsoleCommandSender();
+        minecraftserver.console = new ScalaSpigotCommandSender();
 
         this.k = new GameProfileBanList(a);
         this.l = new IpBanList(b);

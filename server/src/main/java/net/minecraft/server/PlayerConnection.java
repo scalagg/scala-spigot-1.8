@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
-import gg.scala.server.NotchUtil;
+import gg.scala.spigot.server.NotchUtil;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.filter.EventFilterHandler;
 import io.netty.buffer.Unpooled;
@@ -31,7 +31,6 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 import org.github.paperspigot.PaperSpigotConfig;
-import org.spigotmc.SpigotConfig;
 
 import java.io.IOException;
 import java.util.*;

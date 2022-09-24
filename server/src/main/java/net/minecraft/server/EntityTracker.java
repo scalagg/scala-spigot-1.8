@@ -2,8 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.papermc.paper.util.maplist.ObjectMapList;
-import org.apache.logging.log4j.LogManager;
+import gg.scala.spigot.collections.ObjectMapList;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;

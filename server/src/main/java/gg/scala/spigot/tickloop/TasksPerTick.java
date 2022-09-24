@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.tick;
+package gg.scala.spigot.tickloop;
 
 public class TasksPerTick implements Runnable {
     private final int tick;

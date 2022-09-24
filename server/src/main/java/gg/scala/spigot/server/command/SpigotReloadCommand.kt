@@ -1,4 +1,4 @@
-package gg.scala.server.command
+package gg.scala.spigot.server.command
 
 import gg.scala.spigot.ScalaSpigot
 import gg.scala.spigot.preset.KnockbackHandler
