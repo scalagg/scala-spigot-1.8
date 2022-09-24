@@ -101,9 +101,13 @@ public class ActivationRange
             {
                 for ( int j1 = k; j1 <= l; ++j1 )
                 {
-                    if ( world.getWorld().isChunkLoaded( i1, j1 ) )
+                    // ScalaSpigot start - don't look for chunk twice
+                    final Chunk chunk = world.getChunkIfLoaded(i1, j1);
+
+                    if ( chunk != null )
                     {
-                        activateChunkEntities( world.getChunkAt( i1, j1 ) );
+                        activateChunkEntities( chunk );
+                        // ScalaSpigot end
                     }
                 }
             }
