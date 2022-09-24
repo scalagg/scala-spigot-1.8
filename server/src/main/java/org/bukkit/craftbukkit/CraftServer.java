@@ -219,10 +219,10 @@ public final class CraftServer implements Server {
         pluginManager.registerInterface(JavaPluginLoader.class);
 
         File pluginFolder = (File) console.options.valueOf("plugins");
+        boolean foundSparkPlugin = false;
 
         if (pluginFolder.exists()) {
             Plugin[] plugins = pluginManager.loadPlugins(pluginFolder);
-            boolean foundSparkPlugin = false;
 
             for (Plugin plugin : plugins) {
                 try {
@@ -237,74 +237,74 @@ public final class CraftServer implements Server {
                     Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
                 }
             }
+        } else {
+            pluginFolder.mkdir();
+        }
 
-            final boolean shouldInstallSpark = ScalaSpigot.INSTANCE.getConfig()
-                .getAutoInstalledPlugins().getInstallSpark();
+        final boolean shouldInstallSpark = ScalaSpigot.INSTANCE.getConfig()
+            .getAutoInstalledPlugins().getInstallSpark();
 
-            if (shouldInstallSpark && !foundSparkPlugin) {
-                try {
-                    final File file = new File("cached-plugins", "spark.jar");
-                    file.getParentFile().mkdirs();
+        if (shouldInstallSpark && !foundSparkPlugin) {
+            try {
+                final File file = new File("cached-plugins", "spark.jar");
+                file.getParentFile().mkdirs();
 
-                    boolean shouldDownload = true;
-                    if (file.exists()) {
-                        final String fileSha1 = String.format("%040x", new java.math.BigInteger(1, java.security.MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(file.toPath()))));
-                        final String sparkSha1;
+                boolean shouldDownload = true;
+                if (file.exists()) {
+                    final String fileSha1 = String.format("%040x", new java.math.BigInteger(1, java.security.MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(file.toPath()))));
+                    final String sparkSha1;
 
-                        try (java.io.BufferedReader reader = new java.io.BufferedReader(new InputStreamReader(new java.net.URL("https://sparkapi.lucko.me/download/bukkit/sha1").openStream()))) {
-                            sparkSha1 = reader.lines().collect(Collectors.joining(""));
-                        }
-
-                        if (fileSha1.equals(sparkSha1)) {
-                            shouldDownload = false;
-                        }
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(new InputStreamReader(new java.net.URL("https://sparkapi.lucko.me/download/bukkit/sha1").openStream()))) {
+                        sparkSha1 = reader.lines().collect(Collectors.joining(""));
                     }
 
-                    if (shouldDownload) {
-                        gg.scala.spigot.logger.Logger.send("Installing the latest build of spark...");
-                        java.nio.file.Files.copy(new java.net.URL("https://sparkapi.lucko.me/download/bukkit").openStream(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    }
-                } catch (Exception exception) {
-                    MinecraftServer.LOGGER.error(
-                        "Failed to install spark automatically! (Disabling autoInstalledPlugins.installSpark in scala-spigot.json!)", exception
-                    );
-
-                    try {
-                        ScalaSpigot.INSTANCE.getConfig()
-                            .getAutoInstalledPlugins()
-                            .setInstallSpark(false);
-
-                        ScalaSpigot.INSTANCE.saveConfig(
-                            Bukkit.getWorldContainer()
-                        );
-                    } catch (Exception ignored) {
-
+                    if (fileSha1.equals(sparkSha1)) {
+                        shouldDownload = false;
                     }
                 }
 
-                // prevent conflicts with newer versions' cache directories
-                final File cachePluginsDirectory = new File("cached-plugins");
+                if (shouldDownload) {
+                    gg.scala.spigot.logger.Logger.send("Installing the latest build of spark...");
+                    java.nio.file.Files.copy(new java.net.URL("https://sparkapi.lucko.me/download/bukkit").openStream(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (Exception exception) {
+                MinecraftServer.LOGGER.error(
+                    "Failed to install spark automatically! (Disabling autoInstalledPlugins.installSpark in scala-spigot.json!)", exception
+                );
 
-                if (cachePluginsDirectory.exists())
-                {
-                    Plugin[] cachedPlugins = pluginManager
-                        .loadPlugins(
-                            cachePluginsDirectory
-                        );
+                try {
+                    ScalaSpigot.INSTANCE.getConfig()
+                        .getAutoInstalledPlugins()
+                        .setInstallSpark(false);
 
-                    for (Plugin plugin : cachedPlugins) {
-                        try {
-                            String message = String.format("Loading cached plugin %s", plugin.getDescription().getFullName());
-                            plugin.getLogger().info(message);
-                            plugin.onLoad();
-                        } catch (Throwable ex) {
-                            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
-                        }
+                    ScalaSpigot.INSTANCE.saveConfig(
+                        Bukkit.getWorldContainer()
+                    );
+                } catch (Exception ignored) {
+
+                }
+            }
+
+            // prevent conflicts with newer versions' cache directories
+            final File cachePluginsDirectory = new File("cached-plugins");
+
+            if (cachePluginsDirectory.exists())
+            {
+                Plugin[] cachedPlugins = pluginManager
+                    .loadPlugins(
+                        cachePluginsDirectory
+                    );
+
+                for (Plugin plugin : cachedPlugins) {
+                    try {
+                        String message = String.format("Loading cached plugin %s", plugin.getDescription().getFullName());
+                        plugin.getLogger().info(message);
+                        plugin.onLoad();
+                    } catch (Throwable ex) {
+                        Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
                     }
                 }
             }
-        } else {
-            pluginFolder.mkdir();
         }
     }
 
