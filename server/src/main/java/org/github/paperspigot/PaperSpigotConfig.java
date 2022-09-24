@@ -207,6 +207,6 @@ public class PaperSpigotConfig
     public static boolean warnForExcessiveVelocity;
     private static void excessiveVelocityWarning()
     {
-        warnForExcessiveVelocity = getBoolean("warnWhenSettingExcessiveVelocity", true);
+        warnForExcessiveVelocity = getBoolean("warnWhenSettingExcessiveVelocity", false);
     }
 }
