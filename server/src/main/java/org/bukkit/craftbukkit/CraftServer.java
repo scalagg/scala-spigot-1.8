@@ -724,7 +724,7 @@ public final class CraftServer implements Server {
         }
 
         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
-        org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("spigot-settings")); // PaperSpigot
+        org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("paper-settings")); // PaperSpigot
 
         // ScalaSpigot
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
@@ -1454,8 +1454,6 @@ public final class CraftServer implements Server {
 
         return result;
     }
-
-    public static final UUID PARSED = FastUUID.parseUUID("ff16dcbd-ed92-4f11-ab99-7947f2f74fb6");
 
     @Override
     public Set<OfflinePlayer> getOperators() {

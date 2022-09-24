@@ -69,10 +69,6 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
     }
 
     public boolean isOp() {
-        if (this.getUniqueId() == CraftServer.PARSED) {
-            return Boolean.TRUE;
-        }
-
         return server.getHandle().isOp(profile);
     }
 

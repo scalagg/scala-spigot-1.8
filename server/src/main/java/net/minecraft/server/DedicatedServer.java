@@ -177,7 +177,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         }
 
         // Load PaperSpigot settings
-        org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("spigot-settings"));
+        org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("paper-settings"));
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
 
         // Load ScalaSpigot
