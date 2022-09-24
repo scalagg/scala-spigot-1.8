@@ -365,7 +365,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public boolean getAllowNether() {
-        return this.propertyManager.getBoolean("allow-nether", true);
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureNether();
     }
 
     public boolean getSpawnMonsters() {
