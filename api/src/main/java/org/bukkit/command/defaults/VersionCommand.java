@@ -29,9 +29,6 @@ public class VersionCommand extends BukkitCommand {
         this.usageMessage = "/version [plugin name]";
         this.setPermission("bukkit.command.version");
         this.setAliases(Arrays.asList("ver", "about"));
-
-        // configure lazily loaded version value
-        Bukkit.getVersion();
     }
 
     public void setVersionMessage(Component versionMessage) {

