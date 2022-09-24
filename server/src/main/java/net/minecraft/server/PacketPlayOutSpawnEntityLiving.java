@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package net.minecraft.server;
 
 import net.minecraft.server.DataWatcher.WatchableObject;
