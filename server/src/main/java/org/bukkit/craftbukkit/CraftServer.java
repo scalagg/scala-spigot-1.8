@@ -221,32 +221,11 @@ public final class CraftServer implements Server {
         pluginManager.registerInterface(JavaPluginLoader.class);
 
         File pluginFolder = (File) console.options.valueOf("plugins");
-        boolean foundSparkPlugin = false;
-
-        if (pluginFolder.exists()) {
-            Plugin[] plugins = pluginManager.loadPlugins(pluginFolder);
-
-            for (Plugin plugin : plugins) {
-                try {
-                    if (plugin.getName().equals("spark")) {
-                        foundSparkPlugin = true;
-                    }
-
-                    String message = String.format("Loading %s", plugin.getDescription().getFullName());
-                    plugin.getLogger().info(message);
-                    plugin.onLoad();
-                } catch (Throwable ex) {
-                    Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
-                }
-            }
-        } else {
-            pluginFolder.mkdir();
-        }
 
         final boolean shouldInstallSpark = ScalaSpigot.INSTANCE.getConfig()
             .getAutoInstalledPlugins().getInstallSpark();
 
-        if (shouldInstallSpark && !foundSparkPlugin) {
+        if (shouldInstallSpark) {
             try {
                 final File file = new File("cached-plugins", "spark.jar");
                 file.getParentFile().mkdirs();
@@ -307,6 +286,22 @@ public final class CraftServer implements Server {
                     }
                 }
             }
+        }
+
+        if (pluginFolder.exists()) {
+            Plugin[] plugins = pluginManager.loadPlugins(pluginFolder);
+
+            for (Plugin plugin : plugins) {
+                try {
+                    String message = String.format("Loading %s", plugin.getDescription().getFullName());
+                    plugin.getLogger().info(message);
+                    plugin.onLoad();
+                } catch (Throwable ex) {
+                    Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+                }
+            }
+        } else {
+            pluginFolder.mkdir();
         }
     }
 
