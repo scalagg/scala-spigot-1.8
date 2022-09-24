@@ -189,7 +189,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         ScalaSpigot.INSTANCE.initialLoad();
 
         // Configure version
-        LOGGER.info("Running " + Bukkit.getName() + " version built on " + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/\"" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
+        LOGGER.info("Running " + Bukkit.getName() + " version built on origin/" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
 
         server.getCommandMap().register("spigot", new KnockbackCommand());
         server.getCommandMap().register("spigot", new SpigotReloadCommand());
