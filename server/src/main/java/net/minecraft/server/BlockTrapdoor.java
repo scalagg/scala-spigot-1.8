@@ -11,7 +11,7 @@ public class BlockTrapdoor extends Block {
 
     protected BlockTrapdoor(Material material) {
         super(material);
-        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(OPEN, Boolean.valueOf(false)).set(HALF, net.minecraft.server.BlockTrapdoor.EnumTrapdoorHalf.BOTTOM));
+        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(OPEN, false).set(HALF, net.minecraft.server.BlockTrapdoor.EnumTrapdoorHalf.BOTTOM));
         float f = 0.5F;
         float f1 = 1.0F;
 
@@ -136,7 +136,7 @@ public class BlockTrapdoor extends Block {
         IBlockData iblockdata = this.getBlockData();
 
         if (enumdirection.k().c()) {
-            iblockdata = iblockdata.set(FACING, enumdirection).set(OPEN, Boolean.valueOf(false));
+            iblockdata = iblockdata.set(FACING, enumdirection).set(OPEN, false);
             iblockdata = iblockdata.set(HALF, f1 > 0.5F ? net.minecraft.server.BlockTrapdoor.EnumTrapdoorHalf.TOP : net.minecraft.server.BlockTrapdoor.EnumTrapdoorHalf.BOTTOM);
         }
 

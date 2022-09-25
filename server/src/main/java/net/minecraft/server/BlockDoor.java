@@ -15,7 +15,7 @@ public class BlockDoor extends Block {
 
     protected BlockDoor(Material material) {
         super(material);
-        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(OPEN, Boolean.valueOf(false)).set(HINGE, net.minecraft.server.BlockDoor.EnumDoorHinge.LEFT).set(POWERED, Boolean.valueOf(false)).set(HALF, net.minecraft.server.BlockDoor.EnumDoorHalf.LOWER));
+        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(OPEN, false).set(HINGE, net.minecraft.server.BlockDoor.EnumDoorHinge.LEFT).set(POWERED, false).set(HALF, net.minecraft.server.BlockDoor.EnumDoorHalf.LOWER));
     }
 
     public String getName() {

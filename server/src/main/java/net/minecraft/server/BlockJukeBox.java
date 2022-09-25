@@ -6,14 +6,14 @@ public class BlockJukeBox extends BlockContainer {
 
     protected BlockJukeBox() {
         super(Material.WOOD, MaterialMapColor.l);
-        this.j(this.blockStateList.getBlockData().set(HAS_RECORD, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(HAS_RECORD, false));
         this.a(CreativeModeTab.c);
     }
 
     public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumDirection enumdirection, float f, float f1, float f2) {
         if (((Boolean) iblockdata.get(HAS_RECORD)).booleanValue()) {
             this.dropRecord(world, blockposition, iblockdata);
-            iblockdata = iblockdata.set(HAS_RECORD, Boolean.valueOf(false));
+            iblockdata = iblockdata.set(HAS_RECORD, false);
             world.setTypeAndData(blockposition, iblockdata, 2);
             return true;
         } else {
@@ -27,7 +27,7 @@ public class BlockJukeBox extends BlockContainer {
 
             if (tileentity instanceof net.minecraft.server.BlockJukeBox.TileEntityRecordPlayer) {
                 ((net.minecraft.server.BlockJukeBox.TileEntityRecordPlayer) tileentity).setRecord(new ItemStack(itemstack.getItem(), 1, itemstack.getData()));
-                world.setTypeAndData(blockposition, iblockdata.set(HAS_RECORD, Boolean.valueOf(true)), 2);
+                world.setTypeAndData(blockposition, iblockdata.set(HAS_RECORD, true), 2);
             }
         }
     }

@@ -15,7 +15,7 @@ public abstract class BlockButtonAbstract extends Block {
 
     protected BlockButtonAbstract(boolean flag) {
         super(Material.ORIENTABLE);
-        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(POWERED, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(POWERED, false));
         this.a(true);
         this.a(CreativeModeTab.d);
         this.N = flag;
@@ -63,7 +63,7 @@ public abstract class BlockButtonAbstract extends Block {
     }
 
     public IBlockData getPlacedState(World world, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2, int i, EntityLiving entityliving) {
-        return a(world, blockposition, enumdirection.opposite()) ? this.getBlockData().set(FACING, enumdirection).set(POWERED, Boolean.valueOf(false)) : this.getBlockData().set(FACING, EnumDirection.DOWN).set(POWERED, Boolean.valueOf(false));
+        return a(world, blockposition, enumdirection.opposite()) ? this.getBlockData().set(FACING, enumdirection).set(POWERED, false) : this.getBlockData().set(FACING, EnumDirection.DOWN).set(POWERED, false);
     }
 
     public void doPhysics(World world, BlockPosition blockposition, IBlockData iblockdata, Block block) {
@@ -141,7 +141,7 @@ public abstract class BlockButtonAbstract extends Block {
                 return true;
             }
             // CraftBukkit end
-            world.setTypeAndData(blockposition, iblockdata.set(POWERED, Boolean.valueOf(true)), 3);
+            world.setTypeAndData(blockposition, iblockdata.set(POWERED, true), 3);
             world.b(blockposition, blockposition);
             world.makeSound((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, "random.click", 0.3F, 0.6F);
             this.c(world, blockposition, (EnumDirection) iblockdata.get(FACING));
@@ -188,7 +188,7 @@ public abstract class BlockButtonAbstract extends Block {
                         return;
                     }
                     // CraftBukkit end
-                    world.setTypeUpdate(blockposition, iblockdata.set(POWERED, Boolean.valueOf(false)));
+                    world.setTypeUpdate(blockposition, iblockdata.set(POWERED, false));
                     this.c(world, blockposition, (EnumDirection) iblockdata.get(FACING));
                     world.makeSound((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, "random.click", 0.3F, 0.5F);
                     world.b(blockposition, blockposition);
@@ -257,7 +257,7 @@ public abstract class BlockButtonAbstract extends Block {
                 return;
             }
             // CraftBukkit end
-            world.setTypeUpdate(blockposition, iblockdata.set(POWERED, Boolean.valueOf(true)));
+            world.setTypeUpdate(blockposition, iblockdata.set(POWERED, true));
             this.c(world, blockposition, (EnumDirection) iblockdata.get(FACING));
             world.b(blockposition, blockposition);
             world.makeSound((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, "random.click", 0.3F, 0.6F);
@@ -274,7 +274,7 @@ public abstract class BlockButtonAbstract extends Block {
                 return;
             }
             // CraftBukkit end
-            world.setTypeUpdate(blockposition, iblockdata.set(POWERED, Boolean.valueOf(false)));
+            world.setTypeUpdate(blockposition, iblockdata.set(POWERED, false));
             this.c(world, blockposition, (EnumDirection) iblockdata.get(FACING));
             world.b(blockposition, blockposition);
             world.makeSound((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, "random.click", 0.3F, 0.5F);

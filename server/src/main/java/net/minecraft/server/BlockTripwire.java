@@ -19,7 +19,7 @@ public class BlockTripwire extends Block {
 
     public BlockTripwire() {
         super(Material.ORIENTABLE);
-        this.j(this.blockStateList.getBlockData().set(POWERED, Boolean.valueOf(false)).set(SUSPENDED, Boolean.valueOf(false)).set(ATTACHED, Boolean.valueOf(false)).set(DISARMED, Boolean.valueOf(false)).set(NORTH, Boolean.valueOf(false)).set(EAST, Boolean.valueOf(false)).set(SOUTH, Boolean.valueOf(false)).set(WEST, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(POWERED, false).set(SUSPENDED, false).set(ATTACHED, false).set(DISARMED, false).set(NORTH, false).set(EAST, false).set(SOUTH, false).set(WEST, false));
         this.a(0.0F, 0.0F, 0.0F, 1.0F, 0.15625F, 1.0F);
         this.a(true);
     }
@@ -77,13 +77,13 @@ public class BlockTripwire extends Block {
     }
 
     public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
-        this.e(world, blockposition, iblockdata.set(POWERED, Boolean.valueOf(true)));
+        this.e(world, blockposition, iblockdata.set(POWERED, true));
     }
 
     public void a(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman) {
         if (!world.isClientSide) {
             if (entityhuman.bZ() != null && entityhuman.bZ().getItem() == Items.SHEARS) {
-                world.setTypeAndData(blockposition, iblockdata.set(DISARMED, Boolean.valueOf(true)), 4);
+                world.setTypeAndData(blockposition, iblockdata.set(DISARMED, true), 4);
             }
 
         }

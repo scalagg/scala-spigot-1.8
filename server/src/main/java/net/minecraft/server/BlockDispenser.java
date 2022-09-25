@@ -12,7 +12,7 @@ public class BlockDispenser extends BlockContainer {
 
     protected BlockDispenser() {
         super(Material.STONE);
-        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(TRIGGERED, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.NORTH).set(TRIGGERED, false));
         this.a(CreativeModeTab.d);
     }
 
@@ -46,7 +46,7 @@ public class BlockDispenser extends BlockContainer {
                 }
             }
 
-            world.setTypeAndData(blockposition, iblockdata.set(FACING, enumdirection).set(TRIGGERED, Boolean.valueOf(false)), 2);
+            world.setTypeAndData(blockposition, iblockdata.set(FACING, enumdirection).set(TRIGGERED, false), 2);
         }
     }
 
@@ -103,9 +103,9 @@ public class BlockDispenser extends BlockContainer {
 
         if (flag && !flag1) {
             world.a(blockposition, (Block) this, this.a(world));
-            world.setTypeAndData(blockposition, iblockdata.set(TRIGGERED, Boolean.valueOf(true)), 4);
+            world.setTypeAndData(blockposition, iblockdata.set(TRIGGERED, true), 4);
         } else if (!flag && flag1) {
-            world.setTypeAndData(blockposition, iblockdata.set(TRIGGERED, Boolean.valueOf(false)), 4);
+            world.setTypeAndData(blockposition, iblockdata.set(TRIGGERED, false), 4);
         }
 
     }
@@ -122,7 +122,7 @@ public class BlockDispenser extends BlockContainer {
     }
 
     public IBlockData getPlacedState(World world, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2, int i, EntityLiving entityliving) {
-        return this.getBlockData().set(FACING, BlockPiston.a(world, blockposition, entityliving)).set(TRIGGERED, Boolean.valueOf(false));
+        return this.getBlockData().set(FACING, BlockPiston.a(world, blockposition, entityliving)).set(TRIGGERED, false);
     }
 
     public void postPlace(World world, BlockPosition blockposition, IBlockData iblockdata, EntityLiving entityliving, ItemStack itemstack) {
