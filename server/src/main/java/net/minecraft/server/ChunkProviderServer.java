@@ -27,7 +27,27 @@ public class ChunkProviderServer implements IChunkProvider {
     // FlamePaper - Make chunkLoader public
     public IChunkLoader chunkLoader;
     public boolean forceChunkLoad = false; // CraftBukkit - true -> false
-    public Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<>(4096, 0.5f); // TacoSpigot - use trove Long2ObjectOpenHashMap instead of craftbukkit implementation (using inital capacity and load factor chosen by Amaranth in an old impl)
+    // Paper start
+    protected Chunk lastChunkByPos = null;
+    public Long2ObjectOpenHashMap<Chunk> chunks = new Long2ObjectOpenHashMap<Chunk>(8192) {
+
+        @Override
+        public Chunk get(long key) {
+            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
+                return lastChunkByPos;
+            }
+            return lastChunkByPos = super.get(key);
+        }
+
+        @Override
+        public Chunk remove(long key) {
+            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
+                lastChunkByPos = null;
+            }
+            return super.remove(key);
+        }
+    }; // CraftBukkit
+    // Paper end
     public WorldServer world;
 
     public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, IChunkProvider ichunkprovider) {

@@ -30,6 +30,7 @@ public class Chunk {
     private boolean k;
     public final Map<BlockPosition, TileEntity> tileEntities;
     public final List<Entity>[] entitySlices; // Spigot
+    public final long chunkKey; // Paper
     // PaperSpigot start - track the number of minecarts and items
     // Keep this synced with entitySlices.add() and entitySlices.remove()
     private final int[] itemCounts = new int[16];
@@ -157,6 +158,7 @@ public class Chunk {
         this.cachedArea = new BlockPosition(this.locX * 16 + 8, 0, this.locZ * 16 + 8);
 
         this.chunkCoords = new ChunkCoordIntPair(this.locX, this.locZ); // PandaSpigot
+        this.chunkKey = org.bukkit.craftbukkit.util.LongHash.toLong(this.locX, this.locZ); // Paper
     }
 
     public org.bukkit.Chunk bukkitChunk;
