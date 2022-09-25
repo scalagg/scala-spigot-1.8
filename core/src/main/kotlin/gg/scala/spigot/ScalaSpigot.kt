@@ -1,15 +1,23 @@
 package gg.scala.spigot
 
+import com.akuleshov7.ktoml.Toml
 import com.google.common.io.Files
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.LongSerializationPolicy
+import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.PropertySource
+import com.sksamuel.hoplite.addResourceSource
+import com.sksamuel.hoplite.watch.FixedIntervalWatchable
+import com.sksamuel.hoplite.watch.ReloadableConfig
 import gg.scala.spigot.filter.EventFilterHandler
 import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
+import kotlinx.serialization.encodeToString
 import java.io.File
 import java.util.concurrent.CompletableFuture
+import kotlin.time.seconds
 
 /**
  * @author GrowlyX
@@ -24,6 +32,8 @@ object ScalaSpigot
     var config = ScalaSpigotConfig()
 
     private val initialization = System.currentTimeMillis()
+
+    var onReload: () -> Unit = {}
 
     fun initialLoad()
     {
@@ -44,8 +54,17 @@ object ScalaSpigot
         config.potionConfigs.clear()
         config.potionConfigs.addAll(PotionHandler.presets)
 
-        val file = File(parent, "scala-spigot.json")
-        Files.write(GSON.toJson(config), file, Charsets.UTF_8)
+        val file = File(parent, "scspigot.toml")
+
+        if (!file.exists())
+        {
+            file.createNewFile()
+        }
+
+        Files.asCharSink(file, Charsets.UTF_8)
+            .write(
+                Toml.encodeToString(this.config)
+            )
     }
 
     @JvmOverloads
@@ -55,7 +74,7 @@ object ScalaSpigot
     {
         if (!silently)
         {
-            Logger.send("Attempting a reload of scala-spigot.json...")
+            Logger.send("Attempting a reload of scspigot.toml...")
         }
 
         try
@@ -65,7 +84,7 @@ object ScalaSpigot
         {
             if (!silently)
             {
-                Logger.send("Failed to reload scala-spigot.json!")
+                Logger.send("Failed to reload scspigot.toml!")
             }
 
             return false
@@ -78,41 +97,53 @@ object ScalaSpigot
     {
         val file = File(parent, "scala-spigot.json")
 
-        if (!file.exists())
+        // old json config functionality
+        if (file.exists())
         {
-            file.createNewFile()
-                .also {
-                    if (it)
-                    {
-                        val newest = GSON.toJson(config)
+            val reader = Files.newReader(file, Charsets.UTF_8)
+            config = GSON.fromJson(reader, ScalaSpigotConfig::class.java)
 
-                        Files.write(
-                            newest.toByteArray(), file
-                        )
+            file.delete()
 
-                        Logger.send("Created scala-spigot.json.")
-                    } else
-                    {
-                        Logger.send("Failed to create scala-spigot.json, using default values.", Logger.LogLevel.SEVERE)
-                    }
+            Logger.send("Loaded outdated spigot configuration from scala-spigot.json, saving newest one now. Reload functionality will be resumed on restart.")
+
+            CompletableFuture
+                .runAsync {
+                    this.saveConfig(parent)
                 }
+            return
         }
 
-        val reader = Files.newReader(file, Charsets.UTF_8)
-        config = GSON.fromJson(reader, ScalaSpigotConfig::class.java)
+        val tomlFile = File("scspigot.toml")
 
-        Logger.send("Loaded spigot configuration from scala-spigot.json.")
+        if (!tomlFile.exists())
+        {
+            saveConfig(parent)
+        }
+
+        val watcher = FixedIntervalWatchable(10_000L)
+
+        val loader = ConfigLoaderBuilder.default()
+            .addSource(PropertySource.resource("/scspigot.toml"))
+            .build()
+
+        val reloader = ReloadableConfig(loader, ScalaSpigotConfig::class)
+            .addWatcher(watcher)
+
+        this.config = reloader.getLatest()
+
+        reloader.subscribe {
+            this.config = it
+            onReload.invoke()
+        }
 
         CompletableFuture
             .runAsync {
-                val configSnapshot = GSON.toJson(config)
-
-                Files.write(
-                    configSnapshot.toByteArray(), file
-                )
+                // save new config model
+                this.saveConfig(parent)
             }
             .thenRun {
-                Logger.send("Updated spigot configuration with latest values.")
+                Logger.send("Saved latest toml config model.")
             }
     }
 }

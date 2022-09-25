@@ -1,3 +1,7 @@
+plugins {
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+}
+
 repositories {
     maven { url "https://repo.aikar.co/content/groups/aikar/" }
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
@@ -9,9 +13,13 @@ dependencies {
     compileOnly "com.google.code.gson:gson:2.9.0"
     compileOnly "com.google.guava:guava:31.1-jre"
 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+
     api "com.sksamuel.hoplite:hoplite-core:2.6.3"
     api "com.sksamuel.hoplite:hoplite-toml:2.6.3"
-    api "com.sksamuel.hoplite:hoplite-yaml:2.6.3"
+    api "com.sksamuel.hoplite:hoplite-watch:2.6.3"
 
+    implementation "com.akuleshov7:ktoml-core:0.2.13"
+    implementation "com.akuleshov7:ktoml-file:0.2.13"
     implementation "net.jafama:jafama:2.3.2"
 }
