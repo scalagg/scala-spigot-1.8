@@ -149,6 +149,14 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         return server;
     }
 
+    public ServerConnection.EventGroupType getTransport() {
+        try {
+            return ServerConnection.EventGroupType.valueOf(this.getPropertyManager().getString("transport-to-use", "default").toUpperCase());
+        } catch (Exception ignored) {
+            return ServerConnection.EventGroupType.DEFAULT;
+        }
+    }
+
     public MinecraftServer(OptionSet options, Proxy proxy, File file1, Thread thread) {
         super("Server");
         this.nextTickTime = getMillis();

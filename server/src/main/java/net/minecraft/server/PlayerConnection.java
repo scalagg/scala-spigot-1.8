@@ -83,7 +83,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		this.minecraftServer = minecraftserver;
 		this.networkManager = networkmanager;
 
-		networkmanager.a(this);
+		networkmanager.setPacketListener(this);
 
 		this.player = entityplayer;
 

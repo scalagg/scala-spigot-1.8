@@ -402,7 +402,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public boolean ai() {
-        return this.propertyManager.getBoolean("use-native-transport", true);
+        return org.apache.commons.lang.SystemUtils.IS_OS_LINUX && this.getTransport() == ServerConnection.EventGroupType.EPOLL;  // Nacho - Add a check to see if we are using Linux or not, if not ignore this.
     }
 
     public DedicatedPlayerList aP() {

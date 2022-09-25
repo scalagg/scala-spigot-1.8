@@ -7,6 +7,9 @@ import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.kqueue.KQueue;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
+import io.netty.channel.kqueue.KQueueServerSocketChannel;
 import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -15,6 +18,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -25,9 +29,18 @@ import java.util.concurrent.Callable;
 
 public class ServerConnection {
 
+    public enum EventGroupType {
+        EPOLL,
+        KQUEUE,
+        NIO,
+        DEFAULT
+    }
+
+    private static final WriteBufferWaterMark SERVER_WRITE_MARK = new WriteBufferWaterMark(1 << 20, 1 << 21);
+
     private static final Logger e = MinecraftServer.LOGGER;
     public static final LazyInitVar<NioEventLoopGroup> a = new LazyInitVar() {
-        protected NioEventLoopGroup a() {
+        private NioEventLoopGroup a() {
             return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).build());
         }
 
@@ -36,7 +49,7 @@ public class ServerConnection {
         }
     };
     public static final LazyInitVar<EpollEventLoopGroup> b = new LazyInitVar() {
-        protected EpollEventLoopGroup a() {
+        private EpollEventLoopGroup a() {
             return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
         }
 
@@ -45,7 +58,7 @@ public class ServerConnection {
         }
     };
     public static final LazyInitVar<LocalEventLoopGroup> c = new LazyInitVar() {
-        protected LocalEventLoopGroup a() {
+        private LocalEventLoopGroup a() {
             return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
         }
 
@@ -53,13 +66,14 @@ public class ServerConnection {
             return this.a();
         }
     };
-    private final MinecraftServer f;
-    public volatile boolean d;
-    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.<ChannelFuture>newArrayList());
-    private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
+    private final MinecraftServer server;
+    public volatile boolean started;
+    private final List<ChannelFuture> listeningChannels = Collections.synchronizedList(Lists.newArrayList());
+    private final List<NetworkManager> h = Collections.synchronizedList(Lists.newArrayList());
 
     // Paper start - prevent blocking on adding a new network manager while the server is ticking
-    private final List<NetworkManager> pending = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
+    private final List<NetworkManager> pending = Collections.synchronizedList(Lists.newArrayList());
+
     private void addPending() {
         synchronized (pending) {
             this.h.addAll(pending); // Paper - OBFHELPER - List of network managers
@@ -68,11 +82,24 @@ public class ServerConnection {
     }
     // Paper end
 
-    public ServerConnection(MinecraftServer minecraftserver) {
-        this.f = minecraftserver;
-        this.d = true;
-    }
+    private final EventGroupType eventGroupType;
 
+    public ServerConnection(MinecraftServer minecraftserver) {
+        this.server = minecraftserver;
+        this.started = true;
+
+        if (server.ai()) /* use-native-transport */ {
+            if (Epoll.isAvailable()) {
+                this.eventGroupType = EventGroupType.EPOLL;
+                return;
+            } else if (KQueue.isAvailable()) {
+                this.eventGroupType = EventGroupType.KQUEUE;
+                return;
+            }
+        }
+
+        this.eventGroupType = server.getTransport();
+    }
 
     private static final boolean DISABLE_FLUSH_CONSOLIDATION = Boolean.getBoolean("Paper.disableFlushConsolidate"); // PandaSpigot
 
@@ -80,59 +107,108 @@ public class ServerConnection {
         bind(new java.net.InetSocketAddress(inetaddress, i));
     }
 
+    public static EventLoopGroup boss, worker;
+
     public void bind(java.net.SocketAddress address) throws IOException {
         // PandaSpigot end
-        synchronized (this.g) {
-            Class oclass;
-            LazyInitVar lazyinitvar;
+        synchronized (this.listeningChannels) {
+            Class<? extends ServerChannel> channel;
+            final int workerThreadCount = Runtime.getRuntime().availableProcessors();
 
-            if (Epoll.isAvailable() && this.f.ai()) {
-                oclass = EpollServerSocketChannel.class;
-                lazyinitvar = b;
-            } else {
-                oclass = NioServerSocketChannel.class;
-                lazyinitvar = a;
+            switch (eventGroupType) {
+                default:
+                case DEFAULT: {
+                    MinecraftServer.LOGGER.info("[binder] Finding best event group type using fall-through.");
+                }
+                case EPOLL: {
+                    if (Epoll.isAvailable()) {
+                        boss = new EpollEventLoopGroup(0);
+                        worker = new EpollEventLoopGroup(workerThreadCount);
+
+                        channel = EpollServerSocketChannel.class;
+
+                        MinecraftServer.LOGGER.info("[binder] Using Epoll, best of fall-through.");
+
+                        break;
+                    }
+                }
+                case KQUEUE: {
+                    if (KQueue.isAvailable()) {
+                        boss = new KQueueEventLoopGroup(0);
+                        worker = new KQueueEventLoopGroup(workerThreadCount);
+
+                        channel = KQueueServerSocketChannel.class;
+
+                        MinecraftServer.LOGGER.info("[binder] Using KQueue, second-best of fall-through.");
+                        break;
+                    }
+                }
+                case NIO: {
+                    boss = new NioEventLoopGroup(0);
+                    worker = new NioEventLoopGroup(workerThreadCount);
+
+                    channel = NioServerSocketChannel.class;
+
+                    MinecraftServer.LOGGER.info("[binder] Using NIO, last element of fall-through.");
+
+                    break;
+                }
             }
 
-	        this.g.add(((new ServerBootstrap().channel(oclass)).childHandler(new ChannelInitializer() {
-		        protected void initChannel(Channel channel) throws Exception {
-			        try {
-				        channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
-                        channel.config().setOption(ChannelOption.IP_TOS, 0x18); // [Nacho-0027] :: Optimize networking
-			        } catch (ChannelException channelexception) {
-                        // Ignore
-                    }
+            this.listeningChannels.add(
+                ((new ServerBootstrap().channel(channel))
+                    .childHandler(new ChannelInitializer<Channel>() {
+                        protected void initChannel(@NotNull Channel channel) {
+                            try {
+                                channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
+                                channel.config().setOption(ChannelOption.IP_TOS, 0x18);
+                            } catch (ChannelException channelexception) {
+                                // Ignore
+                            }
 
-                    if (!DISABLE_FLUSH_CONSOLIDATION)
-                        channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
+                            if (!DISABLE_FLUSH_CONSOLIDATION) {
+                                channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
+                            }
 
-			        channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this)).addLast("splitter", new PacketSplitter()).addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND)).addLast("prepender", new PacketPrepender()).addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
+                            channel
+                                .pipeline()
+                                .addLast("timeout", new ReadTimeoutHandler(30))
+                                .addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this))
+                                .addLast("splitter", new PacketSplitter())
+                                .addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND))
+                                .addLast("prepender", new PacketPrepender())
+                                .addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 
-			        NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
+                            final NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
+                            pending.add(networkmanager); // Paper
 
-                    pending.add(networkmanager); // Paper
-			        channel.pipeline().addLast("packet_handler", networkmanager);
-                    networkmanager.isPending = false; // PandaSpigot
-			        networkmanager.a((new HandshakeListener(net.minecraft.server.ServerConnection.this.f, networkmanager)));
-		        }
-	        }).group((EventLoopGroup) lazyinitvar.c()).localAddress(address)).bind().syncUninterruptibly()); // PandaSpigot - Unix domain socket support
+                            channel.pipeline().addLast("packet_handler", networkmanager);
+
+                            networkmanager.isPending = false; // PandaSpigot
+                            networkmanager.setPacketListener(
+                                new HandshakeListener(net.minecraft.server.ServerConnection.this.server, networkmanager)
+                            );
+                        }
+                    })
+                    .group(boss, worker)
+                    .localAddress(address))
+                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, SERVER_WRITE_MARK)
+                    .bind()
+                    .syncUninterruptibly()
+            ); // PandaSpigot - Unix domain socket support
         }
     }
 
     public void b() {
-        this.d = false;
-        Iterator iterator = this.g.iterator();
+        this.started = false;
 
-        while (iterator.hasNext()) {
-            ChannelFuture channelfuture = (ChannelFuture) iterator.next();
-
+        for (final ChannelFuture future : this.listeningChannels) {
             try {
-                channelfuture.channel().close().sync();
+                future.channel().close().sync();
             } catch (InterruptedException interruptedexception) {
                 e.error("Interrupted whilst closing channel");
             }
         }
-
     }
 
     public void c() {
@@ -188,7 +264,7 @@ public class ServerConnection {
     }
 
     public MinecraftServer d() {
-        return this.f;
+        return this.server;
     }
 
 }

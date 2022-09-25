@@ -199,7 +199,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 
     }
 
-    public void a(PacketListener packetlistener) {
+    public void setPacketListener(PacketListener packetlistener) {
         Validate.notNull(packetlistener, "packetListener");
         g.debug("Set listener of {} to {}", this, packetlistener);
         this.m = packetlistener;
