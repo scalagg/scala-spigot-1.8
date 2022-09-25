@@ -627,7 +627,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 					int chunkZ = blockposition.getZ() >> 4;
 
 					if (
-						ScalaSpigot.INSTANCE.getConfig().getBlockBreakDesyncFix() &&
+						ScalaSpigot.INSTANCE.getConfig().getBlockBreakDeSyncFix() &&
 						worldserver.isChunkLoaded(chunkX, chunkZ >> 4, true)
 					) { // Paper - Fix block break desync - Don't send for unloaded chunks
 						// Titanium start - fix for Nocom exploit (I think)

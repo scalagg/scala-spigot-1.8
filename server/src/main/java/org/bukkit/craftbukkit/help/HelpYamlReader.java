@@ -7,13 +7,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.help.HelpTopic;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * HelpYamlReader is responsible for processing the contents of the help.yml file.
@@ -34,7 +30,7 @@ public class HelpYamlReader {
 
     public static InputStreamReader loadVersion()
     {
-        return new InputStreamReader(HelpYamlReader.class.getClassLoader().getResourceAsStream("version.properties"), Charsets.UTF_8);
+        return new InputStreamReader(HelpYamlReader.class.getClassLoader().getResourceAsStream("META-INF/gg.scala.spigot.internal/scspigot.internal.properties"), Charsets.UTF_8);
     }
 
     /**

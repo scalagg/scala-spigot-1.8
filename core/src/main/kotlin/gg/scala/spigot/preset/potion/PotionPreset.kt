@@ -1,7 +1,9 @@
 package gg.scala.spigot.preset.potion
 
 import gg.scala.spigot.preset.Preset
+import kotlinx.serialization.Serializable
 
+@Serializable
 class PotionPreset(
     override val id: String,
     override var details: List<String>,

@@ -91,10 +91,6 @@ import java.util.stream.Collectors;
 
 public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
-    // ScalaSpigot start
-    private final String serverName = "ScalaSpigot";
-    private final String serverVersion = ScalaSpigotServerProperties.INSTANCE.getVersion();
-    // ScalaSpigot end
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
     private final ServicesManager servicesManager = new SimpleServicesManager();
@@ -372,12 +368,12 @@ public final class CraftServer implements Server {
 
     @Override
     public String getName() {
-        return serverName;
+        return ScalaSpigotServerProperties.INSTANCE.getName();
     }
 
     @Override
     public String getVersion() {
-        return ScalaSpigotServerProperties.INSTANCE.getVersion() + " (MC: " + console.getVersion() + ")";
+        return "origin/" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/" + ScalaSpigotServerProperties.INSTANCE.getVersion() + " (MC: " + console.getVersion() + ")";
     }
 
     @Override
@@ -387,7 +383,6 @@ public final class CraftServer implements Server {
 
     @Override
     @Deprecated
-    @SuppressWarnings("unchecked")
     public Player[] _INVALID_getOnlinePlayers() {
         return getOnlinePlayers().toArray(EMPTY_PLAYER_ARRAY);
     }
@@ -844,7 +839,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String toString() {
-        return "CraftServer{" + "serverName=" + serverName + ",serverVersion=" + serverVersion + ",minecraftVersion=" + console.getVersion() + '}';
+        return "CraftServer{" + "serverName=" + getName() + ",serverVersion=" + getVersion() + ",minecraftVersion=" + console.getVersion() + '}';
     }
 
     public World createWorld(String name, Environment environment) {

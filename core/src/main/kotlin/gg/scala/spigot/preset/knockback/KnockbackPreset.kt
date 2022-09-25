@@ -1,7 +1,9 @@
 package gg.scala.spigot.preset.knockback
 
 import gg.scala.spigot.preset.Preset
+import kotlinx.serialization.Serializable
 
+@Serializable
 open class KnockbackPreset(
     override val id: String,
     override var details: List<String>,

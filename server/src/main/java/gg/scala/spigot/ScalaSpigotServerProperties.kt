@@ -20,6 +20,10 @@ object ScalaSpigotServerProperties
         properties.getProperty("version")
     }
 
+    val name by lazy {
+        properties.getProperty("name")
+    }
+
     val branch by lazy {
         properties.getProperty("branch")
     }
