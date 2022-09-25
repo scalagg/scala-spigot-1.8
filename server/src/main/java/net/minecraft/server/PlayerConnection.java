@@ -504,7 +504,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		PlayerTeleportEvent event = new PlayerTeleportEvent(player, from.clone(), to.clone(), PlayerTeleportEvent.TeleportCause.UNKNOWN);
 		this.server.getPluginManager().callEvent(event);
 
-		if (event.isCancelled() || to.equals(event.getTo())) {
+		if (event.isCancelled() || !to.equals(event.getTo())) {
 			set.clear();
 			to = event.isCancelled() ? event.getFrom() : event.getTo();
 			d0 = to.getX();
