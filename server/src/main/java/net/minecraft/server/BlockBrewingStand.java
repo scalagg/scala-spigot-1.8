@@ -9,7 +9,7 @@ public class BlockBrewingStand extends BlockContainer {
 
     public BlockBrewingStand() {
         super(Material.ORE);
-        this.j(this.blockStateList.getBlockData().set(HAS_BOTTLE[0], Boolean.valueOf(false)).set(HAS_BOTTLE[1], Boolean.valueOf(false)).set(HAS_BOTTLE[2], Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(HAS_BOTTLE[0], false).set(HAS_BOTTLE[1], false).set(HAS_BOTTLE[2], false));
     }
 
     public String getName() {

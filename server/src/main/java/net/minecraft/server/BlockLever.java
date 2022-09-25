@@ -11,7 +11,7 @@ public class BlockLever extends Block {
 
     protected BlockLever() {
         super(Material.ORIENTABLE);
-        this.j(this.blockStateList.getBlockData().set(FACING, net.minecraft.server.BlockLever.EnumLeverPosition.NORTH).set(POWERED, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(FACING, net.minecraft.server.BlockLever.EnumLeverPosition.NORTH).set(POWERED, false));
         this.a(CreativeModeTab.d);
     }
 
@@ -51,7 +51,7 @@ public class BlockLever extends Block {
     }
 
     public IBlockData getPlacedState(World world, BlockPosition blockposition, EnumDirection enumdirection, float f, float f1, float f2, int i, EntityLiving entityliving) {
-        IBlockData iblockdata = this.getBlockData().set(POWERED, Boolean.valueOf(false));
+        IBlockData iblockdata = this.getBlockData().set(POWERED, false);
 
         if (a(world, blockposition, enumdirection.opposite())) {
             return iblockdata.set(FACING, net.minecraft.server.BlockLever.EnumLeverPosition.a(enumdirection, entityliving.getDirection()));

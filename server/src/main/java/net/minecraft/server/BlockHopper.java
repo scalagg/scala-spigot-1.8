@@ -30,7 +30,7 @@ public class BlockHopper extends BlockContainer {
 
     public BlockHopper() {
         super(Material.ORE, MaterialMapColor.m);
-        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.DOWN).set(ENABLED, Boolean.valueOf(true)));
+        this.j(this.blockStateList.getBlockData().set(FACING, EnumDirection.DOWN).set(ENABLED, true));
         this.a(CreativeModeTab.d);
         this.a(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
@@ -62,7 +62,7 @@ public class BlockHopper extends BlockContainer {
             enumdirection1 = EnumDirection.DOWN;
         }
 
-        return this.getBlockData().set(FACING, enumdirection1).set(ENABLED, Boolean.valueOf(true));
+        return this.getBlockData().set(FACING, enumdirection1).set(ENABLED, true);
     }
 
     public TileEntity a(World world, int i) {

@@ -44,7 +44,7 @@ public class BlockFire extends Block {
 
     protected BlockFire() {
         super(Material.FIRE);
-        this.j(this.blockStateList.getBlockData().set(AGE, Integer.valueOf(0)).set(FLIP, Boolean.valueOf(false)).set(ALT, Boolean.valueOf(false)).set(NORTH, Boolean.valueOf(false)).set(EAST, Boolean.valueOf(false)).set(SOUTH, Boolean.valueOf(false)).set(WEST, Boolean.valueOf(false)).set(UPPER, Integer.valueOf(0)));
+        this.j(this.blockStateList.getBlockData().set(AGE, Integer.valueOf(0)).set(FLIP, false).set(ALT, false).set(NORTH, false).set(EAST, false).set(SOUTH, false).set(WEST, false).set(UPPER, Integer.valueOf(0)));
         this.a(true);
     }
 
@@ -272,7 +272,7 @@ public class BlockFire extends Block {
             }
 
             if (iblockdata.getBlock() == Blocks.TNT) {
-                Blocks.TNT.postBreak(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)));
+                Blocks.TNT.postBreak(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, true));
             }
         }
 

@@ -18,7 +18,7 @@ public class BlockPoweredRail extends BlockMinecartTrackAbstract {
 
     protected BlockPoweredRail() {
         super(true);
-        this.j(this.blockStateList.getBlockData().set(SHAPE, EnumTrackPosition.NORTH_SOUTH).set(POWERED, Boolean.valueOf(false)));
+        this.j(this.blockStateList.getBlockData().set(SHAPE, EnumTrackPosition.NORTH_SOUTH).set(POWERED, false));
     }
 
     protected boolean a(World world, BlockPosition blockposition, IBlockData iblockdata, boolean flag, int i) {

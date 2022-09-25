@@ -84,8 +84,10 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
         final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
 
-        System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
-        System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
+        // CloudSpigot start - Use Log4j IOStreams
+        System.setOut(org.apache.logging.log4j.io.IoBuilder.forLogger(logger).setLevel(Level.INFO).buildPrintStream());
+        System.setErr(org.apache.logging.log4j.io.IoBuilder.forLogger(logger).setLevel(Level.WARN).buildPrintStream());
+        // CloudSpigot end
         // CraftBukkit end
 
         thread.setDaemon(true);
@@ -369,13 +371,6 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         return this.propertyManager.getBoolean("spawn-monsters", true);
     }
 
-    public void a(MojangStatisticsGenerator mojangstatisticsgenerator) {
-        mojangstatisticsgenerator.a("whitelist_enabled", this.aP().getHasWhitelist());
-        mojangstatisticsgenerator.a("whitelist_count", this.aP().getWhitelisted().length);
-
-        super.a(mojangstatisticsgenerator);
-    }
-
     public boolean getSnooperEnabled() {
         return this.propertyManager.getBoolean("snooper-enabled", true);
     }
@@ -409,7 +404,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public boolean ai() {
-        return this.propertyManager.getBoolean("use-native-transport", true);
+        return org.apache.commons.lang.SystemUtils.IS_OS_LINUX && this.getTransport() == ServerConnection.EventGroupType.EPOLL;  // Nacho - Add a check to see if we are using Linux or not, if not ignore this.
     }
 
     public DedicatedPlayerList aP() {

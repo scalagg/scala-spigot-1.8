@@ -5,7 +5,6 @@ package net.minecraft.server;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 // CraftBukkit end
 
 public class HandshakeListener implements PacketHandshakingInListener {
@@ -76,7 +75,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
                 this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext));
                 this.b.close(chatcomponenttext);
             } else {
-                this.b.a((PacketListener) (new LoginListener(this.a, this.b)));
+                this.b.setPacketListener((PacketListener) (new LoginListener(this.a, this.b)));
                 // PandaSpigot start - handshake event
                 boolean proxyLogicEnabled = org.spigotmc.SpigotConfig.bungee;
                 boolean handledByEvent = false;
@@ -133,7 +132,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
 
         case 2:
             this.b.a(EnumProtocol.STATUS);
-            this.b.a((PacketListener) (new PacketStatusListener(this.a, this.b)));
+            this.b.setPacketListener((PacketListener) (new PacketStatusListener(this.a, this.b)));
             break;
 
         default:

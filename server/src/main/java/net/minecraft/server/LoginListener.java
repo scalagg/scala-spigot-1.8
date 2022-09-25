@@ -209,7 +209,11 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                 try {
                     String s = (new BigInteger(MinecraftEncryption.a(LoginListener.this.j, LoginListener.this.server.Q().getPublic(), LoginListener.this.loginKey))).toString(16);
 
-                    LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
+                    LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(
+                        new GameProfile(null, gameprofile.getName()), s,
+                        ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress()
+                    );
+
                     if (LoginListener.this.i != null) {
                         // CraftBukkit start - fire PlayerPreLoginEvent
                         if (!networkManager.g()) {

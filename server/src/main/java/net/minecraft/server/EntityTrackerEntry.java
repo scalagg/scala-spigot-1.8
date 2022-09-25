@@ -13,9 +13,24 @@ import java.util.Set;
 public class EntityTrackerEntry {
 
     private static final Logger p = MinecraftServer.LOGGER;
-    public Entity tracker; public Entity getTracker() { return tracker; }
-    public int b; public int maxTrackingDistance() { return b; }
-    public int c; public int updateInterval() { return c; }
+    public Entity tracker;
+
+    public Entity getTracker() {
+        return tracker;
+    }
+
+    public int b;
+
+    public int maxTrackingDistance() {
+        return b;
+    }
+
+    public int c;
+
+    public int updateInterval() {
+        return c;
+    }
+
     public int xLoc;
     public int yLoc;
     public int zLoc;
@@ -30,14 +45,22 @@ public class EntityTrackerEntry {
     private double r;
     private double s;
     private boolean isMoving;
-    private boolean u; public boolean sendVelocityUpdates() { return u; }
+    private final boolean u;
+
+    public boolean sendVelocityUpdates() {
+        return u;
+    }
+
     private int v;
     private Entity w;
     private boolean x;
     private boolean y;
     public boolean n;
 
-    public boolean playerEntitiesUpdated() { return n; }
+    public boolean playerEntitiesUpdated() {
+        return n;
+    }
+
     // PaperSpigot start
     // Replace trackedPlayers Set with a Map. The value is true until the player receives
     // their first update (which is forced to have absolute coordinates), false afterward.
@@ -60,7 +83,7 @@ public class EntityTrackerEntry {
     }
 
     public boolean equals(Object object) {
-        return object instanceof net.minecraft.server.EntityTrackerEntry ? ((net.minecraft.server.EntityTrackerEntry) object).tracker.getId() == this.tracker.getId() : false;
+        return object instanceof EntityTrackerEntry && ((EntityTrackerEntry) object).tracker.getId() == this.tracker.getId();
     }
 
     public int hashCode() {
@@ -296,13 +319,13 @@ public class EntityTrackerEntry {
                 }
             }
             this.broadcast(new PacketPlayOutEntityMetadata(this.tracker.getId(), datawatcher, false));
-	        //Update the metadata we send to the player we're tracking itself,
-	        //because we're faking some metadata to the other players..
+            //Update the metadata we send to the player we're tracking itself,
+            //because we're faking some metadata to the other players..
             if (isPlayer) {
                 DataWatcher otherWatcher = datawatcher.clone();
                 EntityPlayer player = ((EntityPlayer) this.tracker);
                 otherWatcher.watch(6, player.getHealth());
-	            player.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(this.tracker.getId(), otherWatcher, false));
+                player.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(this.tracker.getId(), otherWatcher, false));
             }
         }
 
@@ -436,7 +459,7 @@ public class EntityTrackerEntry {
                         }
                     }
 
-                    if(this.tracker instanceof EntityLiving) { // SportPaper - avoid processing entities that can't change head rotation
+                    if (this.tracker instanceof EntityLiving) { // SportPaper - avoid processing entities that can't change head rotation
                         this.i = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
                         // SportPaper start
                         // This was originally introduced by CraftBukkit, though the implementation is wrong since it's broadcasting
@@ -452,7 +475,7 @@ public class EntityTrackerEntry {
 
                         for (MobEffect mobeffect : entityliving.getEffects()) {
                             entityplayer.playerConnection.sendPacket(
-                                    new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect)
+                                new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect)
                             );
                         }
                     }
@@ -480,12 +503,20 @@ public class EntityTrackerEntry {
     }
 
     public void scanPlayers(List<EntityHuman> list) {
-        for (EntityHuman entityHuman : list) {
+        for (final EntityHuman entityHuman : list) {
+            if (
+                entityHuman instanceof EntityPlayer &&
+                    entityHuman.bukkitEntity != null &&
+                    !((EntityPlayer) entityHuman).getBukkitEntity().canSeeEntity((this.tracker).getBukkitEntity())
+            ) {
+                continue;
+            }
+
             this.updatePlayer((EntityPlayer) entityHuman);
         }
     }
 
-    private Packet c() {
+    private Packet<?> c() {
         if (this.tracker.dead) {
             // CraftBukkit start - Remove useless error spam, just return
             // EntityTrackerEntry.p.warn("Fetching addPacket for removed entity");
@@ -589,14 +620,14 @@ public class EntityTrackerEntry {
                 } else if (this.tracker instanceof EntityExperienceOrb) {
                     return new PacketPlayOutSpawnEntityExperienceOrb((EntityExperienceOrb) this.tracker);
                 } else {
-                    throw new IllegalArgumentException("Don\'t know how to add " + this.tracker.getClass() + "!");
+                    throw new IllegalArgumentException("Don't know how to add " + this.tracker.getClass() + "!");
                 }
             }
         }
     }
 
     public void clear(EntityPlayer entityplayer, boolean sendDestroy) {
-        org.spigotmc.AsyncCatcher.catchOp( "player tracker clear"); // Spigot
+        org.spigotmc.AsyncCatcher.catchOp("player tracker clear"); // Spigot
 
         if (this.trackedPlayers.contains(entityplayer)) {
             this.trackedPlayers.remove(entityplayer);

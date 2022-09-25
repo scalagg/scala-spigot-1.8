@@ -302,7 +302,7 @@ public abstract class World implements IBlockAccess {
     }
 
     public boolean a(BlockPosition blockposition, boolean flag) {
-        return !this.isValidLocation(blockposition) ? false : this.isChunkLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4, flag);
+        return getChunkIfLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4) != null; // CloudSpigot
     }
 
     public boolean areChunksLoaded(BlockPosition blockposition, int i) {
@@ -635,6 +635,7 @@ public abstract class World implements IBlockAccess {
             if (blockposition.getY() >= 256) {
                 blockposition = new BlockPosition(blockposition.getX(), 255, blockposition.getZ());
             }
+            if (!this.isLoaded(blockposition)) return 0; // CloudSpigot
 
             return this.getChunkAtWorldCoords(blockposition).a(blockposition, 0);
         }
