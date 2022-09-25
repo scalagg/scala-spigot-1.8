@@ -1524,37 +1524,10 @@ public abstract class EntityLiving extends Entity {
         this.world.methodProfiler.b();
         this.world.methodProfiler.a("rangeChecks");
 
-        while (this.yaw - this.lastYaw < -180.0F) {
-            this.lastYaw -= 360.0F;
-        }
-
-        while (this.yaw - this.lastYaw >= 180.0F) {
-            this.lastYaw += 360.0F;
-        }
-
-        while (this.aI - this.aJ < -180.0F) {
-            this.aJ -= 360.0F;
-        }
-
-        while (this.aI - this.aJ >= 180.0F) {
-            this.aJ += 360.0F;
-        }
-
-        while (this.pitch - this.lastPitch < -180.0F) {
-            this.lastPitch -= 360.0F;
-        }
-
-        while (this.pitch - this.lastPitch >= 180.0F) {
-            this.lastPitch += 360.0F;
-        }
-
-        while (this.aK - this.aL < -180.0F) {
-            this.aL -= 360.0F;
-        }
-
-        while (this.aK - this.aL >= 180.0F) {
-            this.aL += 360.0F;
-        }
+        this.lastYaw += Math.round((this.yaw - this.lastYaw) / 360.0F) * 360.0F;
+        this.aJ += Math.round((this.aI - this.aJ) / 360.0F) * 360.0F;
+        this.lastPitch += Math.round((this.pitch - this.lastPitch) / 360.0F) * 360.0F;
+        this.aL += Math.round((this.aK - this.aL) / 360.0F) * 360.0F;
 
         this.world.methodProfiler.b();
         this.aT += f2;
