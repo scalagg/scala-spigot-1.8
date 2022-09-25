@@ -26,6 +26,7 @@ class ScalaSpigotConfig
     val hidePlayersFromTabList = false
     val blockBreakDesyncFix = true
     val doArmorStandEntityLookups = true
+    val namespacedCommandsEnabled = true
 
     val userCacheSaveOnShutdown = true
     val userCacheCacheCap = 1000

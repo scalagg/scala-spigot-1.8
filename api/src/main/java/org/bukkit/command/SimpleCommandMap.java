@@ -1,5 +1,6 @@
 package org.bukkit.command;
 
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -71,7 +72,10 @@ SimpleCommandMap implements CommandMap {
 
         // If we failed to register under the real name, we need to set the command label to the direct address
         if (!registered) {
-            command.setLabel(fallbackPrefix + ":" + label);
+            if (ScalaSpigot.INSTANCE.getConfig().getNamespacedCommandsEnabled())
+            {
+                command.setLabel(fallbackPrefix + ":" + label);
+            }
         }
 
         // Register to us so further updates of the commands label and aliases are postponed until its reregistered
@@ -92,7 +96,11 @@ SimpleCommandMap implements CommandMap {
      * @return true if command was registered, false otherwise.
      */
     private synchronized boolean register(String label, Command command, boolean isAlias, String fallbackPrefix) {
-        knownCommands.put(fallbackPrefix + ":" + label, command);
+        if (ScalaSpigot.INSTANCE.getConfig().getNamespacedCommandsEnabled())
+        {
+            knownCommands.put(fallbackPrefix + ":" + label, command);
+        }
+
         if ((command instanceof VanillaCommand || isAlias) && knownCommands.containsKey(label)) {
             // Request is for an alias/fallback command and it conflicts with
             // a existing command or previous alias ignore it
