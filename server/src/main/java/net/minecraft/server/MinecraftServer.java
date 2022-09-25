@@ -43,7 +43,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
+public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler {
 
     public static final Logger LOGGER = LogManager.getLogger(MinecraftServer.class);
 
@@ -66,7 +66,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     protected final ICommandHandler b;
     protected final Proxy e;
     protected final Queue<FutureTask<?>> j = new CachedSizeConcurrentLinkedQueue<>();
-    private final MojangStatisticsGenerator n = new MojangStatisticsGenerator("net/minecraft/server", this, az());
     private final List<IUpdatePlayerListBox> p = Lists.newArrayList();
     private final ServerPing r = new ServerPing();
     private final Random s = new Random();
@@ -529,10 +528,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             if (this.worldServer != null) {
                 LOGGER.info("Saving worlds");
                 this.saveChunks(false);
-            }
-
-            if (this.n.d()) {
-                this.n.e();
             }
 
             ScalaSpigotService.shutdown();
@@ -1202,54 +1197,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public void setResourcePack(String s, String s1) {
         this.O = s;
         this.P = s1;
-    }
-
-    public void a(MojangStatisticsGenerator mojangstatisticsgenerator) {
-        mojangstatisticsgenerator.a("whitelist_enabled", false);
-        mojangstatisticsgenerator.a("whitelist_count", 0);
-
-        if (this.playerList != null) {
-            mojangstatisticsgenerator.a("players_current", this.I());
-            mojangstatisticsgenerator.a("players_max", this.J());
-            mojangstatisticsgenerator.a("players_seen", this.playerList.getSeenPlayers().length);
-        }
-
-        mojangstatisticsgenerator.a("uses_auth", this.onlineMode);
-        mojangstatisticsgenerator.a("gui_state", this.as() ? "enabled" : "disabled");
-        mojangstatisticsgenerator.a("run_time", (az() - mojangstatisticsgenerator.g()) / 60L * 1000L);
-        mojangstatisticsgenerator.a("avg_tick_ms", (int) (gg.scala.spigot.util.MathHelper.a(this.h) * 1.0E-6D));
-
-        int i = 0;
-
-        if (this.worldServer != null) {
-            for (int j = 0; j < this.worlds.size(); ++j) {
-                WorldServer worldserver = this.worlds.get(j);
-
-                if (worldserver != null) {
-                    WorldData worlddata = worldserver.getWorldData();
-
-                    mojangstatisticsgenerator.a("world[" + i + "][dimension]", worldserver.worldProvider.getDimension());
-                    mojangstatisticsgenerator.a("world[" + i + "][mode]", worlddata.getGameType());
-                    mojangstatisticsgenerator.a("world[" + i + "][difficulty]", worldserver.getDifficulty());
-                    mojangstatisticsgenerator.a("world[" + i + "][hardcore]", worlddata.isHardcore());
-                    mojangstatisticsgenerator.a("world[" + i + "][generator_name]", worlddata.getType().name());
-                    mojangstatisticsgenerator.a("world[" + i + "][generator_version]", worlddata.getType().getVersion());
-                    mojangstatisticsgenerator.a("world[" + i + "][height]", this.maxBuildHeight);
-                    mojangstatisticsgenerator.a("world[" + i + "][chunks_loaded]", worldserver.N().getLoadedChunks());
-
-                    ++i;
-                }
-            }
-        }
-
-        mojangstatisticsgenerator.a("worlds", i);
-    }
-
-    public void b(MojangStatisticsGenerator mojangstatisticsgenerator) {
-        mojangstatisticsgenerator.b("singleplayer", this.T());
-        mojangstatisticsgenerator.b("server_brand", this.getServerModName());
-        mojangstatisticsgenerator.b("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
-        mojangstatisticsgenerator.b("dedicated", this.ae());
     }
 
     public boolean getSnooperEnabled() {
