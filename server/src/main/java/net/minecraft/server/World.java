@@ -1659,7 +1659,7 @@ public abstract class World implements IBlockAccess {
             }
 
             int k = gg.scala.spigot.util.MathHelper.floorD(entity.locX / 16.0D);
-            int l = gg.scala.spigot.util.MathHelper.floorD(entity.locY / 16.0D);
+            int l = (int) Math.min(15, Math.max(0, MathHelper.floor(entity.locY / 16.0D))); // Paper - stay consistent with chunk add/remove behavior
             int i1 = gg.scala.spigot.util.MathHelper.floorD(entity.locZ / 16.0D);
 
             if (!entity.ad || entity.ae != k || entity.af != l || entity.ag != i1) {

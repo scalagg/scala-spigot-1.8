@@ -133,7 +133,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             if (this.server.aK() >= 0 && !this.networkManager.c()) {
                 this.networkManager.a(new PacketLoginOutSetCompression(this.server.aK()), new ChannelFutureListener() {
                     public void a(ChannelFuture channelfuture) throws Exception {
-                        net.minecraft.server.LoginListener.this.networkManager.a(net.minecraft.server.LoginListener.this.server.aK());
+                        net.minecraft.server.LoginListener.this.networkManager.setupCompression(net.minecraft.server.LoginListener.this.server.aK());
                     }
 
                     public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error

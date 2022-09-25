@@ -547,21 +547,20 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         this.setupCompression(i);
     }
 
-    public void setupCompression(int compressionThreshold) {
-        // Nacho end
+    public void setupCompression(int compressionThreshold) { // Nacho - deobfuscate
         if (compressionThreshold >= 0) {
             VelocityCompressor compressor = Natives.compress.get().create(-1); // Paper
 
             if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {
-                ((PacketDecompressor) this.channel.pipeline().get("decompress")).a(compressionThreshold);
+                ((PacketDecompressor) this.channel.pipeline().get("decompress")).a(compressionThreshold); // Nacho - deobfuscate setThreshold
             } else {
-                this.channel.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(compressor, compressionThreshold));
+                this.channel.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(compressor, compressionThreshold)); // Paper
             }
 
             if (this.channel.pipeline().get("compress") instanceof PacketCompressor) {
-                ((PacketCompressor) this.channel.pipeline().get("decompress")).a(compressionThreshold);
+                ((PacketCompressor) this.channel.pipeline().get("decompress")).setThreshold(compressionThreshold); // Nacho - deobfuscate setThreshold
             } else {
-                this.channel.pipeline().addBefore("encoder", "compress", new PacketCompressor(compressor, compressionThreshold));
+                this.channel.pipeline().addBefore("encoder", "compress", new PacketCompressor(compressor, compressionThreshold)); // Paper
             }
         } else {
             if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {
@@ -572,7 +571,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
                 this.channel.pipeline().remove("compress");
             }
         }
-
     }
 
     public void l() {

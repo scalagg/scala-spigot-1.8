@@ -157,7 +157,7 @@ public class ServerConnection {
             }
 
             MinecraftServer.LOGGER.info("[natives] Using " + Natives.compress.getLoadedVariant() + " compression from Velocity.");
-            MinecraftServer.LOGGER.info("[natives] Using " + Natives.cipher.getLoadedVariant() + " compression from Velocity.");
+            MinecraftServer.LOGGER.info("[natives] Using " + Natives.cipher.getLoadedVariant() + " cipher from Velocity.");
 
             this.listeningChannels.add(
                 ((new ServerBootstrap().channel(channel))

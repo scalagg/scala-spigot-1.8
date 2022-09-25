@@ -1007,6 +1007,9 @@ public final class CraftServer implements Server {
             return false;
         }
 
+        worlds.remove(world.getName().toLowerCase());
+        console.worlds.remove(handle);
+
         if (save) {
             try {
                 handle.save(true, null);
