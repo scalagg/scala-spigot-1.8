@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.velocitypowered.natives.util.Natives;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
@@ -154,6 +155,9 @@ public class ServerConnection {
                     break;
                 }
             }
+
+            MinecraftServer.LOGGER.info("[natives] Using " + Natives.compress.getLoadedVariant() + " compression from Velocity.");
+            MinecraftServer.LOGGER.info("[natives] Using " + Natives.cipher.getLoadedVariant() + " compression from Velocity.");
 
             this.listeningChannels.add(
                 ((new ServerBootstrap().channel(channel))

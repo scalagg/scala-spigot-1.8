@@ -19,9 +19,6 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBox {
@@ -199,9 +196,13 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
         if (!Arrays.equals(this.e, packetlogininencryptionbegin.b(privatekey))) {
             throw new IllegalStateException("Invalid nonce!");
         } else {
-            this.loginKey = packetlogininencryptionbegin.a(privatekey);
-            this.g = net.minecraft.server.LoginListener.EnumProtocolState.AUTHENTICATING;
-            this.networkManager.a(this.loginKey);
+            try {
+                this.loginKey = packetlogininencryptionbegin.a(privatekey);
+                this.g = LoginListener.EnumProtocolState.AUTHENTICATING;
+                this.networkManager.setupEncryption(this.loginKey);
+            } catch (Exception ex) {
+                throw new IllegalStateException("Protocol error", ex);
+            }
 
             AUTHENTICATORS.execute(() -> {
                 GameProfile gameprofile = LoginListener.this.i;

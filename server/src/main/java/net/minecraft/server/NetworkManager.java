@@ -2,6 +2,9 @@ package net.minecraft.server;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.velocitypowered.natives.compression.VelocityCompressor;
+import com.velocitypowered.natives.util.Natives;
+import gg.scala.spigot.crypto.CryptException;
 import io.netty.channel.*;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.local.LocalChannel;
@@ -500,10 +503,23 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         return this.channel instanceof LocalChannel || this.channel instanceof LocalServerChannel;
     }
 
-    public void a(SecretKey secretkey) {
+    /*public void setupEncryption(SecretKey secretkey) {
         this.o = true;
         this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecrypter(MinecraftEncryption.a(2, secretkey)));
-        this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncrypter(MinecraftEncryption.a(1, secretkey)));
+        this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncrypter(MinecraftEncryption.a(1, secretkey)));*/
+    public void setupEncryption(javax.crypto.SecretKey key) throws CryptException {
+        if (!this.o) {
+            try {
+                com.velocitypowered.natives.encryption.VelocityCipher decryption = com.velocitypowered.natives.util.Natives.cipher.get().forDecryption(key);
+                com.velocitypowered.natives.encryption.VelocityCipher encryption = com.velocitypowered.natives.util.Natives.cipher.get().forEncryption(key);
+
+                this.o = true;
+                this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecrypter(decryption));
+                this.channel.pipeline().addBefore("prepender", "encrypt", new PacketEncrypter(encryption));
+            } catch (java.security.GeneralSecurityException e) {
+                throw new CryptException(e);
+            }
+        }
     }
 
     public boolean g() {
@@ -527,17 +543,25 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
     }
 
     public void a(int i) {
-        if (i >= 0) {
+        // Nacho start - OBFHELPER
+        this.setupCompression(i);
+    }
+
+    public void setupCompression(int compressionThreshold) {
+        // Nacho end
+        if (compressionThreshold >= 0) {
+            VelocityCompressor compressor = Natives.compress.get().create(-1); // Paper
+
             if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {
-                ((PacketDecompressor) this.channel.pipeline().get("decompress")).a(i);
+                ((PacketDecompressor) this.channel.pipeline().get("decompress")).a(compressionThreshold);
             } else {
-                this.channel.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(i));
+                this.channel.pipeline().addBefore("decoder", "decompress", new PacketDecompressor(compressor, compressionThreshold));
             }
 
             if (this.channel.pipeline().get("compress") instanceof PacketCompressor) {
-                ((PacketCompressor) this.channel.pipeline().get("decompress")).a(i);
+                ((PacketCompressor) this.channel.pipeline().get("decompress")).a(compressionThreshold);
             } else {
-                this.channel.pipeline().addBefore("encoder", "compress", new PacketCompressor(i));
+                this.channel.pipeline().addBefore("encoder", "compress", new PacketCompressor(compressor, compressionThreshold));
             }
         } else {
             if (this.channel.pipeline().get("decompress") instanceof PacketDecompressor) {

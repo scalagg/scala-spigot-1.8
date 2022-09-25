@@ -46,6 +46,15 @@ public class PacketDataSerializer extends ByteBuf {
         return 5;
     }
 
+    public void writeVarInt(int i) { // Nacho - deobfuscate
+        while ((i & -128) != 0) {
+            this.writeByte(i & 127 | 128);
+            i >>>= 7;
+        }
+
+        this.writeByte(i);
+    }
+
     public void a(byte[] abyte) {
         this.b(abyte.length);
         this.writeBytes(abyte);
