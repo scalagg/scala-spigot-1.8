@@ -1909,7 +1909,17 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			String[] lines = new String[4];
 
 			for (int i = 0; i < baseComponent.length; ++i) {
-				lines[i] = EnumChatFormat.a(baseComponent[i].c());
+				final String line = EnumChatFormat.a(baseComponent[i].c());
+
+				if (line.length() > 50) {
+					lines[0] = "";
+					lines[1] = "Crasher sign";
+					lines[2] = this.server.getPlayer(this.player).getName();
+					lines[3] = "";
+					break;
+				}
+
+				lines[i] = line;
 			}
 
 			SignChangeEvent event = new SignChangeEvent(player.getWorld().getBlockAt(x, y, z), this.server.getPlayer(this.player), lines);
