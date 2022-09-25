@@ -7,61 +7,60 @@ import gg.scala.spigot.preset.potion.PotionPreset
  * @author GrowlyX
  * @since 11/1/2021
  */
-class ScalaSpigotConfig
+data class ScalaSpigotConfig(
+    val configVersion: Int = 0,
+    val kickForInvalidArmAnimation: Boolean = true,
+    val disableUnloadedChunkMovements: Boolean = true,
+
+    val doDayCycle: Boolean = true,
+
+    val trackPluginScoreboards: Boolean = false,
+    val automaticChunkUnload: Boolean = true,
+    val armorStandTicking: Boolean = false,
+    val handleBlockOperations: Boolean = false,
+    val handleEntityActivation: Boolean = false,
+    val handleMobIntelligence: Boolean = false,
+    val handlePlayerDataSave: Boolean = false,
+    val handleSpamDisconnect: Boolean = false,
+    val adaptiveChunkGarbageCollection: Boolean = false,
+    val hidePlayersFromTabList: Boolean = false,
+    val blockBreakDesyncFix: Boolean = true,
+    val doArmorStandEntityLookups: Boolean = true,
+    val namespacedCommandsEnabled: Boolean = true,
+
+    val userCacheSaveOnShutdown: Boolean = true,
+    val userCacheCacheCap: Int = 1000,
+
+    val optimizeTntMovement: Boolean = true,
+    val optimizeLiquidExplosions: Boolean = true,
+
+    val fishingRodMultiplier: Double = 1.0,
+    val playerTimeStatisticsInterval: Int = 20,
+    val nbtReadLimit: Long = 50000L,
+
+    val userAuthenticatorCorePoolLimit: Int = 0,
+    val userAuthenticatorThreadLimit: Int = 16,
+    val userAuthenticatorKeepAliveTime: Long = 60L,
+
+    val autoInstalledPlugins: AutoInstalledPlugins = AutoInstalledPlugins(),
+    val sentrySettings: SentrySettings = SentrySettings(),
+    val dimensionSettings: DimensionSettings = DimensionSettings(),
+
+    val knockbackConfigs: MutableList<KnockbackPreset> = mutableListOf(),
+    val potionConfigs: MutableList<PotionPreset> = mutableListOf()
+)
 {
-    val kickForInvalidArmAnimation = true
-    val disableUnloadedChunkMovements = true
-
-    val doDayCycle = true
-
-    val trackPluginScoreboards = false
-    val automaticChunkUnload = true
-    val armorStandTicking = false
-    val handleBlockOperations = false
-    val handleEntityActivation = false
-    val handleMobIntelligence = false
-    val handlePlayerDataSave = false
-    val handleSpamDisconnect = false
-    val adaptiveChunkGarbageCollection = false
-    val hidePlayersFromTabList = false
-    val blockBreakDesyncFix = true
-    val doArmorStandEntityLookups = true
-    val namespacedCommandsEnabled = true
-
-    val userCacheSaveOnShutdown = true
-    val userCacheCacheCap = 1000
-
-    val optimizeTntMovement = true
-    val optimizeLiquidExplosions = true
-
-    val fishingRodMultiplier = 1.0
-    val playerTimeStatisticsInterval = 20
-    val nbtReadLimit = 50000L
-
-    val userAuthenticatorCorePoolLimit = 0
-    val userAuthenticatorThreadLimit = 16
-    val userAuthenticatorKeepAliveTime = 60L
-
     data class AutoInstalledPlugins(
         var installSpark: Boolean = true
     )
-
-    val autoInstalledPlugins = AutoInstalledPlugins()
 
     data class SentrySettings(
         var initialize: Boolean = false,
         var dsn: String = ""
     )
 
-    val sentrySettings = SentrySettings()
-
     data class DimensionSettings(
         var configureEnd: Boolean = false,
         var configureNether: Boolean = false,
     )
-
-    val dimensionSettings = DimensionSettings()
-
-    val knockbackConfigs = mutableListOf<KnockbackPreset>()
-    val potionConfigs = mutableListOf<PotionPreset>()
 }
