@@ -27,9 +27,6 @@ public class PlayerChunkMap {
     public PlayerChunkMap(WorldServer worldserver, int viewDistance /* Spigot */) {
         this.world = worldserver;
         this.a(viewDistance); // Spigot
-        this.trackerUpdateDistanceSquared = Math.pow(
-            ScalaSpigot.INSTANCE.getConfig().getTrackerUpdateDistance(), 2
-        ); // Paper
     }
 
     public WorldServer a() {

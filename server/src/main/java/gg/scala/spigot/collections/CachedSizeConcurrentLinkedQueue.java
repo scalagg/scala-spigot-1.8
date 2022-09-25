@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.utils;
+package gg.scala.spigot.collections;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.LongAdder;

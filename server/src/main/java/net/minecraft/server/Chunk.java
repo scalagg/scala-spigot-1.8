@@ -4,23 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import net.minecraft.server.BiomeBase;
-import net.minecraft.server.Block;
-import net.minecraft.server.BlockPosition;
-import net.minecraft.server.ChunkSection;
-import net.minecraft.server.CrashReport;
-import net.minecraft.server.Entity;
-import net.minecraft.server.EntityInsentient;
-import net.minecraft.server.EntityItem;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.IInventory;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PacketPlayOutMapChunk;
-import net.minecraft.server.TileEntity;
-import net.minecraft.server.World;
-import net.minecraft.server.*;
-import org.apache.logging.log4j.LogManager;
+import gg.scala.spigot.collections.ObjectMapList;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
@@ -158,7 +142,7 @@ public class Chunk {
         this.heightMap = new int[256];
 
         for (int k = 0; k < this.entitySlices.length; ++k) {
-            this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList<>(); // Spigot
+            this.entitySlices[k] = new ObjectMapList<>(); // Spigot
         }
 
         Arrays.fill(this.f, -999);

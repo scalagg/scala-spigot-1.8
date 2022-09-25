@@ -1,4 +1,4 @@
-package me.suicidalkids.ion.movement;
+package gg.scala.spigot.movement;
 
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Entity;

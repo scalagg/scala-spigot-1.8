@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.tick;
+package gg.scala.spigot.tickloop;
 
 public abstract class ReentrantIAsyncHandler<R extends Runnable> extends IAsyncHandler<R> {
 

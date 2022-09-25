@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.console.ScalaSpigotCommandSender;
 import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -36,7 +38,7 @@ public abstract class PlayerList {
     private static final Logger f = MinecraftServer.LOGGER;
     private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
     private final MinecraftServer server;
-    private final Map<UUID, EntityPlayer> j = Maps.newHashMap();
+    private final Map<UUID, EntityPlayer> j = new Object2ObjectOpenHashMap<>();
     private final GameProfileBanList k;
     private final IpBanList l;
     private final OpList operators;
@@ -70,7 +72,7 @@ public abstract class PlayerList {
 
     public PlayerList(MinecraftServer minecraftserver) {
         this.cserver = minecraftserver.server = new CraftServer(minecraftserver, this);
-        minecraftserver.console = new com.destroystokyo.paper.console.TerminalConsoleCommandSender();
+        minecraftserver.console = new ScalaSpigotCommandSender();
 
         this.k = new GameProfileBanList(a);
         this.l = new IpBanList(b);

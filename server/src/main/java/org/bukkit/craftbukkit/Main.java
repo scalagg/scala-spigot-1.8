@@ -130,10 +130,10 @@ public class Main {
                 // Spigot End
 
                 // PaperSpigot Start
-                acceptsAll(asList("spigot", "spigot-settings"), "File for paperspigot settings")
+                acceptsAll(asList("paper", "paper-settings"), "File for paperspigot settings")
                         .withRequiredArg()
                         .ofType(File.class)
-                        .defaultsTo(new File("spigot.yml"))
+                        .defaultsTo(new File("paper.yml"))
                         .describedAs("Yml file");
                 // PaperSpigot End
             }

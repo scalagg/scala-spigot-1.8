@@ -460,6 +460,7 @@ public class EntityTrackerEntry {
             } else if (isPlayerEntityTracked) {
                 this.trackedPlayers.remove(entityplayer);
                 entityplayer.d(this.tracker);
+
             }
 
         }

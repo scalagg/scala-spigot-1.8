@@ -35,12 +35,31 @@ class ScalaSpigotConfig
 
     val fishingRodMultiplier = 1.0
     val playerTimeStatisticsInterval = 20
-    val trackerUpdateDistance = 1
     val nbtReadLimit = 50000L
 
     val userAuthenticatorCorePoolLimit = 0
     val userAuthenticatorThreadLimit = 16
     val userAuthenticatorKeepAliveTime = 60L
+
+    data class AutoInstalledPlugins(
+        var installSpark: Boolean = true
+    )
+
+    val autoInstalledPlugins = AutoInstalledPlugins()
+
+    data class SentrySettings(
+        var initialize: Boolean = false,
+        var dsn: String = ""
+    )
+
+    val sentrySettings = SentrySettings()
+
+    data class DimensionSettings(
+        var configureEnd: Boolean = false,
+        var configureNether: Boolean = false,
+    )
+
+    val dimensionSettings = DimensionSettings()
 
     val knockbackConfigs = mutableListOf<KnockbackPreset>()
     val potionConfigs = mutableListOf<PotionPreset>()

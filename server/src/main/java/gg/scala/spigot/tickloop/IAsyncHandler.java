@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.tick;
+package gg.scala.spigot.tickloop;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

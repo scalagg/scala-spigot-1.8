@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gg.scala.ScalaSpigotService;
+import gg.scala.spigot.ScalaSpigotService;
 import org.github.paperspigot.exception.ServerInternalException;
 
 import java.io.*;

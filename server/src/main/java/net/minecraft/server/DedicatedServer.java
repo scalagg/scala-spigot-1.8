@@ -1,17 +1,15 @@
 package net.minecraft.server;
 
-import com.destroystokyo.paper.console.PaperConsole;
-import com.google.common.collect.Lists;
-import gg.scala.ScalaSpigotServerProperties;
-import gg.scala.server.command.KnockbackCommand;
-import gg.scala.server.command.PotionCommand;
-import gg.scala.server.command.SpigotReloadCommand;
+import gg.scala.spigot.console.ScalaSpigotConsole;
+import gg.scala.spigot.ScalaSpigotServerProperties;
+import gg.scala.spigot.server.command.KnockbackCommand;
+import gg.scala.spigot.server.command.PotionCommand;
+import gg.scala.spigot.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.util.Waitable;
@@ -23,8 +21,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Proxy;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +67,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                     return;
                 }
 
-                new PaperConsole(DedicatedServer.this).start();
+                new ScalaSpigotConsole(DedicatedServer.this).start();
             }
         };
 
@@ -181,7 +177,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         }
 
         // Load PaperSpigot settings
-        org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("spigot-settings"));
+        org.github.paperspigot.PaperSpigotConfig.init((File) options.valueOf("paper-settings"));
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
 
         // Load ScalaSpigot
@@ -189,7 +185,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         ScalaSpigot.INSTANCE.initialLoad();
 
         // Configure version
-        LOGGER.info("Running " + Bukkit.getName() + " version built on " + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/\"" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
+        LOGGER.info("Running " + Bukkit.getName() + " version built on origin/" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
 
         server.getCommandMap().register("spigot", new KnockbackCommand());
         server.getCommandMap().register("spigot", new SpigotReloadCommand());
@@ -365,7 +361,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     }
 
     public boolean getAllowNether() {
-        return this.propertyManager.getBoolean("allow-nether", true);
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureNether();
     }
 
     public boolean getSpawnMonsters() {

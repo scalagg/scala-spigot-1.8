@@ -5,15 +5,14 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.sqlite.SQLitePlatform;
 import com.eatthepath.uuid.FastUUID;
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
-import gg.scala.ScalaSpigotServerProperties;
-import gg.scala.server.command.KnockbackCommand;
-import gg.scala.server.command.PotionCommand;
-import gg.scala.server.command.SpigotReloadCommand;
+import gg.scala.spigot.ScalaSpigotServerProperties;
+import gg.scala.spigot.server.command.KnockbackCommand;
+import gg.scala.spigot.server.command.PotionCommand;
+import gg.scala.spigot.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.KotlinBridge;
 import io.netty.buffer.ByteBuf;
@@ -88,6 +87,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class CraftServer implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
@@ -103,8 +103,8 @@ public final class CraftServer implements Server {
     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
     private final StandardMessenger messenger = new StandardMessenger();
     private final PluginManager pluginManager = new SimplePluginManager(this, commandMap);
-    protected final MinecraftServer console;
-    protected final DedicatedPlayerList playerList;
+    final MinecraftServer console;
+    private final DedicatedPlayerList playerList;
     private final Map<String, World> worlds = new LinkedHashMap<>();
     private YamlConfiguration configuration;
     // KigPaper start - CVE-2017-18640
@@ -151,6 +151,9 @@ public final class CraftServer implements Server {
         online.value = console.getPropertyManager().getBoolean("online-mode", true);
 
         Bukkit.setServer(this);
+
+        // configure lazily loaded version value
+        Bukkit.getVersion();
 
         // Register all the Enchantments and PotionTypes now so we can stop new registration immediately after
         Enchantment.DAMAGE_ALL.getClass();
@@ -219,8 +222,75 @@ public final class CraftServer implements Server {
 
         File pluginFolder = (File) console.options.valueOf("plugins");
 
+        final boolean shouldInstallSpark = ScalaSpigot.INSTANCE.getConfig()
+            .getAutoInstalledPlugins().getInstallSpark();
+
+        if (shouldInstallSpark) {
+            try {
+                final File file = new File("cached-plugins", "spark.jar");
+                file.getParentFile().mkdirs();
+
+                boolean shouldDownload = true;
+                if (file.exists()) {
+                    final String fileSha1 = String.format("%040x", new java.math.BigInteger(1, java.security.MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(file.toPath()))));
+                    final String sparkSha1;
+
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(new InputStreamReader(new java.net.URL("https://sparkapi.lucko.me/download/bukkit/sha1").openStream()))) {
+                        sparkSha1 = reader.lines().collect(Collectors.joining(""));
+                    }
+
+                    if (fileSha1.equals(sparkSha1)) {
+                        shouldDownload = false;
+                    }
+                }
+
+                if (shouldDownload) {
+                    gg.scala.spigot.logger.Logger.send("Installing the latest build of spark...");
+                    java.nio.file.Files.copy(new java.net.URL("https://sparkapi.lucko.me/download/bukkit").openStream(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (Exception exception) {
+                MinecraftServer.LOGGER.error(
+                    "Failed to install spark automatically! (Disabling autoInstalledPlugins.installSpark in scala-spigot.json!)", exception
+                );
+
+                try {
+                    ScalaSpigot.INSTANCE.getConfig()
+                        .getAutoInstalledPlugins()
+                        .setInstallSpark(false);
+
+                    ScalaSpigot.INSTANCE.saveConfig(
+                        Bukkit.getWorldContainer()
+                    );
+                } catch (Exception ignored) {
+
+                }
+            }
+
+            // prevent conflicts with newer versions' cache directories
+            final File cachePluginsDirectory = new File("cached-plugins");
+
+            if (cachePluginsDirectory.exists())
+            {
+                Plugin[] cachedPlugins = pluginManager
+                    .loadPlugins(
+                        cachePluginsDirectory
+                    );
+
+                for (Plugin plugin : cachedPlugins) {
+                    try {
+                        String message = String.format("Loading cached plugin %s", plugin.getDescription().getFullName());
+                        plugin.getLogger().info(message);
+                        plugin.onLoad();
+                    } catch (Throwable ex) {
+                        Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+                    }
+                }
+            }
+        }
+
         if (pluginFolder.exists()) {
             Plugin[] plugins = pluginManager.loadPlugins(pluginFolder);
+
             for (Plugin plugin : plugins) {
                 try {
                     String message = String.format("Loading %s", plugin.getDescription().getFullName());
@@ -271,7 +341,7 @@ public final class CraftServer implements Server {
         for (ICommand cmd : commands.values()) {
             // Spigot start
             VanillaCommandWrapper wrapper = new VanillaCommandWrapper((CommandAbstract) cmd, LocaleI18n.get(cmd.getUsage(null)));
-            if (org.spigotmc.SpigotConfig.replaceCommands.contains( wrapper.getName() ) ) {
+            if (org.spigotmc.SpigotConfig.replaceCommands.contains(wrapper.getName())) {
                 if (first) {
                     commandMap.register("minecraft", wrapper);
                 }
@@ -451,12 +521,14 @@ public final class CraftServer implements Server {
 
     @Override
     public boolean getAllowEnd() {
-        return this.configuration.getBoolean("settings.allow-end");
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureEnd();
     }
 
     @Override
     public boolean getAllowNether() {
-        return this.getConfigBoolean("allow-nether", true);
+        // ScalaSpigot start - relocate dimension settings to our config
+        return ScalaSpigot.INSTANCE.getConfig().getDimensionSettings().getConfigureNether();
     }
 
     public boolean getWarnOnOverload() {
@@ -545,7 +617,7 @@ public final class CraftServer implements Server {
     // NOTE: Should only be called from DedicatedServer.ah()
     public boolean dispatchServerCommand(CommandSender sender, ServerCommand serverCommand) {
         if (sender instanceof Conversable) {
-            Conversable conversable = (Conversable)sender;
+            Conversable conversable = (Conversable) sender;
 
             if (conversable.isConversing()) {
                 conversable.acceptConversationInput(serverCommand.command);
@@ -647,7 +719,7 @@ public final class CraftServer implements Server {
         }
 
         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
-        org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("spigot-settings")); // PaperSpigot
+        org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("paper-settings")); // PaperSpigot
 
         // ScalaSpigot
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
@@ -683,7 +755,8 @@ public final class CraftServer implements Server {
         while (pollCount < 50 && getScheduler().getActiveWorkers().size() > 0) {
             try {
                 Thread.sleep(50);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
             pollCount++;
         }
 
@@ -722,7 +795,7 @@ public final class CraftServer implements Server {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "finally" })
+    @SuppressWarnings({"unchecked", "finally"})
     private void loadCustomPermissions() {
         File file = new File(configuration.getString("settings.permissions-file"));
         FileInputStream stream;
@@ -740,9 +813,9 @@ public final class CraftServer implements Server {
         Map<String, Map<String, Object>> perms;
 
         try {
-            perms = (Map<String, Map<String, Object>>) yaml.load(stream);
+            perms = yaml.load(stream);
         } catch (MarkedYAMLException ex) {
-            getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML: " + ex.toString());
+            getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML: " + ex);
             return;
         } catch (Throwable ex) {
             getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML.", ex);
@@ -750,7 +823,8 @@ public final class CraftServer implements Server {
         } finally {
             try {
                 stream.close();
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+            }
         }
 
         if (perms == null) {
@@ -818,7 +892,8 @@ public final class CraftServer implements Server {
             converter.convert(name, new IProgressUpdate() {
                 private long b = System.currentTimeMillis();
 
-                public void a(String s) {}
+                public void a(String s) {
+                }
 
                 public void a(int i) {
                     if (System.currentTimeMillis() - this.b >= 1000L) {
@@ -828,7 +903,8 @@ public final class CraftServer implements Server {
 
                 }
 
-                public void c(String s) {}
+                public void c(String s) {
+                }
             });
         }
 
@@ -842,7 +918,7 @@ public final class CraftServer implements Server {
                     break;
                 }
             }
-        } while(used);
+        } while (used);
         boolean hardcore = false;
 
         IDataManager sdm = new ServerNBTManager(getWorldContainer(), name, true);
@@ -888,7 +964,8 @@ public final class CraftServer implements Server {
                     }
 
                     BlockPosition chunkcoordinates = internal.getSpawn();
-                    internal.chunkProviderServer.getChunkAt(chunkcoordinates.getX() + j >> 4, chunkcoordinates.getZ() + k >> 4, () -> {}); // IonSpigot - Async Spawn Chunks
+                    internal.chunkProviderServer.getChunkAt(chunkcoordinates.getX() + j >> 4, chunkcoordinates.getZ() + k >> 4, () -> {
+                    }); // IonSpigot - Async Spawn Chunks
                 }
             }
         }
@@ -970,7 +1047,7 @@ public final class CraftServer implements Server {
         synchronized (RegionFileCache.class) {
             // RegionFileCache.a should be RegionFileCache.cache
             Iterator<Map.Entry<File, RegionFile>> i = RegionFileCache.a.entrySet().iterator();
-            while(i.hasNext()) {
+            while (i.hasNext()) {
                 Map.Entry<File, RegionFile> entry = i.next();
                 File child = entry.getKey().getAbsoluteFile();
                 while (child != null) {
@@ -1263,16 +1340,15 @@ public final class CraftServer implements Server {
     @Deprecated
     public OfflinePlayer getOfflinePlayer(String name) {
         Validate.notNull(name, "Name cannot be null");
-        com.google.common.base.Preconditions.checkArgument( !KotlinBridge.isBlank( name ), "Name cannot be blank" ); // Spigot
+        com.google.common.base.Preconditions.checkArgument(!KotlinBridge.isBlank(name), "Name cannot be blank"); // Spigot
 
         OfflinePlayer result = getPlayerExact(name);
         if (result == null) {
             // Spigot Start
             GameProfile profile = null;
             // Only fetch an online UUID in online mode
-            if ( MinecraftServer.getServer().getOnlineMode() || org.spigotmc.SpigotConfig.bungee )
-            {
-                profile = MinecraftServer.getServer().getUserCache().getProfile( name );
+            if (MinecraftServer.getServer().getOnlineMode() || org.spigotmc.SpigotConfig.bungee) {
+                profile = MinecraftServer.getServer().getUserCache().getProfile(name);
             }
             // Spigot end
             if (profile == null) {
@@ -1348,12 +1424,12 @@ public final class CraftServer implements Server {
     public BanList getBanList(BanList.Type type) {
         Validate.notNull(type, "Type cannot be null");
 
-        switch(type){
-        case IP:
-            return new CraftIpBanList(playerList.getIPBans());
-        case NAME:
-        default:
-            return new CraftProfileBanList(playerList.getProfileBans());
+        switch (type) {
+            case IP:
+                return new CraftIpBanList(playerList.getIPBans());
+            case NAME:
+            default:
+                return new CraftProfileBanList(playerList.getProfileBans());
         }
     }
 
@@ -1376,10 +1452,10 @@ public final class CraftServer implements Server {
 
     @Override
     public Set<OfflinePlayer> getOperators() {
-        Set<OfflinePlayer> result = new HashSet<OfflinePlayer>();
+        Set<OfflinePlayer> result = new HashSet<>();
 
-        for (JsonListEntry entry : playerList.getOPs().getValues()) {
-            result.add(getOfflinePlayer((GameProfile) entry.getKey()));
+        for (JsonListEntry<GameProfile> entry : playerList.getOPs().getValues()) {
+            result.add(getOfflinePlayer(entry.getKey()));
         }
 
         return result;
@@ -1578,8 +1654,7 @@ public final class CraftServer implements Server {
      */
     public List<String> tabCompleteCommand(Player player, String message, BlockPosition blockPosition) {
         // Spigot Start
-        if ( (org.spigotmc.SpigotConfig.tabComplete < 0 || message.length() <= org.spigotmc.SpigotConfig.tabComplete) && !message.contains( " " ) )
-        {
+        if ((org.spigotmc.SpigotConfig.tabComplete < 0 || message.length() <= org.spigotmc.SpigotConfig.tabComplete) && !message.contains(" ")) {
             return ImmutableList.of();
         }
         // Spigot End
@@ -1598,7 +1673,7 @@ public final class CraftServer implements Server {
             getLogger().log(Level.SEVERE, "Exception when " + player.getName() + " attempted to tab complete " + message, ex);
         }
 
-        return completions == null ? ImmutableList.<String>of() : completions;
+        return completions == null ? ImmutableList.of() : completions;
     }
     // PaperSpigot end
 
@@ -1699,42 +1774,37 @@ public final class CraftServer implements Server {
         return CraftMagicNumbers.INSTANCE;
     }
 
-    private final Spigot spigot = new Spigot()
-    {
+    private final Spigot spigot = new Spigot() {
 
         // PaperSpigot start - Add getTPS (Further improve tick loop)
         @Override
         public double[] getTPS() {
-            return new double[] {
-                    MinecraftServer.getServer().tps1.getAverage(),
-                    MinecraftServer.getServer().tps5.getAverage(),
-                    MinecraftServer.getServer().tps15.getAverage()
+            return new double[]{
+                MinecraftServer.getServer().tps1.getAverage(),
+                MinecraftServer.getServer().tps5.getAverage(),
+                MinecraftServer.getServer().tps15.getAverage()
             };
         }
         // PaperSpigot end
 
         @Deprecated
         @Override
-        public YamlConfiguration getConfig()
-        {
+        public YamlConfiguration getConfig() {
             return getBukkitConfig();
         }
 
         @Override
-        public YamlConfiguration getBukkitConfig()
-        {
+        public YamlConfiguration getBukkitConfig() {
             return configuration;
         }
 
         @Override
-        public YamlConfiguration getSpigotConfig()
-        {
+        public YamlConfiguration getSpigotConfig() {
             return org.spigotmc.SpigotConfig.config;
         }
 
         @Override
-        public YamlConfiguration getPaperSpigotConfig()
-        {
+        public YamlConfiguration getPaperSpigotConfig() {
             return org.github.paperspigot.PaperSpigotConfig.config;
         }
 
@@ -1758,8 +1828,7 @@ public final class CraftServer implements Server {
         }
     };
 
-    public Spigot spigot()
-    {
+    public Spigot spigot() {
         return spigot;
     }
 }

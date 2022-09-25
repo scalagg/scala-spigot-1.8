@@ -1,4 +1,4 @@
-package gg.scala.minetick;
+package gg.scala.spigot.autosave;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.world.WorldSaveEvent;

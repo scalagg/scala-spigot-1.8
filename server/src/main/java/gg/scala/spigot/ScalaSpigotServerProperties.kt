@@ -1,4 +1,4 @@
-package gg.scala
+package gg.scala.spigot
 
 import org.bukkit.craftbukkit.help.HelpYamlReader
 import java.util.*
@@ -17,10 +17,10 @@ object ScalaSpigotServerProperties
         }
 
     val version by lazy {
-        this.properties.getProperty("version")
+        properties.getProperty("version")
     }
 
     val branch by lazy {
-        this.properties.getProperty("branch")
+        properties.getProperty("branch")
     }
 }

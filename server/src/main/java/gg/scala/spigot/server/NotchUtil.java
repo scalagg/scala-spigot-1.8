@@ -1,4 +1,4 @@
-package gg.scala.server;
+package gg.scala.spigot.server;
 
 import net.minecraft.server.EnumDirection;
 import net.minecraft.server.MathHelper;

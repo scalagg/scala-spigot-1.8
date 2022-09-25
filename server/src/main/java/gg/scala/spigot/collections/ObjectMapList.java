@@ -1,4 +1,4 @@
-package io.papermc.paper.util.maplist;
+package gg.scala.spigot.collections;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.AbstractReferenceList;
