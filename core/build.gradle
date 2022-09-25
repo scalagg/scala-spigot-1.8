@@ -9,5 +9,9 @@ dependencies {
     compileOnly "com.google.code.gson:gson:2.9.0"
     compileOnly "com.google.guava:guava:31.1-jre"
 
+    api "com.sksamuel.hoplite:hoplite-core:2.6.3"
+    api "com.sksamuel.hoplite:hoplite-toml:2.6.3"
+    api "com.sksamuel.hoplite:hoplite-yaml:2.6.3"
+
     implementation "net.jafama:jafama:2.3.2"
 }

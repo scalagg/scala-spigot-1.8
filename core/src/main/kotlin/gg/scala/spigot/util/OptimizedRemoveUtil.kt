@@ -38,7 +38,7 @@ object OptimizedRemoveUtil
 
         for (i in 0 until size)
         {
-            val element: T? = list[i]
+            val element: T? = list.getOrNull(i)
             if (i == position) mutable = insertAt
             if (element != null && !element.isNeedRemoval)
             {
