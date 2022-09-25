@@ -76,7 +76,7 @@ public class PacketDecompressor extends ByteToMessageDecoder {
     }
     // Paper end
 
-    public void a(int var1) {
+    public void setThreshold(int var1) { // Nacho - deobfuscate
         this.threshold = var1;
     }
 }
