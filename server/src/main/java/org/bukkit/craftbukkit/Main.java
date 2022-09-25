@@ -177,11 +177,6 @@ public class Main {
                     }
                 }
 
-                if (Float.parseFloat(System.getProperty("java.class.version")) < 52 && maxPermGen < (128 << 10)) { // 128mb
-                    System.out.println("Warning, your max perm gen size is not set or less than 128mb. It is recommended you restart Java with the following argument: -XX:MaxPermSize=128M");
-                    System.out.println("Please see http://www.spigotmc.org/wiki/changing-permgen-size/ for more details and more in-depth instructions.");
-                }
-
                 System.setProperty("library.jansi.version", "ScalaSpigot"); // ScalaSpigot - set meaningless jansi version to prevent git builds from crashing on Windows
                 System.out.println("Libraries are loading, please wait...");
                 startup = System.nanoTime();

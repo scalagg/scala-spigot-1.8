@@ -1,13 +1,11 @@
 package gg.scala.spigot
 
-import com.akuleshov7.ktoml.Toml
 import com.google.common.io.Files
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.LongSerializationPolicy
 import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.PropertySource
-import com.sksamuel.hoplite.addResourceSource
 import com.sksamuel.hoplite.watch.FixedIntervalWatchable
 import com.sksamuel.hoplite.watch.ReloadableConfig
 import gg.scala.spigot.filter.EventFilterHandler
@@ -15,6 +13,7 @@ import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
 import kotlinx.serialization.encodeToString
+import net.peanuuutz.tomlkt.Toml
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import kotlin.time.seconds
@@ -103,6 +102,10 @@ object ScalaSpigot
             val reader = Files.newReader(file, Charsets.UTF_8)
             config = GSON.fromJson(reader, ScalaSpigotConfig::class.java)
 
+            kotlin.runCatching {
+                reader.close()
+            }
+
             file.delete()
 
             Logger.send("Loaded outdated spigot configuration from scala-spigot.json, saving newest one now. Reload functionality will be resumed on restart.")
@@ -114,7 +117,7 @@ object ScalaSpigot
             return
         }
 
-        val tomlFile = File("scspigot.toml")
+        val tomlFile = File(parent, "scspigot.toml")
 
         if (!tomlFile.exists())
         {
@@ -124,7 +127,7 @@ object ScalaSpigot
         val watcher = FixedIntervalWatchable(10_000L)
 
         val loader = ConfigLoaderBuilder.default()
-            .addSource(PropertySource.resource("/scspigot.toml"))
+            .addSource(PropertySource.file(tomlFile))
             .build()
 
         val reloader = ReloadableConfig(loader, ScalaSpigotConfig::class)
@@ -133,6 +136,11 @@ object ScalaSpigot
         this.config = reloader.getLatest()
 
         reloader.subscribe {
+            if (it == this.config)
+            {
+                return@subscribe
+            }
+
             this.config = it
             onReload.invoke()
         }

@@ -6,13 +6,16 @@ import gg.scala.spigot.server.command.KnockbackCommand;
 import gg.scala.spigot.server.command.PotionCommand;
 import gg.scala.spigot.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
+import kotlin.Unit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.Main;
 import org.bukkit.craftbukkit.util.Waitable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
@@ -186,8 +189,14 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         ScalaSpigot.INSTANCE.internalLoadConfig(Bukkit.getWorldContainer());
         ScalaSpigot.INSTANCE.initialLoad();
 
-        // Configure version
-        LOGGER.info("Running " + Bukkit.getName() + " version built on origin/" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/" + ScalaSpigotServerProperties.INSTANCE.getVersion() + ".");
+        ScalaSpigot.INSTANCE.setOnReload(() -> {
+            Bukkit.getOnlinePlayers()
+                .stream().filter(Player::isOp)
+                .forEach(player -> {
+                    player.sendMessage(ChatColor.GREEN + "[ScalaSpigot] " + ChatColor.GRAY + "Configuration file automatically reloaded!");
+                });
+            return Unit.INSTANCE;
+        });
 
         server.getCommandMap().register("spigot", new KnockbackCommand());
         server.getCommandMap().register("spigot", new SpigotReloadCommand());
