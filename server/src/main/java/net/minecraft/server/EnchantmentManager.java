@@ -165,8 +165,8 @@ public class EnchantmentManager {
         }
 
         // MinetickMod start
-        EnchantmentManager.e.a = null;
-        EnchantmentManager.e.b = null;
+        EnchantmentManager.d.a = null;
+        EnchantmentManager.d.b = null;
         // MinetickMod end
     }
 
