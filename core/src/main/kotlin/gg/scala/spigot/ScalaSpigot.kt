@@ -142,7 +142,6 @@ object ScalaSpigot
             }
 
             this.config = it
-            onReload.invoke()
         }
 
         CompletableFuture
