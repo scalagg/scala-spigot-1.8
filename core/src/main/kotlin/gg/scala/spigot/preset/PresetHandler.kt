@@ -3,17 +3,23 @@ package gg.scala.spigot.preset
 import gg.scala.spigot.ScalaSpigot
 import java.io.File
 
-open class PresetHandler<T : Preset> {
-
+open class PresetHandler<T : Any>
+{
     val presets = mutableListOf<T>()
 
     lateinit var activePreset: T
 
-    open fun initialLoad() {
+    open fun initialLoad()
+    {
 
     }
 
-    fun getId() = ""
+    open fun getId() = ""
+
+    open fun unwrap(file: File)
+    {
+
+    }
 
     fun load(parent: File)
     {
@@ -21,18 +27,18 @@ open class PresetHandler<T : Preset> {
 
         if (file.exists())
         {
-            presets.addAll(
-                ScalaSpigot.GSON.fromJson<List<T>>(
-                    file.readText(), List::class.java
-                )
-            )
-
+            unwrap(file)
             initialLoad()
             return
         }
 
         initialLoad()
         save(parent)
+    }
+
+    open fun persist(file: File)
+    {
+
     }
 
     fun save(parent: File)
@@ -44,12 +50,6 @@ open class PresetHandler<T : Preset> {
             file.createNewFile()
         }
 
-        file.writeText(
-            ScalaSpigot.GSON.toJson(presets)
-        )
-    }
-
-    fun findPreset(id: String): T? {
-        return presets.find { id.equals(it.id, true) }
+        persist(file)
     }
 }

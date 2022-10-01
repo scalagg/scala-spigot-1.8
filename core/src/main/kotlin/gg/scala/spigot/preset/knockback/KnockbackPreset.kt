@@ -1,12 +1,8 @@
 package gg.scala.spigot.preset.knockback
 
-import gg.scala.spigot.preset.Preset
-import kotlinx.serialization.Serializable
-
-@Serializable
 open class KnockbackPreset(
-    override val id: String,
-    override var details: List<String>,
+    val id: String,
+    var details: List<String>,
     var friction: Double,
     var horizontal: Double,
     var vertical: Double,
@@ -17,4 +13,4 @@ open class KnockbackPreset(
     var rodVerticalMultiplier: Double = 0.0,
     var rodHorizontalMultiplier: Double = 0.0,
     var autoWTap: Boolean = false
-) : Preset
+)

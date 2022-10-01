@@ -21,8 +21,10 @@ import java.util.concurrent.CompletableFuture
 object ScalaSpigot
 {
     @JvmStatic
-    val GSON: Gson = GsonBuilder().setPrettyPrinting()
-        .setLongSerializationPolicy(LongSerializationPolicy.STRING).create()
+    val GSON: Gson = GsonBuilder()
+        .setPrettyPrinting()
+        .setLongSerializationPolicy(LongSerializationPolicy.STRING)
+        .create()
 
     var config = ScalaSpigotConfig()
 
@@ -45,6 +47,7 @@ object ScalaSpigot
             PotionHandler.save(parent)
         }.onFailure {
             Logger.send("Failed to save knockback and/or potion configs", Logger.LogLevel.SEVERE)
+            it.printStackTrace()
         }
 
         val file = File(parent, "scspigot.toml")
@@ -93,6 +96,7 @@ object ScalaSpigot
             PotionHandler.load(parent)
         }.onFailure {
             Logger.send("Failed to load knockback and/or potion configs", Logger.LogLevel.SEVERE)
+            it.printStackTrace()
         }
 
         val file = File(parent, "scala-spigot.json")
