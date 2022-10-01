@@ -15,10 +15,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
-    api "com.sksamuel.hoplite:hoplite-core:2.6.3"
-    api "com.sksamuel.hoplite:hoplite-toml:2.6.3"
-    api "com.sksamuel.hoplite:hoplite-watch:2.6.3"
-
     implementation "net.peanuuutz:tomlkt:0.1.7"
     implementation "net.jafama:jafama:2.3.2"
 }

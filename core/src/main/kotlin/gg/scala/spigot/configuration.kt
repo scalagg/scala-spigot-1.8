@@ -151,36 +151,9 @@ data class ScalaSpigotConfig(
     @TomlComment(
         "Very self-explanatory. Moved from other configuration files to make lives easier.",
     )
-    val dimensionSettings: DimensionSettings = DimensionSettings(),
-
-    @TomlComment(
-        "Knockback & potion configurations.",
-    )
-    val knockbackConfigs: MutableList<KnockbackPreset> = mutableListOf(
-        KnockbackPreset(
-            "default", listOf("The default preset"),
-            friction = 2.0,
-            horizontal = 0.35,
-            vertical = 0.35,
-            verticalLimit = 0.4,
-            extraHorizontal = 0.425,
-            extraVertical = 0.085
-        )
-    ),
-    val potionConfigs: MutableList<PotionPreset> = mutableListOf(
-        PotionPreset(
-            id = "default",
-            details = listOf(
-                "The default preset"
-            ),
-            offset = -20F,
-            speed = 0.5F,
-            distance = 0.05F
-        )
-    )
+    val dimensionSettings: DimensionSettings = DimensionSettings()
 )
 {
-
     @Serializable
     data class AutoInstalledPlugins(
         var installSpark: Boolean = true

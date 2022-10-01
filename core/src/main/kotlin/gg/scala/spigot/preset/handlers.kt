@@ -6,10 +6,6 @@ import gg.scala.spigot.preset.potion.PotionPreset
 
 object KnockbackHandler : PresetHandler<KnockbackPreset>() {
     override fun initialLoad() {
-        ScalaSpigot.config.knockbackConfigs.forEach {
-            this.presets.add(it)
-        }
-
         if (this.presets.isEmpty())
         {
             this.presets.add(
@@ -30,10 +26,6 @@ object KnockbackHandler : PresetHandler<KnockbackPreset>() {
 }
 object PotionHandler : PresetHandler<PotionPreset>() {
     override fun initialLoad() {
-        ScalaSpigot.config.potionConfigs.forEach {
-            this.presets.add(it)
-        }
-
         if (this.presets.isEmpty())
         {
             this.presets.add(

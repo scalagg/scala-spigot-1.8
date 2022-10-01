@@ -4,19 +4,15 @@ import com.google.common.io.Files
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.LongSerializationPolicy
-import com.sksamuel.hoplite.ConfigLoaderBuilder
-import com.sksamuel.hoplite.PropertySource
-import com.sksamuel.hoplite.watch.FixedIntervalWatchable
-import com.sksamuel.hoplite.watch.ReloadableConfig
 import gg.scala.spigot.filter.EventFilterHandler
 import gg.scala.spigot.logger.Logger
 import gg.scala.spigot.preset.KnockbackHandler
 import gg.scala.spigot.preset.PotionHandler
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import net.peanuuutz.tomlkt.Toml
 import java.io.File
 import java.util.concurrent.CompletableFuture
-import kotlin.time.seconds
 
 /**
  * @author GrowlyX
@@ -37,9 +33,6 @@ object ScalaSpigot
     fun initialLoad()
     {
         Logger.send("Starting ScalaSpigot initialization...")
-
-        KnockbackHandler.initialLoad()
-        PotionHandler.initialLoad()
         EventFilterHandler.initialLoad()
 
         Logger.send("ScalaSpigot has initialized. (${System.currentTimeMillis() - initialization}ms)")
@@ -47,11 +40,12 @@ object ScalaSpigot
 
     fun saveConfig(parent: File)
     {
-        config.knockbackConfigs.clear()
-        config.knockbackConfigs.addAll(KnockbackHandler.presets)
-
-        config.potionConfigs.clear()
-        config.potionConfigs.addAll(PotionHandler.presets)
+        kotlin.runCatching {
+            KnockbackHandler.save(parent)
+            PotionHandler.save(parent)
+        }.onFailure {
+            Logger.send("Failed to save knockback and/or potion configs", Logger.LogLevel.SEVERE)
+        }
 
         val file = File(parent, "scspigot.toml")
 
@@ -94,6 +88,13 @@ object ScalaSpigot
 
     fun internalLoadConfig(parent: File)
     {
+        kotlin.runCatching {
+            KnockbackHandler.load(parent)
+            PotionHandler.load(parent)
+        }.onFailure {
+            Logger.send("Failed to load knockback and/or potion configs", Logger.LogLevel.SEVERE)
+        }
+
         val file = File(parent, "scala-spigot.json")
 
         // old json config functionality
@@ -124,25 +125,7 @@ object ScalaSpigot
             saveConfig(parent)
         }
 
-        val watcher = FixedIntervalWatchable(10_000L)
-
-        val loader = ConfigLoaderBuilder.default()
-            .addSource(PropertySource.file(tomlFile))
-            .build()
-
-        val reloader = ReloadableConfig(loader, ScalaSpigotConfig::class)
-            .addWatcher(watcher)
-
-        this.config = reloader.getLatest()
-
-        reloader.subscribe {
-            if (it == this.config)
-            {
-                return@subscribe
-            }
-
-            this.config = it
-        }
+        this.config = Toml.decodeFromString(tomlFile.readText())
 
         CompletableFuture
             .runAsync {
