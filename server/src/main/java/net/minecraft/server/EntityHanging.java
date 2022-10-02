@@ -13,6 +13,11 @@ import java.util.List;
 public abstract class EntityHanging extends Entity {
 
     private int c;
+
+    {
+        this.c = this.getId() % this.world.spigotConfig.hangingTickFrequency;
+    } // Paper
+
     public BlockPosition blockPosition;
     public EnumDirection direction;
 
