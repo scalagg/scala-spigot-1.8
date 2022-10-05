@@ -356,6 +356,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     }
 
     public EntityDamageEvent getLastDamageCause() {
+        if (lastDamageEvent == null) {
+            return null;
+        }
+
         return lastDamageEvent.get();
     }
 
