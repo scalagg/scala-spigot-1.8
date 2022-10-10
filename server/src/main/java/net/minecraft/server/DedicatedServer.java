@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import gg.scala.spigot.console.ScalaSpigotConsole;
 import gg.scala.spigot.ScalaSpigotServerProperties;
+import gg.scala.spigot.event.ServerLoadedEvent;
 import gg.scala.spigot.server.command.KnockbackCommand;
 import gg.scala.spigot.server.command.PotionCommand;
 import gg.scala.spigot.server.command.SpigotReloadCommand;
@@ -270,6 +271,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             String s3 = String.format("%.3fs", (double) i1 / 1.0E9D);
 
             LOGGER.info("[Scala] Finished loading the server in " + s3 + ".");
+            Bukkit.getPluginManager().callEvent(new ServerLoadedEvent());
 
             if (this.propertyManager.getBoolean("enable-query", false)) {
                 LOGGER.info("* Enabled GS4 Query");
