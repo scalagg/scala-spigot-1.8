@@ -68,7 +68,7 @@ public class ServerConnection {
     };
     private final MinecraftServer server;
     public volatile boolean started;
-    private final List<ChannelFuture> listeningChannels = Collections.synchronizedList(Lists.newArrayList());
+    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.newArrayList());
     private final List<NetworkManager> h = Collections.synchronizedList(Lists.newArrayList());
 
     // Paper start - prevent blocking on adding a new network manager while the server is ticking
@@ -111,7 +111,7 @@ public class ServerConnection {
 
     public void bind(java.net.SocketAddress address) throws IOException {
         // PandaSpigot end
-        synchronized (this.listeningChannels) {
+        synchronized (this.g) {
             Class<? extends ServerChannel> channel;
             final int workerThreadCount = Runtime.getRuntime().availableProcessors();
 
@@ -155,7 +155,7 @@ public class ServerConnection {
                 }
             }
 
-            this.listeningChannels.add(
+            this.g.add(
                 ((new ServerBootstrap().channel(channel))
                     .childHandler(new ChannelInitializer<Channel>() {
                         protected void initChannel(@NotNull Channel channel) {
@@ -202,7 +202,7 @@ public class ServerConnection {
     public void b() {
         this.started = false;
 
-        for (final ChannelFuture future : this.listeningChannels) {
+        for (final ChannelFuture future : this.g) {
             try {
                 future.channel().close().sync();
             } catch (InterruptedException interruptedexception) {
