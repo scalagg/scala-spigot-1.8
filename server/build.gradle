@@ -28,7 +28,7 @@ dependencies {
     implementation "net.sf.trove4j:trove4j:3.0.3"
 
     implementation "com.eatthepath:fast-uuid:0.2.0"
-    implementation "it.unimi.dsi:fastutil:8.5.8"
+    implementation "it.unimi.dsi:fastutil:8.5.9"
 
     implementation "io.netty:netty-all:4.1.82.Final"
     implementation "commons-io:commons-io:2.11.0"
