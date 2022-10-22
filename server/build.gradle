@@ -54,7 +54,7 @@ dependencies {
     // ScalaSpigot end
 
     implementation "org.xerial:sqlite-jdbc:3.39.3.0"
-    implementation "mysql:mysql-connector-java:8.0.30"
+    implementation "mysql:mysql-connector-java:8.0.31"
 
     implementation "net.jafama:jafama:2.3.2"
 
