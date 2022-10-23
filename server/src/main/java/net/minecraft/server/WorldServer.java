@@ -210,10 +210,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     public void doTick(int ticks) {
         super.doTick(ticks);
 
-        if (this.getWorldData().isHardcore() && this.getDifficulty() != EnumDifficulty.HARD) {
-            this.getWorldData().setDifficulty(EnumDifficulty.HARD);
-        }
-
         this.worldProvider.m().b();
 
         if (this.everyoneDeeplySleeping()) {

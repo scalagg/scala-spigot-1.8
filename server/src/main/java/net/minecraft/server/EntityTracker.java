@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -183,11 +182,6 @@ public class EntityTracker {
     );
 
     public void updatePlayers() {
-        int offset = 0;
-
-        final CountDownLatch latch =
-                new CountDownLatch(TRACKER_THREADS);
-
         final ArrayList<EntityPlayer> entities = Lists.newArrayList();
 
         for (final EntityTrackerEntry entry : this.getTrackedEntities()) {
@@ -198,33 +192,12 @@ public class EntityTracker {
             }
         }
 
-        for (int i = 1; i <= TRACKER_THREADS; i++) {
-            final int localOffset = offset++;
-
-            final Runnable runnable = () -> {
-                for (int i1 = localOffset; i1 < entities.size(); i1 += TRACKER_THREADS) {
-                    final EntityPlayer entity = entities.get(i1);
-
-                    for (EntityTrackerEntry entry : this.getTrackedEntities()) {
-                        if (entry.getTracker() != entity) {
-                            entry.updatePlayer(entity);
-                        }
-                    }
+        for (final EntityPlayer entityplayer : entities) {
+            for (final EntityTrackerEntry entry : this.c) {
+                if (entry.tracker != entityplayer) {
+                    entry.updatePlayer(entityplayer);
                 }
-
-                latch.countDown();
-            };
-
-            if (i < TRACKER_THREADS)
-                THREAD_POOL.execute(runnable);
-
-            else runnable.run();
-        }
-
-        try {
-            latch.await();
-        } catch (Exception exception) {
-            exception.printStackTrace();
+            }
         }
     }
 

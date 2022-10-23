@@ -622,7 +622,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
                     this.nextTickTime += 50L;
                     this.methodProfiler.a("tick");
-                    this.A(this::haveTime);
+                    this.A();
                     this.methodProfiler.c("nextTickWait");
                     this.mayHaveDelayedTasks = true;
                     this.delayedTasksMaxNextTickTime = Math.max(getMillis() + 50L, this.nextTickTime);
@@ -771,23 +771,15 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     }
 
     // PandaSpigot start - Modern tick loop
-    protected void A(java.util.function.BooleanSupplier shouldKeepTicking) throws ExceptionWorldConflict { // CraftBukkit - added throws
+    protected void A() throws ExceptionWorldConflict { // CraftBukkit - added throws
         long i = System.nanoTime();
 
         isOversleep = true;
         this.controlTerminate(() -> !this.canOversleep());
         isOversleep = false;
         new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent(); // Paper
-
         ++this.ticks;
 
-        if (this.T) {
-            this.T = false;
-            this.methodProfiler.a = true;
-            this.methodProfiler.a();
-        }
-
-        this.methodProfiler.a("root");
         this.tickServer();
 
         if (i - this.X >= 5000000000L) {
@@ -807,14 +799,11 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         if (SpigotConfig.autoSave)
         {
             if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
-                this.methodProfiler.a("save");
                 this.playerList.savePlayers();
 
                 server.playerCommandState = true;
                 this.queueWorldsForAutoSave();
                 server.playerCommandState = false;
-
-                this.methodProfiler.b();
             }
 
             if (this.autoSaveOrdered) {
@@ -854,7 +843,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         this.server.getScheduler().mainThreadHeartbeat(this.ticks);
 
         // Tick process queue
-
         while (!processQueue.isEmpty()) {
             processQueue.remove().run();
         }
@@ -894,18 +882,21 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
             CrashReport crashreport;
 
-            try {
-                worldserver.doTick(this.ticks);
-            } catch (Throwable throwable) {
+            if (ScalaSpigot.INSTANCE.getConfig().getDoWorldTicks())
+            {
                 try {
-                    crashreport = CrashReport.a(throwable, "Exception ticking world");
-                } catch (Throwable t) {
-                    throw new RuntimeException("Error generating crash report", t);
+                    worldserver.doTick(this.ticks);
+                } catch (Throwable throwable) {
+                    try {
+                        crashreport = CrashReport.a(throwable, "Exception ticking world");
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Error generating crash report", t);
+                    }
+
+                    worldserver.a(crashreport);
+
+                    throw new ReportedException(crashreport);
                 }
-
-                worldserver.a(crashreport);
-
-                throw new ReportedException(crashreport);
             }
 
             try {
