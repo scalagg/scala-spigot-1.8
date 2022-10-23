@@ -80,31 +80,17 @@ public class HelpCommand extends VanillaCommand {
 
         ChatPaginator.ChatPage page = ChatPaginator.paginate(topic.getFullText(sender), pageNumber, pageWidth, pageHeight);
 
-        StringBuilder header = new StringBuilder();
-        header.append(ChatColor.AQUA);
-        header.append(ChatColor.STRIKETHROUGH);
-        header.append(Strings.repeat("-", 15));
-        header.append(ChatColor.WHITE);
-        header.append(topic.getName());
-        header.append(" ");
-        header.append("Help");
-        header.append(" ");
-        if (page.getTotalPages() > 1) {
-            header.append("(");
-            header.append(page.getPageNumber());
-            header.append("/");
-            header.append(page.getTotalPages());
-            header.append(") ");
-        }
-        header.append(ChatColor.AQUA);
-        header.append(ChatColor.STRIKETHROUGH);
-        for (int i = header.length(); i < ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH; i++) {
-            header.append("-");
-        }
-        sender.sendMessage(header.toString());
-
+        sender.sendMessage(
+            ChatColor.GOLD + "=== " + ChatColor.YELLOW + "Showing help page " + ChatColor.GOLD + "==="
+        );
         sender.sendMessage(page.getLines());
-        sender.sendMessage(ChatColor.AQUA + ChatColor.STRIKETHROUGH.toString() + Strings.repeat("-", ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH));
+
+        if (page.getTotalPages() > 1) {
+            sender.sendMessage(
+                ChatColor.YELLOW + " - Showing page " + ChatColor.GOLD + page.getPageNumber() + ChatColor.YELLOW + " of " + ChatColor.GOLD + page.getTotalPages() + ChatColor.YELLOW + "."
+            );
+        }
+
 
         return true;
     }

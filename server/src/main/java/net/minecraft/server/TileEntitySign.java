@@ -73,7 +73,7 @@ public class TileEntitySign extends TileEntity {
 
         // CraftBukkit start - Add an option to convert signs correctly
         // This is done with a flag instead of all the time because
-        // we have no way to tell whether a sign is from 1.7.10 or 1.8
+        // we have no way to tell whether a sign is from 1.7.20 or 1.8
 
         boolean oldSign = Boolean.getBoolean("convertLegacySigns") && !nbttagcompound.getBoolean("Bukkit.isConverted");
 

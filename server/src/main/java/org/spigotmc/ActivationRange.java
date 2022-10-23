@@ -226,6 +226,11 @@ public class ActivationRange
      */
     public static boolean checkIfActive(Entity entity)
     {
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation())
+        {
+            return true;
+        }
+
         // Never safe to skip fireworks or entities not yet added to chunk
         if ( !entity.isAddedToChunk() || entity instanceof EntityFireworks || entity.loadChunks ) { // PaperSpigot
             return true;

@@ -51,7 +51,7 @@ public class VersionCommand extends BukkitCommand {
 
         if (args.length == 0) {
             sender.sendMessage(
-                "This server is running ScalaSpigot version " + Bukkit.getVersion() + " (Implementing API version 1.8.8-R0.3-SNAPSHOT)"
+                "This server is running ScSpigot version " + Bukkit.getVersion() + " (Implementing API version 1.8.8-R0.3-SNAPSHOT)"
             );
         } else {
             StringBuilder name = new StringBuilder();

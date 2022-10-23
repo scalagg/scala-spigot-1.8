@@ -373,7 +373,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String getVersion() {
-        return "origin/" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "/" + ScalaSpigotServerProperties.INSTANCE.getVersion() + " (MC: " + console.getVersion() + ")";
+        return "" + ScalaSpigotServerProperties.INSTANCE.getBranch() + "-" + ScalaSpigotServerProperties.INSTANCE.getVersion() + " (MC: " + console.getVersion() + ")";
     }
 
     @Override

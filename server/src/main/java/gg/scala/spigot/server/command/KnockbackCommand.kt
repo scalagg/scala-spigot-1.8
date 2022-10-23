@@ -94,7 +94,7 @@ class KnockbackCommand : BukkitCommand("knockback")
             }
             "list" ->
             {
-                sender.sendMessage("${ChatColor.AQUA}Knockback Presets:")
+                sender.sendMessage("${ChatColor.GOLD}Knockback Presets:")
 
                 KnockbackHandler.presets.forEach {
                     sender.sendMessage(" ${it.id}")

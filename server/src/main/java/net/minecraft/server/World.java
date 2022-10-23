@@ -21,6 +21,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.generator.ChunkGenerator;
 import org.github.paperspigot.event.ServerExceptionEvent;
 import org.github.paperspigot.exception.ServerInternalException;
+import org.spigotmc.ActivationRange;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -1610,7 +1611,7 @@ public abstract class World implements IBlockAccess {
         int j = gg.scala.spigot.util.MathHelper.floorD(entity.locZ);
 
         // Spigot start
-        if (ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleEntityActivation() && !ActivationRange.checkIfActive(entity)) {
             entity.ticksLived++;
             entity.inactiveTick();
             // PaperSpigot start - Remove entities in unloaded chunks

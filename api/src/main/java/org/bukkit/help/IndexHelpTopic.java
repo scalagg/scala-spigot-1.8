@@ -104,9 +104,13 @@ public class IndexHelpTopic extends HelpTopic {
         StringBuilder line = new StringBuilder();
         line.append(ChatColor.YELLOW);
         line.append(topic.getName());
-        line.append(": ");
-        line.append(ChatColor.AQUA);
-        line.append(topic.getShortText());
+
+        if (!topic.getShortText().isEmpty()) {
+            line.append(ChatColor.GRAY);
+            line.append(" - ");
+            line.append(topic.getShortText());
+        }
+
         return line.toString();
     }
 }
