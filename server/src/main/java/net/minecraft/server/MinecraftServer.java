@@ -882,21 +882,18 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
             CrashReport crashreport;
 
-            if (ScalaSpigot.INSTANCE.getConfig().getDoWorldTicks())
-            {
+            try {
+                worldserver.doTick(this.ticks);
+            } catch (Throwable throwable) {
                 try {
-                    worldserver.doTick(this.ticks);
-                } catch (Throwable throwable) {
-                    try {
-                        crashreport = CrashReport.a(throwable, "Exception ticking world");
-                    } catch (Throwable t) {
-                        throw new RuntimeException("Error generating crash report", t);
-                    }
-
-                    worldserver.a(crashreport);
-
-                    throw new ReportedException(crashreport);
+                    crashreport = CrashReport.a(throwable, "Exception ticking world");
+                } catch (Throwable t) {
+                    throw new RuntimeException("Error generating crash report", t);
                 }
+
+                worldserver.a(crashreport);
+
+                throw new ReportedException(crashreport);
             }
 
             try {

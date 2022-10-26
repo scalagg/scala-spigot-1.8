@@ -33,10 +33,6 @@ data class ScalaSpigotConfig(
         "Enables day cycle loop when enabled."
     )
     val doDayCycle: Boolean = true,
-    @TomlComment(
-        "Enables/disables world ticking."
-    )
-    val doWorldTicks: Boolean = true,
 
     @TomlComment(
         """
