@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import javolution.util.FastSet;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
@@ -331,7 +332,7 @@ public class EntityTrackerEntry {
 
         if (this.tracker instanceof EntityLiving) {
             AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).getAttributeMap();
-            Set set = attributemapserver.getAttributes();
+            FastSet<AttributeInstance> set = attributemapserver.getAttributes();
 
             if (!set.isEmpty()) {
                 // CraftBukkit start - Send scaled max health

@@ -7,6 +7,7 @@ import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
+import javolution.util.FastSet;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -1525,7 +1526,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
 	public void updateScaledHealth() {
 		AttributeMapServer attributemapserver = (AttributeMapServer) getHandle().getAttributeMap();
-		Set set = attributemapserver.getAttributes();
+		FastSet<AttributeInstance> set = attributemapserver.getAttributes();
 
 		injectScaledMaxHealth(set, true);
 
