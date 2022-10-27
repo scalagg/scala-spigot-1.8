@@ -22,7 +22,8 @@ class CraftMetaBookSigned extends CraftMetaBook implements BookMeta {
 
     CraftMetaBookSigned(NBTTagCompound tag) {
         super(tag, false);
-
+        // fix crash exploit
+        /*
         boolean resolved = true;
         if (tag.hasKey(RESOLVED.NBT)) {
             resolved = tag.getBoolean(RESOLVED.NBT);
@@ -43,7 +44,7 @@ class CraftMetaBookSigned extends CraftMetaBook implements BookMeta {
                 }
                 addPage(page);
             }
-        }
+        }*/
     }
 
     CraftMetaBookSigned(Map<String, Object> map) {

@@ -84,7 +84,7 @@ public abstract class TileEntity implements OptimizedRemoveUtil.Marker {
 		if (tileentity != null) {
 			tileentity.a(nbttagcompound);
 		} else {
-			a.warn("Skipping BlockEntity with id " + nbttagcompound.getString("id"));
+//			a.warn("Skipping BlockEntity with id " + nbttagcompound.getString("id"));
 		}
 
 		return tileentity;
