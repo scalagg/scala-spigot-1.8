@@ -208,11 +208,17 @@ public class WorldServer extends World implements IAsyncTaskHandler {
     }
 
     public void doTick(int ticks) {
-        super.doTick(ticks);
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleWeatherTicking())
+        {
+            super.doTick(ticks);
+        }
 
         this.worldProvider.m().b();
 
-        if (this.everyoneDeeplySleeping()) {
+        if (
+            ScalaSpigot.INSTANCE.getConfig().getHandleSleepChecks() &&
+            this.everyoneDeeplySleeping()
+        ) {
             if (this.getGameRules().getBoolean("doDaylightCycle")) {
                 final long i = this.worldData.getDayTime() + 24000L;
                 this.worldData.setDayTime(i - i % 24000L);
@@ -221,11 +227,14 @@ public class WorldServer extends World implements IAsyncTaskHandler {
             this.e();
         }
 
-        // CraftBukkit start - Only call spawner if we have players online and the world allows for mobs or animals
-        long time = this.worldData.getTime();
-        if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && this.players.size() > 0) {
-            this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
-            // CraftBukkit end
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleMobSpawnerTicking())
+        {
+            // CraftBukkit start - Only call spawner if we have players online and the world allows for mobs or animals
+            long time = this.worldData.getTime();
+            if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && this.players.size() > 0) {
+                this.R.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
+                // CraftBukkit end
+            }
         }
 
         // CraftBukkit end

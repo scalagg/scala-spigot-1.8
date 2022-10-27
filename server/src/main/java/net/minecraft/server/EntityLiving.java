@@ -6,6 +6,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.jetbrains.annotations.NotNull;
+import org.spigotmc.ActivationRange;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.util.*;
@@ -1663,6 +1665,13 @@ public abstract class EntityLiving extends Entity {
     protected void doTick() {}
 
     protected void bL() {
+        if (
+            !ScalaSpigot.INSTANCE.getConfig().getHandleEntityCollisions() ||
+            !ActivationRange.checkIfActive(this)
+        ) { // joeleoli
+            return;
+        }
+
         List list = this.world.a((Entity) this, this.getBoundingBox().grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), Predicates.and(IEntitySelector.d, new Predicate() {
             public boolean a(Entity entity) {
                 return entity.ae();

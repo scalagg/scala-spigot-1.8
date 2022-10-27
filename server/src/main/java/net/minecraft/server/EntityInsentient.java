@@ -459,19 +459,28 @@ public abstract class EntityInsentient extends EntityLiving {
         this.world.methodProfiler.a("checkDespawn");
         this.D();
         this.world.methodProfiler.b();
-        // Spigot Start
-        if ( this.fromMobSpawner )
+
+        if (ScalaSpigot.INSTANCE.getConfig().getHandleMobIntelligence())
         {
-            // PaperSpigot start - Allow nerfed mobs to jump
-            if (goalFloat != null) {
-                if (goalFloat.a()) goalFloat.e();
-                this.g.b();
+            // Spigot Start
+            if (
+                MinecraftServer.currentTick % ScalaSpigot.INSTANCE.getConfig().getAiGoalSelectionSpeed() == getId()
+                    % ScalaSpigot.INSTANCE.getConfig().getAiGoalSelectionSpeed()
+            )
+            {
+                if ( this.fromMobSpawner )
+                {
+                    // PaperSpigot start - Allow nerfed mobs to jump
+                    if (goalFloat != null) {
+                        if (goalFloat.a()) goalFloat.e();
+                        this.g.b();
+                    }
+                    // PaperSpigot end
+                    return;
+                }
             }
-            // PaperSpigot end
-            return;
-        }
-        // Spigot End
-        if(ScalaSpigot.INSTANCE.getConfig().getHandleMobIntelligence()) {
+            // Spigot End
+
             this.world.methodProfiler.a("sensing");
             this.bk.a();
             this.world.methodProfiler.b();
@@ -484,11 +493,9 @@ public abstract class EntityInsentient extends EntityLiving {
             this.world.methodProfiler.a("navigation");
             this.navigation.k();
             this.world.methodProfiler.b();
-        }
-        this.world.methodProfiler.a("mob tick");
-        this.E();
-        this.world.methodProfiler.b();
-        if(ScalaSpigot.INSTANCE.getConfig().getHandleMobIntelligence()) {
+            this.world.methodProfiler.a("mob tick");
+            this.E();
+            this.world.methodProfiler.b();
             this.world.methodProfiler.a("controls");
             this.world.methodProfiler.a("move");
             this.moveController.c();

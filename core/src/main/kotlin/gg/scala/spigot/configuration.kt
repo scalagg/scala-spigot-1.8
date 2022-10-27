@@ -71,6 +71,7 @@ data class ScalaSpigotConfig(
         "Enables entity activation when enabled & in the proper range of the targeted entity.",
     )
     val handleEntityActivation: Boolean = false,
+    val handleEntityCollisions: Boolean = false,
     @TomlComment(
         "Enables entity AI when enabled.",
     )
@@ -102,6 +103,10 @@ data class ScalaSpigotConfig(
     )
     val hidePlayersFromTabList: Boolean = false,
     val blockBreakDeSyncFix: Boolean = true,
+    val handleWeatherTicking: Boolean = false,
+    val handleSleepChecks: Boolean = false,
+    val handleMobSpawnerTicking: Boolean = false,
+    val aiGoalSelectionSpeed: Int = 20,
 
     @TomlComment(
         "User cache persistence settings:"

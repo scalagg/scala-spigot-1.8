@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EntityPlayer extends EntityHuman implements ICrafting {
 

@@ -29,7 +29,6 @@ import org.bukkit.event.server.ServerStopEvent;
 import org.spigotmc.SpigotConfig;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler {
 
@@ -134,7 +131,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public long serverStartTime;
     public volatile Thread shutdownThread;
     private long lastTick = 0;
-    private long catchupTime = 0;
+    private final long catchupTime = 0;
 
     public static <S extends MinecraftServer> S spin(java.util.function.Function<Thread, S> serverFactory) {
         java.util.concurrent.atomic.AtomicReference<S> reference = new java.util.concurrent.atomic.AtomicReference<>();
@@ -686,6 +683,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     }
 
     boolean isOversleep = false;
+
     private boolean canOversleep() {
         return this.mayHaveDelayedTasks && getMillis() < this.delayedTasksMaxNextTickTime;
     }
@@ -708,7 +706,8 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         // anything that does try to post to main during watchdog crash, run on watchdog
         if (this.hasStopped && Thread.currentThread().equals(shutdownThread)) {
             runnable.run();
-            runnable = () -> {};
+            runnable = () -> {
+            };
         }
         return new TasksPerTick(this.ticks, runnable);
     }
@@ -796,8 +795,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             this.r.b().a(gameProfile);
         }
 
-        if (SpigotConfig.autoSave)
-        {
+        if (SpigotConfig.autoSave) {
             if (autoSavePeriod > 0 && this.ticks % autoSavePeriod == 0) {
                 this.playerList.savePlayers();
 
@@ -859,12 +857,11 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             final PacketPlayOutUpdateTime worldSyncedPacket = new PacketPlayOutUpdateTime(worldTime, dayTime, doDaylight);
 
             for (EntityHuman human : world.players) {
-                if (!(human instanceof EntityPlayer) || (this.ticks + human.getId()) % 20 != 0) {
+                if (!(human instanceof EntityPlayer player) || (this.ticks + human.getId()) % 20 != 0) {
                     continue;
                 }
 
                 // Check if the players time is currently synced with the world if not, we will sync it.
-                EntityPlayer player = (EntityPlayer) human;
                 final long playerTime = player.getPlayerTime();
                 PacketPlayOutUpdateTime packet = (playerTime == worldTime) ? worldSyncedPacket : new PacketPlayOutUpdateTime(worldTime, playerTime, doDaylight);
                 player.playerConnection.sendPacket(packet);
