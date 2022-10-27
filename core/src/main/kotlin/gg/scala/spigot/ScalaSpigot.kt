@@ -26,6 +26,10 @@ object ScalaSpigot
         .setLongSerializationPolicy(LongSerializationPolicy.STRING)
         .create()
 
+    private val toml = Toml {
+        ignoreUnknownKeys = true
+    }
+
     var config = ScalaSpigotConfig()
 
     private val initialization = System.currentTimeMillis()
@@ -59,7 +63,7 @@ object ScalaSpigot
 
         Files.asCharSink(file, Charsets.UTF_8)
             .write(
-                Toml.encodeToString(this.config)
+                toml.encodeToString(this.config)
             )
     }
 
@@ -129,7 +133,7 @@ object ScalaSpigot
             saveConfig(parent)
         }
 
-        this.config = Toml.decodeFromString(tomlFile.readText())
+        this.config = toml.decodeFromString(tomlFile.readText())
 
         CompletableFuture
             .runAsync {
