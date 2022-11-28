@@ -53,7 +53,8 @@ class KnockbackCommand : BukkitCommand("knockback")
                     val preset = KnockbackPreset(
                         args[1], listOf("Default description."),
 
-                        friction = 2.0,
+                        horizontalFriction = 2.0,
+                        verticalFriction = 2.0,
                         horizontal = 0.35,
                         vertical = 0.35,
                         verticalLimit = 0.4,
