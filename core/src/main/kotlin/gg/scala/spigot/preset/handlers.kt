@@ -43,8 +43,7 @@ object KnockbackHandler : PresetHandler<KnockbackPreset>()
             this.presets.add(
                 KnockbackPreset(
                     "default", listOf("The default preset"),
-                    horizontalFriction = 2.0,
-                    verticalFriction = 2.0,
+                    Friction = 2.0,
                     horizontal = 0.35,
                     vertical = 0.35,
                     verticalLimit = 0.4,

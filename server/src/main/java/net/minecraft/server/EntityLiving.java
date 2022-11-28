@@ -803,12 +803,15 @@ public abstract class EntityLiving extends Entity {
                         double d0 = entity.locX - this.locX;
 
                         // ScalaSpigot - Start Randomness
+
 //                        double d1;
 //
 //                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
 //                            d0 = (Math.random() - Math.random()) * 0.01D;
 //                        }
+
                         double d1 = entity.locZ - this.locZ;
+
                         // ScalaSpigot - End Randomness
 
                         this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
@@ -912,50 +915,33 @@ public abstract class EntityLiving extends Entity {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (preset.getDistanceKB()) {
-                double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
+            double magnitude = gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1);
 
-                this.motX /= preset.getHorizontalFriction();
-                this.motY /= preset.getVerticalFriction();
-                this.motZ /= preset.getHorizontalFriction();
+            this.motY /= preset.getFriction();
 
-                this.motX -= d0 / magnitude * preset.getHorizontal();
-                this.motY += preset.getVertical();
-                this.motZ -= d1 / magnitude * preset.getHorizontal();
-
-            } else {
-
-                this.motX /= preset.getHorizontalFriction();
-                this.motY /= preset.getVerticalFriction();
-                this.motZ /= preset.getHorizontalFriction();
-
-                this.motX -= d0 * preset.getHorizontal();
-                this.motY += preset.getVertical();
-                this.motZ -= d1 * preset.getHorizontal();
-
-            }
+            this.motX -= d0 / magnitude * preset.getHorizontal();
+            this.motY += preset.getVertical();
+            this.motZ -= d1 / magnitude * preset.getHorizontal();
 
             if (damageSource instanceof EntityDamageSourceIndirect) {
                 final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
 
                 if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
-                    if (preset.getRodHorizontalMultiplier() != 0)
-                    {
+                    if (preset.getRodHorizontalMultiplier() != 0) {
                         this.motX *= preset.getRodHorizontalMultiplier();
                         this.motZ *= preset.getRodHorizontalMultiplier();
                     }
 
-                    if (preset.getRodVerticalMultiplier() != 0)
-                    {
+                    if (preset.getRodVerticalMultiplier() != 0) {
                         this.motY *= preset.getRodVerticalMultiplier();
                     }
                 }
             }
 
+
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
-//        }
     }
 
     protected String bo() {
