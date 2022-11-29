@@ -100,8 +100,6 @@ public abstract class EntityLiving extends Entity {
     private boolean isTickingEffects = false;
     private List<Object> effectsToProcess = Lists.newArrayList();
 
-    protected int lastSwingTicks;
-
     boolean previousSprintStatus = false;
 
     public void inactiveTick() {
@@ -274,8 +272,6 @@ public abstract class EntityLiving extends Entity {
         this.lastPitch = this.pitch;
 
         this.world.methodProfiler.b();
-
-        this.lastSwingTicks++; // joeleoli - increment last swing ticks for animation broadcast
     }
 
     public int getExpReward() {
@@ -1205,10 +1201,6 @@ public abstract class EntityLiving extends Entity {
         if (!this.ar || this.as >= this.n() / 2 || this.as < 0) {
             this.as = -1;
             this.ar = true;
-
-            if (lastSwingTicks < 5) {
-                return;
-            }
 
             if (this.world instanceof WorldServer) {
                 ((WorldServer) this.world).getTracker().a(this, new PacketPlayOutAnimation(this, 0));

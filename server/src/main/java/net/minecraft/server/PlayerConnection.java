@@ -1226,7 +1226,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 		}
 
 		if (MinecraftServer.currentTick >= this.forwardSwingTick) {
-			this.player.lastSwingTicks = 0;
 			this.player.bw();
 			this.forwardSwingTick = MinecraftServer.currentTick + 5;
 		}
