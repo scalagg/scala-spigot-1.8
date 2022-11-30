@@ -905,8 +905,7 @@ public abstract class EntityLiving extends Entity {
 
     public void a(Entity entity, float f, double d0, double d1, DamageSource damageSource) {
 
-        // ScalaSpigot - Start Randomness 2
-//        if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+        if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
             final KnockbackPreset preset = getKnockbackPreset();
@@ -938,6 +937,7 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
+        }
     }
 
     protected String bo() {
