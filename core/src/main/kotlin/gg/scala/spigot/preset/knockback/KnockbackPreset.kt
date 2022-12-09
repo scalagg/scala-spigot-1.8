@@ -3,7 +3,7 @@ package gg.scala.spigot.preset.knockback
 open class KnockbackPreset(
     val id: String,
     var details: List<String>,
-    var friction: Double,
+    var Friction: Double,
     var horizontal: Double,
     var vertical: Double,
     var verticalLimit: Double,

@@ -164,6 +164,8 @@ public class EntityTrackerEntry {
                     }
                     // CraftBukkit end
 
+                    // The 400 you can find on the line below allows you to edit the rate of tracking for entities. Editing this can give you a plethora of effects both good and bad.
+                    // This is mainly touched to mess with the "smoothness" and Fluidity of PvP. All effects of changing this aren't yet documented. Updates will come.
                     if (j1 >= -128 && j1 < 128 && k1 >= -128 && k1 < 128 && l1 >= -128 && l1 < 128 && this.v <= 400 && !this.x && this.y == this.tracker.onGround) {
                         if (((!flag || !flag1) && !(this.tracker instanceof EntityArrow))) {
                             if (flag) {
