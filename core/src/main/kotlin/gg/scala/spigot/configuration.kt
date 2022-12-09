@@ -33,6 +33,7 @@ data class ScalaSpigotConfig(
         "Enables day cycle loop when enabled."
     )
     val doDayCycle: Boolean = true,
+    val mapRenderChunks: Boolean = false,
 
     @TomlComment(
         """
