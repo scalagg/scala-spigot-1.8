@@ -1025,6 +1025,10 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
+//            if (!this.isSprinting() && previousSprintStatus) {
+//                Bukkit.broadcastMessage(this.getName() + " just wtapped");
+//            }
+
             this.previousSprintStatus = this.isSprinting();
 
             if (f > 0.0F || f1 > 0.0F) {

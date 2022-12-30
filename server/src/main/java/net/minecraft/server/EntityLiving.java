@@ -918,6 +918,10 @@ public abstract class EntityLiving extends Entity {
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
 
+            if (this.motY > preset.getVerticalLimit()) {
+                this.motY = preset.getVerticalLimit();
+            }
+
             if (damageSource instanceof EntityDamageSourceIndirect) {
                 final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
 
@@ -934,9 +938,6 @@ public abstract class EntityLiving extends Entity {
             }
 
 
-            if (this.motY > preset.getVerticalLimit()) {
-                this.motY = preset.getVerticalLimit();
-            }
         }
     }
 

@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.eatthepath.uuid.FastUUID;
+import gg.scala.spigot.ScalaSpigotSR;
 import gg.scala.spigot.ScalaSpigotService;
 import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.util.OptimizedRemoveUtil;
@@ -1144,6 +1145,14 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		return MathHelper.c(f * f + f1 * f1 + f2 * f2);
 	}
 
+	public double distanceSqured(double d0, double d1, double d2) {
+		double d3 = this.locX - d0;
+		double d4 = this.locY - d1;
+		double d5 = this.locZ - d2;
+
+		return d3 * d3 + d4 * d4 + d5 * d5;
+	}
+
 	public double e(double d0, double d1, double d2) {
 		double d3 = this.locX - d0;
 		double d4 = this.locY - d1;
@@ -1175,6 +1184,39 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 
 		return d0 * d0 + d1 * d1 + d2 * d2;
 	}
+
+	// WindSpigot start
+	public double distanceSqrdAccurate(Entity entity) {
+		// Nacho start - improved hit reg
+		if (ScalaSpigot.INSTANCE.getConfig().getFixHitReg() && entity instanceof EntityPlayer && this instanceof EntityPlayer) {
+
+			EntityPlayer entityPlayer = (EntityPlayer) entity;
+			EntityPlayer player = (EntityPlayer) this;
+
+			Location loc;
+			if (entityPlayer.playerConnection.getClass().equals(PlayerConnection.class)
+					&& player.playerConnection.getClass().equals(PlayerConnection.class)) {
+				loc = ScalaSpigotSR.getInstance().getLagCompensator().getHistoryLocation(entityPlayer.getBukkitEntity(),
+						player.ping);
+			} else {
+				loc = entityPlayer.getBukkitEntity().getLocation();
+			}
+			// Nacho end
+
+			double d0 = this.locX - loc.getX();
+			double d1 = this.locY - loc.getY();
+			double d2 = this.locZ - loc.getZ();
+
+			return d0 * d0 + d1 * d1 + d2 * d2;
+		} else {
+			double d0 = this.locX - entity.locX;
+			double d1 = this.locY - entity.locY;
+			double d2 = this.locZ - entity.locZ;
+
+			return d0 * d0 + d1 * d1 + d2 * d2;
+		}
+	}
+	// WindSpigot end
 
 	public void d(EntityHuman entityhuman) {
 	}

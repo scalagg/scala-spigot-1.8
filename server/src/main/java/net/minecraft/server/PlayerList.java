@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import gg.scala.spigot.ScalaSpigotSR;
 import gg.scala.spigot.console.ScalaSpigotCommandSender;
 import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;
@@ -359,6 +360,7 @@ public abstract class PlayerList {
         // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
         org.bukkit.craftbukkit.event.CraftEventFactory.handleInventoryCloseEvent(entityplayer);
 
+        Player bukkit = cserver.getPlayer(entityplayer); // KigPaper
         PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), "\u00A7e" + entityplayer.getName() + " left the game.");
         cserver.getPluginManager().callEvent(playerQuitEvent);
         entityplayer.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
@@ -397,6 +399,8 @@ public abstract class PlayerList {
         // CraftBukkit end
 
         ChunkIOExecutor.adjustPoolSize(this.getPlayerCount()); // CraftBukkit
+
+        ScalaSpigotSR.getInstance().getLagCompensator().clearCache(bukkit); // SRSpigot
 
         return playerQuitEvent.getQuitMessage(); // CraftBukkit
     }
@@ -583,6 +587,7 @@ public abstract class PlayerList {
             }
             // Spigot End
 
+            ScalaSpigotSR.getInstance().getLagCompensator().clearCache(respawnPlayer); // Nacho
             location = respawnEvent.getRespawnLocation();
             entityplayer.reset();
         } else {
@@ -635,6 +640,8 @@ public abstract class PlayerList {
         // CraftBukkit start
         // Don't fire on respawn
         if (fromWorld != location.getWorld()) {
+            // SR
+            ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), entityplayer.getBukkitEntity().getLocation());
             PlayerChangedWorldEvent event = new PlayerChangedWorldEvent(entityplayer.getBukkitEntity(), fromWorld);
             server.server.getPluginManager().callEvent(event);
         }
@@ -692,6 +699,8 @@ public abstract class PlayerList {
             return;
         }
         exitWorld = ((CraftWorld) exit.getWorld()).getHandle();
+
+        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), exit); // SRSpigot
 
         org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent(entityplayer.getBukkitEntity(), enter, exit, cause);
         Bukkit.getServer().getPluginManager().callEvent(tpEvent);

@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import gg.scala.spigot.ScalaSpigotSR;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -79,7 +80,7 @@ public class EntityEnderPearl extends EntityProjectile {
                         }
 
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
-                        entityliving.fallDistance = 0.0F;
+                        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, location); // SrSpigot
                         CraftEventFactory.entityDamage = this;
 
                         entityliving.d(DamageSource.FALL, 5.0F);

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.ScalaSpigot;
+import gg.scala.spigot.ScalaSpigotSR;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
@@ -610,6 +611,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		if (event.isCancelled()) {
 			return false;
 		}
+
+		ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(this, to);
 
 		// If this player is riding another entity, we must dismount before teleporting.
 		entity.mount(null);
