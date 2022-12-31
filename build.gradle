@@ -28,6 +28,8 @@ ext {
         }
 
         return stdout.toString().trim()
+        
+        /// dh3e9wuiofhjnoikwejmnfi
     }
 
     gitHash = getGitHash
