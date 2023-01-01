@@ -1063,6 +1063,8 @@ public abstract class EntityHuman extends EntityLiving {
 
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
+
+
                 if (damaged) {
                     if (isSprinting()) {
                         entity.g(

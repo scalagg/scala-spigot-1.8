@@ -921,23 +921,6 @@ public abstract class EntityLiving extends Entity {
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
             }
-
-            if (damageSource instanceof EntityDamageSourceIndirect) {
-                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
-
-                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
-                    if (preset.getRodHorizontalMultiplier() != 0) {
-                        this.motX *= preset.getRodHorizontalMultiplier();
-                        this.motZ *= preset.getRodHorizontalMultiplier();
-                    }
-
-                    if (preset.getRodVerticalMultiplier() != 0) {
-                        this.motY *= preset.getRodVerticalMultiplier();
-                    }
-                }
-            }
-
-
         }
     }
 

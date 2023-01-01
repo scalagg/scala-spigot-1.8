@@ -4,6 +4,7 @@ package net.minecraft.server;
 import gg.scala.spigot.ScalaSpigotSR;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.player.PlayerTeleportEvent;
 // CraftBukkit end
@@ -80,10 +81,12 @@ public class EntityEnderPearl extends EntityProjectile {
                         }
 
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
-                        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, location); // SrSpigot
+                        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, teleEvent.getTo()); // SrSpigot
+                        entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
 
-                        entityliving.d(DamageSource.FALL, 5.0F);
+//                      entityliving.damageEntity(DamageSource.FALL, 5.0F); // With Shake
+                        entityliving.d(DamageSource.FALL, 5.0F); // Without Shake
                         CraftEventFactory.entityDamage = null;
                     }
                     // CraftBukkit end
@@ -98,15 +101,12 @@ public class EntityEnderPearl extends EntityProjectile {
 
     }
 
+    @Override
     public void t_() {
         EntityLiving entityliving = this.getShooter();
-
-        if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
+        if (entityliving != null && entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
-            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
-                this.lastValidTeleport = getBukkitEntity().getLocation();
-            }
             AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(this.locX - 0.3, this.locY - 0.05, this.locZ - 0.3, this.locX + 0.3, this.locY + 1.62, this.locZ + 0.3);
             if (this.world.getCubes(this, clearTeleportBoundingBox).isEmpty()) {
                 this.lastValidTeleport = this.getBukkitEntity().getLocation();

@@ -59,15 +59,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
     }
 
     public void shoot(double d0, double d1, double d2, float f, float f1) {
-        /*
-        if (this instanceof EntityPotion && this.shooter.isSprinting()) {
-            Player player = (Player) this.shooter.getBukkitEntity();
-            for (PotionEffect effect : player.getActivePotionEffects()) {
-                if (effect.getType().equals(PotionEffectType.SPEED)) {
-                    f += (effect.getAmplifier() + 1) * 0.0415F;
-                }
-            }
-        } */
         float f2 = (float) gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 
         d0 /= (double) f2;
@@ -128,35 +119,33 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
         if (!this.world.isClientSide) {
             Entity entity = null;
-            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
+            boolean newPotion = this instanceof EntityPotion;
+            double grow = newPotion ? 0.1 : 1.0;
+            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(grow, grow, grow));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
 
             for (int i = 0; i < list.size(); ++i) {
+                double d1;
                 Entity entity1 = (Entity) list.get(i);
+                if (!entity1.ad() || entity1 == entityliving && this.ar < 5) continue;
 
+                if (this instanceof EntityPotion) {
+                    d1 = Math.pow(entity1.locX - this.locX, 2.0) + Math.pow(entity1.locY - this.locY, 2.0) + Math.pow(entity1.locZ - this.locZ, 2.0);
+                    if (!(d1 < d0) && d0 != 0.0) continue;
+                    entity = entity1;
+                    d0 = d1;
+                    continue;
+                }
                 if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
-                    float f = 0.3F;
+                    float f = 0.31f;
                     AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow((double) f, (double) f, (double) f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
-
-                    // IonSpigot start - Smooth Potting
-                    if (this instanceof EntityPotion && movingobjectposition1 == null && getBoundingBox().b(entity1.getBoundingBox())) {
-                        movingobjectposition1 = new MovingObjectPosition(entity1);
-                    }
-                    // IonSpigot end
-
-                    if (movingobjectposition1 != null) {
-                        double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
-
-                        if (d1 < d0 || d0 == 0.0D) {
+                        if (movingobjectposition1 == null || !((d1 = vec3d.distanceSquared(movingobjectposition1.pos)) < d0) && d0 != 0.0) continue;
                             entity = entity1;
                             d0 = d1;
-                        }
-                    }
                 }
             }
-
             if (entity != null) {
                 movingobjectposition = new MovingObjectPosition(entity);
             }
@@ -287,5 +276,18 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         }
 
         return this.shooter;
+    }
+
+    @Override
+    public boolean a(EntityPlayer entityplayer) {
+        if (!super.a(entityplayer)) {
+            return false;
+        }
+        EntityLiving shooter = this.getShooter();
+        if (shooter instanceof EntityPlayer) {
+            EntityPlayer otherPlayer = (EntityPlayer)shooter;
+            return entityplayer.getBukkitEntity().canSee(otherPlayer.getBukkitEntity());
+        }
+        return true;
     }
 }
