@@ -81,7 +81,6 @@ public class EntityEnderPearl extends EntityProjectile {
                         }
 
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
-                        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, teleEvent.getTo()); // SrSpigot
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
 

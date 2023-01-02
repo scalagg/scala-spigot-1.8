@@ -612,8 +612,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return false;
 		}
 
-		ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(this, to);
-
 		// If this player is riding another entity, we must dismount before teleporting.
 		entity.mount(null);
 

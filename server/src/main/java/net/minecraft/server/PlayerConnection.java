@@ -280,7 +280,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
 						if (event.isCancelled()) {
 							// PandaSpigot end
-							ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, to); // Nacho
 							this.player.playerConnection.sendPacket(new PacketPlayOutPosition(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
 							return;
 						}
@@ -295,7 +294,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 							return;
 						}
 					}
-					ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, to); // SRSpigot - register movement
 				}
 
 				if (this.checkMovement && !this.player.dead) {
@@ -517,7 +515,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 			f1 = to.getPitch();
 		}
 
-		ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(player, to); // SRSpigot
 		this.internalTeleport(d0, d1, d2, f, f1, set);
 	}
 

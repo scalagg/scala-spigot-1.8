@@ -400,8 +400,6 @@ public abstract class PlayerList {
 
         ChunkIOExecutor.adjustPoolSize(this.getPlayerCount()); // CraftBukkit
 
-        ScalaSpigotSR.getInstance().getLagCompensator().clearCache(bukkit); // SRSpigot
-
         return playerQuitEvent.getQuitMessage(); // CraftBukkit
     }
 
@@ -587,7 +585,6 @@ public abstract class PlayerList {
             }
             // Spigot End
 
-            ScalaSpigotSR.getInstance().getLagCompensator().clearCache(respawnPlayer); // Nacho
             location = respawnEvent.getRespawnLocation();
             entityplayer.reset();
         } else {
@@ -641,7 +638,7 @@ public abstract class PlayerList {
         // Don't fire on respawn
         if (fromWorld != location.getWorld()) {
             // SR
-            ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), entityplayer.getBukkitEntity().getLocation());
+            entityplayer.getBukkitEntity().getLocation();
             PlayerChangedWorldEvent event = new PlayerChangedWorldEvent(entityplayer.getBukkitEntity(), fromWorld);
             server.server.getPluginManager().callEvent(event);
         }
@@ -699,8 +696,6 @@ public abstract class PlayerList {
             return;
         }
         exitWorld = ((CraftWorld) exit.getWorld()).getHandle();
-
-        ScalaSpigotSR.getInstance().getLagCompensator().registerMovement(entityplayer.getBukkitEntity(), exit); // SRSpigot
 
         org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent(entityplayer.getBukkitEntity(), enter, exit, cause);
         Bukkit.getServer().getPluginManager().callEvent(tpEvent);

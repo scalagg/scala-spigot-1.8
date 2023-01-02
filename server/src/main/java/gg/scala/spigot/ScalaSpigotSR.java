@@ -1,7 +1,6 @@
 package gg.scala.spigot;
 
 import gg.scala.spigot.async.thread.CombatThread;
-import gg.scala.spigot.hitdetection.LagCompensator;
 
 public class ScalaSpigotSR {
 
@@ -10,7 +9,6 @@ public class ScalaSpigotSR {
     private static final ScalaSpigotSR INSTANCE = new ScalaSpigotSR();
 
     private CombatThread knockbackThread;
-    private LagCompensator lagCompensator;
 
     public ScalaSpigotSR() {
 //        INSTANCE = this;
@@ -25,16 +23,10 @@ public class ScalaSpigotSR {
         if (ScalaSpigot.INSTANCE.getConfig().getFixHitReg()) {
             knockbackThread = new CombatThread("Knockback Thread");
         }
-
-        lagCompensator = new LagCompensator();
     }
 
     public CombatThread getKnockbackThread() {
         return knockbackThread;
-    }
-
-    public LagCompensator getLagCompensator() {
-        return lagCompensator;
     }
 
     public static ScalaSpigotSR getInstance() {
