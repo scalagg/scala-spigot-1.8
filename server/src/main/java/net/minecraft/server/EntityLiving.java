@@ -1774,20 +1774,7 @@ public abstract class EntityLiving extends Entity {
     }
 
     public Vec3D d(float f) {
-        // ScalaSpigot Start - Mouse delay fix (Server sided)
-        if (this instanceof EntityPlayer) {
-            return super.d(f);
-        }
-        // ScalaSpigot End
-
-        if (f == 1.0F) {
-            return this.f(this.pitch, this.aK);
-        } else {
-            float f1 = this.lastPitch + (this.pitch - this.lastPitch) * f;
-            float f2 = this.aL + (this.aK - this.aL) * f;
-
-            return this.f(f1, f2);
-        }
+        return this.f(this.pitch, this.yaw);
     }
 
     public boolean bM() {

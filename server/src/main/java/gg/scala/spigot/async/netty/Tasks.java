@@ -1,5 +1,3 @@
-// From
-// https://github.com/Argarian-Network/NachoSpigot/tree/async-kb-hit
 package gg.scala.spigot.async.netty;
 
 import java.util.concurrent.atomic.AtomicInteger;

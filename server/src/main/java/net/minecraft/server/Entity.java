@@ -1281,14 +1281,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 	}
 
 	public Vec3D d(float f) {
-		if (f == 1.0F) {
-			return this.f(this.pitch, this.yaw);
-		} else {
-			float f1 = this.lastPitch + (this.pitch - this.lastPitch) * f;
-			float f2 = this.lastYaw + (this.yaw - this.lastYaw) * f;
-
-			return this.f(f1, f2);
-		}
+		return this.f(this.pitch, this.yaw);
 	}
 
 	protected final Vec3D f(float f, float f1) {

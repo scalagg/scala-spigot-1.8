@@ -15,8 +15,6 @@ import java.util.List;
 public class EntityPotion extends EntityProjectile {
 
     public ItemStack item;
-    public boolean compensated = false; // IonSpigot - Lag Compensated Potions
-
     public EntityPotion(World world) {
         super(world);
     }
