@@ -830,10 +830,10 @@ public abstract class EntityHuman extends EntityLiving {
                         f = f * 3.0F / 2.0F;
                     }
                 }
-
-                if (false && f == 0.0F) { // CraftBukkit - Don't filter out 0 damage
-                    return false;
-                } else {
+// Dead Code
+//                if (false && f == 0.0F) { // CraftBukkit - Don't filter out 0 damage
+//                    return false;
+//                } else {
                     Entity entity = damagesource.getEntity();
 
                     if (entity instanceof EntityArrow && ((EntityArrow) entity).shooter != null) {
@@ -844,7 +844,6 @@ public abstract class EntityHuman extends EntityLiving {
                 }
             }
         }
-    }
 
     public boolean a(net.minecraft.server.EntityHuman entityhuman) {
         // CraftBukkit start - Change to check OTHER player's scoreboard team according to API
@@ -898,41 +897,7 @@ public abstract class EntityHuman extends EntityLiving {
 
     // CraftBukkit start
     protected boolean d(DamageSource damagesource, float f) { // void -> boolean
-        if (true) {
             return super.d(damagesource, f);
-        }
-        // CraftBukkit end
-        if (!this.isInvulnerable(damagesource)) {
-            if (!damagesource.ignoresArmor() && this.isBlocking() && f > 0.0F) {
-                final PlayerBlockedHitEvent event =
-                    new PlayerBlockedHitEvent(uniqueID);
-
-                Bukkit.getPluginManager().callEvent(event);
-
-                if (!event.isCancelled()) {
-                    f = (1.0F + f) * this.world.paperSpigotConfig.playerBlockingDamageMultiplier; // PaperSpigot - Configurable damage multiplier for blocking;
-                }
-            }
-
-            f = this.applyArmorModifier(damagesource, f);
-            f = this.applyMagicModifier(damagesource, f);
-            float f1 = f;
-
-            f = Math.max(f - this.getAbsorptionHearts(), 0.0F);
-            this.setAbsorptionHearts(this.getAbsorptionHearts() - (f1 - f));
-            if (f != 0.0F) {
-                this.applyExhaustion(damagesource.getExhaustionCost());
-                float f2 = this.getHealth();
-
-                this.setHealth(this.getHealth() - f);
-                this.bs().a(damagesource, f2, f);
-                if (f < 3.4028235E37F) {
-                    this.a(StatisticList.x, Math.round(f * 10.0F));
-                }
-
-            }
-        }
-        return false; // CraftBukkit
     }
 
     public void openSign(TileEntitySign tileentitysign) {
@@ -1062,8 +1027,6 @@ public abstract class EntityHuman extends EntityLiving {
                 // Kohi end
 
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
-
-
 
                 if (damaged) {
                     if (isSprinting()) {

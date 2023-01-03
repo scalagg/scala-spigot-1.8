@@ -733,11 +733,6 @@ public abstract class EntityLiving extends Entity {
             } else if (damagesource.o() && this.hasEffect(MobEffectList.FIRE_RESISTANCE)) {
                 return false;
             } else {
-                // CraftBukkit - Moved into d(DamageSource, float)
-                if (false && (damagesource == DamageSource.ANVIL || damagesource == DamageSource.FALLING_BLOCK) && this.getEquipment(4) != null) {
-                    this.getEquipment(4).damage((int) (f * 4.0F + this.random.nextFloat() * f * 2.0F), this);
-                    f *= 0.75F;
-                }
 
                 this.aB = 1.5F;
                 boolean flag = true;

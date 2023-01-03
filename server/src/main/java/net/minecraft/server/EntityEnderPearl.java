@@ -40,6 +40,19 @@ public class EntityEnderPearl extends EntityProjectile {
         }
         // PaperSpigot end
 
+        // FlamePaper start - 0117-Pearl-through-blocks
+        BlockPosition blockPosition = movingobjectposition.a();
+
+        if (blockPosition != null) {
+            IBlockData blockData = world.getType(blockPosition);
+            Block block = blockData.getBlock();
+            boolean collides = (block == Blocks.TALLGRASS);
+            if (collides) {
+                return;
+            }
+        }
+        // FlamePaper end
+
 //        for (int i = 0; i < 32; ++i) {
 //            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
 //        }
@@ -81,7 +94,7 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
-
+                        entityliving.damageEntity(DamageSource.FALL, 5.0F);
                       entityliving.d(DamageSource.FALL, 5.0F);
                       CraftEventFactory.entityDamage = null;
                     }
