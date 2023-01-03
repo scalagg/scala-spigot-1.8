@@ -1,10 +1,8 @@
 package net.minecraft.server;
 
 // CraftBukkit start
-import gg.scala.spigot.ScalaSpigotSR;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.player.PlayerTeleportEvent;
 // CraftBukkit end
@@ -84,9 +82,8 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
 
-//                      entityliving.damageEntity(DamageSource.FALL, 5.0F); // With Shake
-                        entityliving.d(DamageSource.FALL, 5.0F); // Without Shake
-                        CraftEventFactory.entityDamage = null;
+                      entityliving.d(DamageSource.FALL, 5.0F);
+                      CraftEventFactory.entityDamage = null;
                     }
                     // CraftBukkit end
                 }

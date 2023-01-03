@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
-import gg.scala.spigot.ScalaSpigotSR;
 import gg.scala.spigot.console.ScalaSpigotCommandSender;
 import gg.scala.spigot.ScalaSpigot;
 import io.netty.buffer.Unpooled;

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import gg.scala.spigot.ScalaSpigot;
-import gg.scala.spigot.ScalaSpigotSR;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
