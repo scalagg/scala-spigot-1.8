@@ -76,7 +76,8 @@ public class EntityPotion extends EntityProjectile {
             AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0, 2.0, 4.0);
             List<EntityLiving> list1 = this.world.a(EntityLiving.class, axisalignedbb);
             Iterator<EntityLiving> iterator = list1.iterator();
-            HashMap<LivingEntity, Double> affected = new HashMap<LivingEntity, Double>();
+
+            HashMap<LivingEntity, Double> affected = new HashMap<>();
             while (iterator.hasNext()) {
                 EntityLiving entityliving = iterator.next();
                 double d0 = this.h(entityliving);
@@ -87,16 +88,20 @@ public class EntityPotion extends EntityProjectile {
                 } else if (Math.hypot(this.motX, this.motZ) > 0.4 && d1 > 0.8) {
                     d1 = 1.0;
                 }
-                affected.put((LivingEntity)((Object)entityliving.getBukkitEntity()), d1);
+                affected.put((LivingEntity)(entityliving.getBukkitEntity()), d1);
             }
+
             PotionSplashEvent event = CraftEventFactory.callPotionSplashEvent(this, affected);
             if (event.getEntity().getShooter() instanceof Player && (shooter = (Player)event.getEntity().getShooter()).isSprinting() && event.getIntensity(shooter) > 0.5) {
                 event.setIntensity(shooter, 1.0);
             }
+
             if (!event.isCancelled() && list != null && !list.isEmpty()) {
+
                 for (LivingEntity victim : event.getAffectedEntities()) {
                     if (!(victim instanceof CraftLivingEntity)) continue;
                     EntityLiving entityliving = ((CraftLivingEntity)victim).getHandle();
+
                     if (this.getShooter() != null && entityliving instanceof EntityPlayer && !((EntityPlayer)entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity())) continue;
                     double d1 = event.getIntensity(victim);
                     for (MobEffect mobeffect : list) {

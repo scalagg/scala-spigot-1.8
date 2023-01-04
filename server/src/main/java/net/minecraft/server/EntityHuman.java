@@ -1035,15 +1035,20 @@ public abstract class EntityHuman extends EntityLiving {
                                 preset.getExtraVertical(),
                                 MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
                         );
-                        //Working on this
-//                        if entity.g(getX() < preset.getExtraHorizontal() && getZ() < preset.getExtraHorizontal() && getY() < preset.getExtraVertical()) {
-//                            entity.g(
-//                                    -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
-//                                    preset.getExtraVertical(),
-//                                    MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
-//                            );
-//                        }
 
+                        // Fix Random Decrease in Entity Motion
+                        var extraHorz = preset.getExtraHorizontal();
+
+                        if (
+                            entity.motX < extraHorz &&
+                            entity.motZ < extraHorz &&
+                            entity.motY < preset.getExtraVertical()
+                        )
+                        {
+                            entity.motX += extraHorz;
+                            entity.motZ += extraHorz;
+                            entity.motY += preset.getExtraVertical();
+                        }
                     }
 
                     this.motX *= preset.getSlowdown();
