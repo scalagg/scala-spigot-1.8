@@ -990,9 +990,9 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-            if (!this.isSprinting() && previousSprintStatus && preset.getExtraHorizontal() > 0.0) { //WTAP FIX?
-                i += preset.getExtraHorizontal();
-            }
+//            if (!this.isSprinting() && previousSprintStatus && preset.getExtraHorizontal() > 0.0) { //WTAP FIX?
+//                i += preset.getExtraHorizontal();
+//            }
 
             this.previousSprintStatus = this.isSprinting();
 
@@ -1035,6 +1035,15 @@ public abstract class EntityHuman extends EntityLiving {
                                 preset.getExtraVertical(),
                                 MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
                         );
+                        //Working on this
+//                        if entity.g(getX() < preset.getExtraHorizontal() && getZ() < preset.getExtraHorizontal() && getY() < preset.getExtraVertical()) {
+//                            entity.g(
+//                                    -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
+//                                    preset.getExtraVertical(),
+//                                    MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
+//                            );
+//                        }
+
                     }
 
                     this.motX *= preset.getSlowdown();
