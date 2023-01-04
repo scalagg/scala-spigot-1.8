@@ -120,8 +120,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
         if (!this.world.isClientSide) {
             Entity entity = null;
             boolean newPotion = this instanceof EntityPotion;
-            double grow = newPotion ? 0.1 : 1.0;
-            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(grow, grow, grow));
+            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
 
@@ -141,6 +140,13 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                     float f = 0.31f;
                     AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow((double) f, (double) f, (double) f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
+
+                    // IonSpigot start - Smooth Potting
+                    if (this instanceof EntityPotion && movingobjectposition1 == null && getBoundingBox().b(entity1.getBoundingBox())) {
+                        movingobjectposition1 = new MovingObjectPosition(entity1);
+                    }
+                    // IonSpigot end
+
                         if (movingobjectposition1 == null || !((d1 = vec3d.distanceSquared(movingobjectposition1.pos)) < d0) && d0 != 0.0) continue;
                             entity = entity1;
                             d0 = d1;
