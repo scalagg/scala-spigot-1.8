@@ -1039,15 +1039,13 @@ public abstract class EntityHuman extends EntityLiving {
                         // Fix Random Decrease in Entity Motion
                         var extraHorz = preset.getExtraHorizontal();
 
-                        if (
-                            entity.motX < extraHorz &&
-                            entity.motZ < extraHorz &&
-                            entity.motY < preset.getExtraVertical()
-                        )
-                        {
-                            entity.motX += extraHorz;
-                            entity.motZ += extraHorz;
-                            entity.motY += preset.getExtraVertical();
+                        if (preset.getFixWTap()) {
+                            if (entity.motX < extraHorz && entity.motZ < extraHorz && entity.motY < preset.getExtraVertical()) {
+
+                                entity.motX += extraHorz;
+                                entity.motZ += extraHorz;
+                                entity.motY += preset.getExtraVertical();
+                            }
                         }
                     }
 
