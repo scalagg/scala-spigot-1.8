@@ -1826,6 +1826,23 @@ public abstract class EntityHuman extends EntityLiving {
         }
     }
 
+    public void a(AxisAlignedBB aabb) {
+        //if (shiftUp(aabb)) aabb = aabb.c(0, 0.0625, 0);
+        super.a(aabb);
+    }
+
+    private boolean shiftUp(AxisAlignedBB aabb) {
+        if (aabb.b % 1 > 0.0625) return false;
+
+        List<AxisAlignedBB> collisions = getWorld().getCubes(this, aabb);
+        if (collisions.isEmpty()) return false;
+
+        for (AxisAlignedBB collision : collisions) {
+            if (collision.e % 1 > 0.0625) return false;
+        }
+        return true;
+    }
+
     static class SyntheticClass_1 {
 
         static final int[] a = new int[EnumDirection.values().length];
