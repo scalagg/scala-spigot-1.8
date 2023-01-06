@@ -1029,7 +1029,7 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (isSprinting()) {
+                    if (this.isApplyingSprintKnockback()) {
                         entity.g(
                                 -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
                                 preset.getExtraVertical(),

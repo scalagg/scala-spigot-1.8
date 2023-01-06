@@ -98,6 +98,8 @@ public abstract class EntityLiving extends Entity {
     public int maxAirTicks = 300;
     ArrayList<org.bukkit.inventory.ItemStack> drops = null;
     private boolean isTickingEffects = false;
+
+    private boolean applyingSprintKnockback;
     private List<Object> effectsToProcess = Lists.newArrayList();
 
     boolean previousSprintStatus = false;
@@ -1245,6 +1247,7 @@ public abstract class EntityLiving extends Entity {
                 this.isSprinting();
 
         super.setSprinting(flag);
+        this.setApplyingSprintKnockback(flag);
 
         AttributeInstance attributeinstance = this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
 
@@ -1256,6 +1259,14 @@ public abstract class EntityLiving extends Entity {
             attributeinstance.b(b);
         }
 
+    }
+
+    public void setApplyingSprintKnockback(final boolean flag) {
+        this.applyingSprintKnockback = flag;
+    }
+
+    public boolean isApplyingSprintKnockback() {
+        return this.applyingSprintKnockback;
     }
 
     public abstract ItemStack[] getEquipment();
