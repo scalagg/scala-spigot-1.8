@@ -797,13 +797,13 @@ public abstract class EntityLiving extends Entity {
 
                         // ScalaSpigot - Start Randomness
 
-//                        double d1;
-//
-//                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
-//                            d0 = (Math.random() - Math.random()) * 0.01D;
-//                        }
+                        double d1;
 
-                        double d1 = entity.locZ - this.locZ;
+                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
+                            d0 = (Math.random() - Math.random()) * 0.01D;
+                        }
+
+//                        double d1 = entity.locZ - this.locZ;
 
                         // ScalaSpigot - End Randomness
 
