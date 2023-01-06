@@ -330,7 +330,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
             for (int i = 0; i < this.potions.size(); ++i) {
                 EntityPotion entityPotion = this.potions.get(i);
-                entityPotion.tick();
 
                 if (entityPotion.dead || this.potions.size() > 9) {
                     this.potions.remove(i--);

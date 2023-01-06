@@ -733,11 +733,6 @@ public abstract class EntityLiving extends Entity {
             } else if (damagesource.o() && this.hasEffect(MobEffectList.FIRE_RESISTANCE)) {
                 return false;
             } else {
-                // CraftBukkit - Moved into d(DamageSource, float)
-                if (false && (damagesource == DamageSource.ANVIL || damagesource == DamageSource.FALLING_BLOCK) && this.getEquipment(4) != null) {
-                    this.getEquipment(4).damage((int) (f * 4.0F + this.random.nextFloat() * f * 2.0F), this);
-                    f *= 0.75F;
-                }
 
                 this.aB = 1.5F;
                 boolean flag = true;
@@ -917,22 +912,6 @@ public abstract class EntityLiving extends Entity {
             this.motX -= d0 / magnitude * preset.getHorizontal();
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
-
-            if (damageSource instanceof EntityDamageSourceIndirect) {
-                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
-
-                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
-                    if (preset.getRodHorizontalMultiplier() != 0) {
-                        this.motX *= preset.getRodHorizontalMultiplier();
-                        this.motZ *= preset.getRodHorizontalMultiplier();
-                    }
-
-                    if (preset.getRodVerticalMultiplier() != 0) {
-                        this.motY *= preset.getRodVerticalMultiplier();
-                    }
-                }
-            }
-
 
             if (this.motY > preset.getVerticalLimit()) {
                 this.motY = preset.getVerticalLimit();
@@ -1790,20 +1769,7 @@ public abstract class EntityLiving extends Entity {
     }
 
     public Vec3D d(float f) {
-        // ScalaSpigot Start - Mouse delay fix (Server sided)
-        if (this instanceof EntityPlayer) {
-            return super.d(f);
-        }
-        // ScalaSpigot End
-
-        if (f == 1.0F) {
-            return this.f(this.pitch, this.aK);
-        } else {
-            float f1 = this.lastPitch + (this.pitch - this.lastPitch) * f;
-            float f2 = this.aL + (this.aK - this.aL) * f;
-
-            return this.f(f1, f2);
-        }
+        return this.f(this.pitch, this.yaw);
     }
 
     public boolean bM() {

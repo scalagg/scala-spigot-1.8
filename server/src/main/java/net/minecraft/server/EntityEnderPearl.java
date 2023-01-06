@@ -40,6 +40,19 @@ public class EntityEnderPearl extends EntityProjectile {
         }
         // PaperSpigot end
 
+        // FlamePaper start - 0117-Pearl-through-blocks
+        BlockPosition blockPosition = movingobjectposition.a();
+
+        if (blockPosition != null) {
+            IBlockData blockData = world.getType(blockPosition);
+            Block block = blockData.getBlock();
+            boolean collides = (block == Blocks.TALLGRASS);
+            if (collides) {
+                return;
+            }
+        }
+        // FlamePaper end
+
 //        for (int i = 0; i < 32; ++i) {
 //            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
 //        }
@@ -81,9 +94,8 @@ public class EntityEnderPearl extends EntityProjectile {
                         entityplayer.playerConnection.teleport(teleEvent.getTo());
                         entityliving.fallDistance = 0.0F;
                         CraftEventFactory.entityDamage = this;
-
-                        entityliving.d(DamageSource.FALL, 5.0F);
-                        CraftEventFactory.entityDamage = null;
+                      entityliving.damageEntity(DamageSource.FALL, 5.0F);
+                      CraftEventFactory.entityDamage = null;
                     }
                     // CraftBukkit end
                 }
@@ -97,15 +109,12 @@ public class EntityEnderPearl extends EntityProjectile {
 
     }
 
+    @Override
     public void t_() {
         EntityLiving entityliving = this.getShooter();
-
-        if (entityliving instanceof EntityHuman && !entityliving.isAlive()) {
+        if (entityliving != null && entityliving instanceof EntityHuman && !entityliving.isAlive()) {
             this.die();
         } else {
-            if (this.world.getCubes(this, this.getBoundingBox().grow(0.25D, 0.25D, 0.25D)).isEmpty()) {
-                this.lastValidTeleport = getBukkitEntity().getLocation();
-            }
             AxisAlignedBB clearTeleportBoundingBox = AxisAlignedBB.a(this.locX - 0.3, this.locY - 0.05, this.locZ - 0.3, this.locX + 0.3, this.locY + 1.62, this.locZ + 0.3);
             if (this.world.getCubes(this, clearTeleportBoundingBox).isEmpty()) {
                 this.lastValidTeleport = this.getBukkitEntity().getLocation();

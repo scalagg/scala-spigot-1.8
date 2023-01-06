@@ -359,6 +359,7 @@ public abstract class PlayerList {
         // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
         org.bukkit.craftbukkit.event.CraftEventFactory.handleInventoryCloseEvent(entityplayer);
 
+        Player bukkit = cserver.getPlayer(entityplayer); // KigPaper
         PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), "\u00A7e" + entityplayer.getName() + " left the game.");
         cserver.getPluginManager().callEvent(playerQuitEvent);
         entityplayer.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
@@ -635,6 +636,8 @@ public abstract class PlayerList {
         // CraftBukkit start
         // Don't fire on respawn
         if (fromWorld != location.getWorld()) {
+            // SR
+            entityplayer.getBukkitEntity().getLocation();
             PlayerChangedWorldEvent event = new PlayerChangedWorldEvent(entityplayer.getBukkitEntity(), fromWorld);
             server.server.getPluginManager().callEvent(event);
         }
