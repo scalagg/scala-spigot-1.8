@@ -14,7 +14,6 @@ import net.peanuuutz.tomlkt.Toml
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
-
 /**
  * @author GrowlyX
  * @since 11/1/2021

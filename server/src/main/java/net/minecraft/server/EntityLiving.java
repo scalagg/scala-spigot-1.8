@@ -738,7 +738,9 @@ public abstract class EntityLiving extends Entity {
                 boolean flag = true;
 
                 if ((float) this.noDamageTicks > (float) this.maxNoDamageTicks / 2.0F) {
-                    return false;
+                    if (ScalaSpigot.INSTANCE.getConfig().getFixNoDamageTicks()) {
+                        return false;
+                    }
                 } else {
                     // CraftBukkit start
                     float previousHealth = this.getHealth();

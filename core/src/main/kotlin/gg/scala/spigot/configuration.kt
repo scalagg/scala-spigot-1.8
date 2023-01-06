@@ -107,8 +107,7 @@ data class ScalaSpigotConfig(
     val handleSleepChecks: Boolean = false,
     val handleMobSpawnerTicking: Boolean = false,
     val aiGoalSelectionSpeed: Int = 20,
-    val fixHitReg: Boolean = true,
-    val combatTPS: Int = 40,
+    val fixNoDamageTicks: Boolean = true,
 
 
     @TomlComment(
