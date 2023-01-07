@@ -12,4 +12,5 @@ open class KnockbackPreset(
     var slowdown: Double = 0.6,
     var autoWTap: Boolean = false,
     var fixWTap: Boolean = false,
+    var distanceCheck: Boolean = true,
 )

@@ -794,27 +794,39 @@ public abstract class EntityLiving extends Entity {
                         this.ac();
                     }
 
-                    if (entity != null) {
-                        double d0 = entity.locX - this.locX;
+                    final KnockbackPreset preset = getKnockbackPreset();
 
-                        // ScalaSpigot - Start Randomness
+                    if (preset.getDistanceCheck()) {
+                        if (entity != null) {
+                            double d0 = entity.locX - this.locX;
 
-                        double d1;
+                            // ScalaSpigot - Start Regular Randomness
+                            double d1;
 
-                        for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
-                            d0 = (Math.random() - Math.random()) * 0.01D;
+                            for (d1 = entity.locZ - this.locZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
+                                d0 = (Math.random() - Math.random()) * 0.01D;
+                            }
+                            // ScalaSpigot - End Regular Randomness
+
+                            this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
+                            this.a(entity, f, d0, d1, damagesource);
+                        } else {
+                            this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
                         }
-
-//                        double d1 = entity.locZ - this.locZ;
-
-                        // ScalaSpigot - End Randomness
-
-                        this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
-                        this.a(entity, f, d0, d1, damagesource);
                     } else {
-                        this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
+                        if (entity != null) {
+                            // ScalaSpigot - Start Fixed Randomness
+                            double d0 = entity.locX - this.locX;
+                            double d1 = entity.locZ - this.locZ;
+                            // ScalaSpigot - End Fixed Radnomness
+                            this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw);
+                            this.a(entity, f, d0, d1, damagesource);
+                        } else {
+                            this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
+                        }
                     }
                 }
+
 
                 if (knockbackCancelled) this.world.broadcastEntityEffect(this, (byte) 2); // PaperSpigot
 
