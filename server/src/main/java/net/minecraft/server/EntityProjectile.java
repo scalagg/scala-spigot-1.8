@@ -1,6 +1,8 @@
 package net.minecraft.server;
 
 import com.eatthepath.uuid.FastUUID;
+import gg.scala.spigot.preset.PotionHandler;
+import gg.scala.spigot.preset.potion.PotionPreset;
 
 import java.util.List;
 import java.util.UUID;
@@ -137,8 +139,10 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                     continue;
                 }
                 if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
-                    float f = 0.31f;
-                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow((double) f, (double) f, (double) f);
+                    final PotionPreset preset = PotionHandler
+                            .INSTANCE.getActivePreset();
+                    float f = preset.getHitbox();
+                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f,f,f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
 
                     // IonSpigot start - Smooth Potting

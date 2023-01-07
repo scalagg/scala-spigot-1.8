@@ -47,7 +47,7 @@ class PotionCommand : BukkitCommand("potion")
                 {
                     if (PotionHandler.findPreset(args[1]) != null)
                     {
-                        sender.sendMessage("alr exits")
+                        sender.sendMessage("This profile already exists.")
                         return true
                     }
 
@@ -56,12 +56,13 @@ class PotionCommand : BukkitCommand("potion")
                         details = listOf(""),
                         offset = -20F,
                         speed = 0.5F,
-                        distance = 0.05F
+                        distance = 0.05F,
+                        hitbox = 0.29F
                     )
 
                     PotionHandler.presets.add(preset)
 
-                    sender.sendMessage("created new pot")
+                    sender.sendMessage("Created new profile.")
 
                     ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                 } else
@@ -80,10 +81,10 @@ class PotionCommand : BukkitCommand("potion")
                         PotionHandler.presets.remove(existing)
 
                         ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
-                        sender.sendMessage("delet")
+                        sender.sendMessage("Deleted profile.")
                     } else
                     {
-                        sender.sendMessage("not exist")
+                        sender.sendMessage("That profile does not exist.")
                     }
                 } else
                 {

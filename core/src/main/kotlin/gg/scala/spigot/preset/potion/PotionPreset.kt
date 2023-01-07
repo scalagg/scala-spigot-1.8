@@ -7,5 +7,6 @@ class PotionPreset(
     // TODO: 11/4/2021 no idea what these values stand for, look at the definition
     var speed: Float,
     var distance: Float,
-    var offset: Float
+    var offset: Float,
+    var hitbox: Float
 )
