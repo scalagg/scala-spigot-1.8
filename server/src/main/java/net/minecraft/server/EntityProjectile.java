@@ -121,7 +121,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
         if (!this.world.isClientSide) {
             Entity entity = null;
-            boolean newPotion = this instanceof EntityPotion;
             List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
@@ -131,13 +130,6 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                 Entity entity1 = (Entity) list.get(i);
                 if (!entity1.ad() || entity1 == entityliving && this.ar < 5) continue;
 
-                if (this instanceof EntityPotion) {
-                    d1 = Math.pow(entity1.locX - this.locX, 2.0) + Math.pow(entity1.locY - this.locY, 2.0) + Math.pow(entity1.locZ - this.locZ, 2.0);
-                    if (!(d1 < d0) && d0 != 0.0) continue;
-                    entity = entity1;
-                    d0 = d1;
-                    continue;
-                }
                 if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
                     final PotionPreset preset = PotionHandler
                             .INSTANCE.getActivePreset();
@@ -145,11 +137,11 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                     AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f,f,f);
                     MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
 
-                    // IonSpigot start - Smooth Potting
+//                     IonSpigot start - Smooth Potting
                     if (this instanceof EntityPotion && movingobjectposition1 == null && getBoundingBox().b(entity1.getBoundingBox())) {
                         movingobjectposition1 = new MovingObjectPosition(entity1);
                     }
-                    // IonSpigot end
+//                     IonSpigot end
 
                         if (movingobjectposition1 == null || !((d1 = vec3d.distanceSquared(movingobjectposition1.pos)) < d0) && d0 != 0.0) continue;
                             entity = entity1;
