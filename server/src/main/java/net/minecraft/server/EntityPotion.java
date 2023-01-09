@@ -6,7 +6,10 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,47 +76,58 @@ public class EntityPotion extends EntityProjectile {
         if (!this.world.isClientSide) {
             Player shooter;
             List<MobEffect> list = Items.POTION.h(this.item);
-            AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0, 2.0, 4.0);
-            List<EntityLiving> list1 = this.world.a(EntityLiving.class, axisalignedbb);
-            Iterator<EntityLiving> iterator = list1.iterator();
 
-            HashMap<LivingEntity, Double> affected = new HashMap<>();
-            while (iterator.hasNext()) {
-                EntityLiving entityliving = iterator.next();
-                double d0 = this.h(entityliving);
-                if (!(d0 < 16.0)) continue;
-                double d1 = 1.0 - Math.sqrt(d0) / 4.0;
-                if (entityliving == movingobjectposition.entity) {
-                    d1 = 1.0;
-                } else if (Math.hypot(this.motX, this.motZ) > 0.4 && d1 > 0.8) {
-                    d1 = 1.0;
-                }
-                affected.put((LivingEntity)(entityliving.getBukkitEntity()), d1);
-            }
+            if (true || list != null && !list.isEmpty()) { // CraftBukkit - Call event even if no effects to apply
+                AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(4.0D, 2.0D, 4.0D);
+                List list1 = this.world.a(EntityLiving.class, axisalignedbb);
 
-            PotionSplashEvent event = CraftEventFactory.callPotionSplashEvent(this, affected);
-            if (event.getEntity().getShooter() instanceof Player && (shooter = (Player)event.getEntity().getShooter()).isSprinting() && event.getIntensity(shooter) > 0.5) {
-                event.setIntensity(shooter, 1.0);
-            }
+                if (true || !list1.isEmpty()) { // CraftBukkit - Run code even if there are no entities around
+                    Iterator iterator = list1.iterator();
 
-            if (!event.isCancelled() && list != null && !list.isEmpty()) {
+                    HashMap<LivingEntity, Double> affected = new HashMap<>();
+                    while (iterator.hasNext()) {
+                        EntityLiving entityliving = (EntityLiving) iterator.next();
+                        double d0 = this.h(entityliving);
 
-                for (LivingEntity victim : event.getAffectedEntities()) {
-                    if (!(victim instanceof CraftLivingEntity)) continue;
-                    EntityLiving entityliving = ((CraftLivingEntity)victim).getHandle();
+                        if (d0 < 16.0D) {
+                            double d1 = 1.0D - Math.sqrt(d0) / 4.0D;
 
-                    if (this.getShooter() != null && entityliving instanceof EntityPlayer && !((EntityPlayer)entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity())) continue;
-                    double d1 = event.getIntensity(victim);
-                    for (MobEffect mobeffect : list) {
-                        int i = mobeffect.getEffectId();
-                        if (!this.world.pvpMode && this.getShooter() instanceof EntityPlayer && entityliving instanceof EntityPlayer && entityliving != this.getShooter() && (i == 2 || i == 4 || i == 7 || i == 15 || i == 17 || i == 18 || i == 19)) continue;
-                        if (MobEffectList.byId[i].isInstant()) {
-                            MobEffectList.byId[i].applyInstantEffect(this, this.getShooter(), entityliving, mobeffect.getAmplifier(), d1);
-                            continue;
+                            if (entityliving == movingobjectposition.entity) {
+                                d1 = 1.0D;
+                            }
+
+                            // CraftBukkit start
+                            affected.put((LivingEntity) entityliving.getBukkitEntity(), d1);
                         }
-                        int j = (int)(d1 * (double)mobeffect.getDuration() + 0.5);
-                        if (j <= 20) continue;
-                        entityliving.addEffect(new MobEffect(i, j, mobeffect.getAmplifier()));
+                    }
+
+                    PotionSplashEvent event = CraftEventFactory.callPotionSplashEvent(this, affected);
+                    if (event.getEntity().getShooter() instanceof Player && (shooter = (Player) event.getEntity().getShooter()).isSprinting() && event.getIntensity(shooter) > 0.5) {
+                        event.setIntensity(shooter, 1.0);
+                    }
+
+                    if (!event.isCancelled() && list != null && !list.isEmpty()) {
+
+                        for (LivingEntity victim : event.getAffectedEntities()) {
+                            if (!(victim instanceof CraftLivingEntity)) continue;
+                            EntityLiving entityliving = ((CraftLivingEntity) victim).getHandle();
+
+                            if (this.getShooter() != null && entityliving instanceof EntityPlayer && !((EntityPlayer) entityliving).getBukkitEntity().canSeeEntity(this.getShooter().getBukkitEntity()))
+                                continue;
+                            double d1 = event.getIntensity(victim);
+                            for (MobEffect mobeffect : list) {
+                                int i = mobeffect.getEffectId();
+                                if (!this.world.pvpMode && this.getShooter() instanceof EntityPlayer && entityliving instanceof EntityPlayer && entityliving != this.getShooter() && (i == 2 || i == 4 || i == 7 || i == 15 || i == 17 || i == 18 || i == 19))
+                                    continue;
+                                if (MobEffectList.byId[i].isInstant()) {
+                                    MobEffectList.byId[i].applyInstantEffect(this, this.getShooter(), entityliving, mobeffect.getAmplifier(), d1);
+                                    continue;
+                                }
+                                int j = (int) (d1 * (double) mobeffect.getDuration() + 0.5);
+                                if (j <= 20) continue;
+                                entityliving.addEffect(new MobEffect(i, j, mobeffect.getAmplifier()));
+                            }
+                        }
                     }
                 }
             }

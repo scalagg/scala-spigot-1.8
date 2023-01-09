@@ -42,6 +42,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.meta.BookMeta;
+import org.github.paperspigot.event.entity.ProjectileCollideEvent;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -742,6 +743,23 @@ public class CraftEventFactory {
 
         return CraftItemStack.asNMSCopy(bitem);
     }
+
+    // Paper start
+    public static ProjectileCollideEvent callProjectileCollideEvent(Entity entity, MovingObjectPosition position) {
+        Projectile projectile = (Projectile) entity.getBukkitEntity();
+        org.bukkit.entity.Entity collided = position.entity.getBukkitEntity();
+        ProjectileCollideEvent event = new ProjectileCollideEvent(projectile, collided);
+
+        if (projectile.getShooter() instanceof Player && collided instanceof Player) {
+            if (!((Player) projectile.getShooter()).canSee((Player) collided)) {
+                event.setCancelled(true);
+            }
+        }
+
+        Bukkit.getPluginManager().callEvent(event);
+        return event;
+    }
+    // Paper end
 
     public static ProjectileLaunchEvent callProjectileLaunchEvent(Entity entity) {
         Projectile bukkitEntity = (Projectile) entity.getBukkitEntity();

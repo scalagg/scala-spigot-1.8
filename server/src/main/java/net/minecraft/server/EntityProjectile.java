@@ -3,6 +3,8 @@ package net.minecraft.server;
 import com.eatthepath.uuid.FastUUID;
 import gg.scala.spigot.preset.PotionHandler;
 import gg.scala.spigot.preset.potion.PotionPreset;
+import org.bukkit.Bukkit;
+import org.github.paperspigot.event.entity.ProjectileCollideEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -121,35 +123,40 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
         if (!this.world.isClientSide) {
             Entity entity = null;
-            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(1.0D, 1.0D, 1.0D));
+            boolean newPotion = this instanceof EntityPotion;
+            double grow = newPotion ? 1.0 : 1.0;
+            List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(grow,grow,grow));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
 
             for (int i = 0; i < list.size(); ++i) {
-                double d1;
                 Entity entity1 = (Entity) list.get(i);
-                if (!entity1.ad() || entity1 == entityliving && this.ar < 5) continue;
 
-                if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
-                    final PotionPreset preset = PotionHandler
-                            .INSTANCE.getActivePreset();
-                    float f = preset.getHitbox();
-                    AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f,f,f);
-                    MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
+                    if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
+                        final PotionPreset preset = PotionHandler
+                                .INSTANCE.getActivePreset();
+                        float f = preset.getHitbox();
+                        AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f, f, f);
+                        MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
 
-//                     IonSpigot start - Smooth Potting
-                    if (this instanceof EntityPotion && movingobjectposition1 == null && getBoundingBox().b(entity1.getBoundingBox())) {
-                        movingobjectposition1 = new MovingObjectPosition(entity1);
-                    }
-//                     IonSpigot end
+                        //ScalaSpigot - Smooth Potting
+                        if (this instanceof EntityPotion && movingobjectposition1 == null && getBoundingBox().b(entity1.getBoundingBox())) {
+                            movingobjectposition1 = new MovingObjectPosition(entity1);
+                        }
+                        //ScalaSpigot end
 
-                        if (movingobjectposition1 == null || !((d1 = vec3d.distanceSquared(movingobjectposition1.pos)) < d0) && d0 != 0.0) continue;
-                            entity = entity1;
-                            d0 = d1;
+                        if (movingobjectposition1 != null) {
+                            double d1 = Math.pow(entity1.locX - this.locX, 2.0) + Math.pow(entity1.locY - this.locY, 2.0) + Math.pow(entity1.locZ - this.locZ, 2.0);
+
+                            if (d1 < d0 || d0 == 0.0D) {
+                                entity = entity1;
+                                d0 = d1;
+                            }
+                        }
                 }
-            }
-            if (entity != null) {
-                movingobjectposition = new MovingObjectPosition(entity);
+                if (entity != null) {
+                    movingobjectposition = new MovingObjectPosition(entity);
+                }
             }
         }
 
@@ -160,6 +167,15 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             }
         }
         // PaperSpigot end
+
+        // Paper start - Call ProjectileCollideEvent
+        if (movingobjectposition != null && movingobjectposition.entity != null) {
+            ProjectileCollideEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileCollideEvent(this, movingobjectposition);
+            if (event.isCancelled()) {
+                movingobjectposition = null;
+            }
+        }
+        // Paper end
 
         if (movingobjectposition != null) {
             if (movingobjectposition.type == MovingObjectPosition.EnumMovingObjectType.BLOCK && this.world.getType(movingobjectposition.a()).getBlock() == Blocks.PORTAL) {
