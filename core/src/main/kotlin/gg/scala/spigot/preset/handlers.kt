@@ -101,7 +101,7 @@ object PotionHandler : PresetHandler<PotionPreset>()
                     offset = -20F,
                     speed = 0.5F,
                     distance = 0.05F,
-                    hitbox = 0.29F
+                    hitbox = 1.0F
                 )
             )
         }

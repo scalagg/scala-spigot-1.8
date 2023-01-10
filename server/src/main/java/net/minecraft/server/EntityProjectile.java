@@ -123,8 +123,10 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
 
         if (!this.world.isClientSide) {
             Entity entity = null;
+            final PotionPreset preset = PotionHandler
+                    .INSTANCE.getActivePreset();
             boolean newPotion = this instanceof EntityPotion;
-            double grow = newPotion ? 1.0 : 1.0;
+            double grow = newPotion ? preset.getHitbox() : preset.getHitbox();
             List list = this.world.getEntities(this, this.getBoundingBox().a(this.motX, this.motY, this.motZ).grow(grow,grow,grow));
             double d0 = 0.0D;
             EntityLiving entityliving = this.getShooter();
@@ -133,9 +135,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                 Entity entity1 = (Entity) list.get(i);
 
                     if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
-                        final PotionPreset preset = PotionHandler
-                                .INSTANCE.getActivePreset();
-                        float f = preset.getHitbox();
+                        float f = 0.30F;
                         AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f, f, f);
                         MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);
 

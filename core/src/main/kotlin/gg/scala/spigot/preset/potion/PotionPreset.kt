@@ -8,5 +8,5 @@ class PotionPreset(
     var speed: Float,
     var distance: Float,
     var offset: Float,
-    var hitbox: Float
+    var hitbox: Float,
 )
