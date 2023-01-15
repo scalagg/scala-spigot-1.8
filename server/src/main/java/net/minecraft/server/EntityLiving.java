@@ -1081,7 +1081,16 @@ public abstract class EntityLiving extends Entity {
                 public Double apply(Double f) {
                     if (human) {
                         if (!damagesource.ignoresArmor() && ((EntityHuman) net.minecraft.server.EntityLiving.this).isBlocking() && f > 0.0F) {
-                            return -(f - ((1.0F + f) * 0.5F));
+                            final org.bukkit.event.player.PlayerBlockedHitEvent event =
+                                new org.bukkit.event.player.PlayerBlockedHitEvent(uniqueID);
+
+                            org.bukkit.Bukkit.getPluginManager().callEvent(event);
+
+                            if (event.isCancelled()) {
+                                return -0.0;
+                            }
+
+                            return -(f - ((1.0F + f) * world.paperSpigotConfig.playerBlockingDamageMultiplier));
                         }
                     }
                     return -0.0;
