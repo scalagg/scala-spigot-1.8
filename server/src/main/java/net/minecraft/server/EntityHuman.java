@@ -897,7 +897,35 @@ public abstract class EntityHuman extends EntityLiving {
 
     // CraftBukkit start
     protected boolean d(DamageSource damagesource, float f) { // void -> boolean
-            return super.d(damagesource, f);
+        // CraftBukkit end
+        if (!this.isInvulnerable(damagesource)) {
+            if (!damagesource.ignoresArmor() && this.isBlocking() && f > 0.0F) {
+                final org.bukkit.event.player.PlayerBlockedHitEvent event =
+                    new org.bukkit.event.player.PlayerBlockedHitEvent(uniqueID);
+
+                org.bukkit.Bukkit.getPluginManager().callEvent(event);
+
+                if (!event.isCancelled()) {
+                    f = (1.0F + f) * this.world.paperSpigotConfig.playerBlockingDamageMultiplier; // PaperSpigot - Configurable damage multiplier for blocking;
+                }
+            }
+
+            f = this.applyArmorModifier(damagesource, f);
+            f = this.applyMagicModifier(damagesource, f);
+            float f1 = f;
+            f = Math.max(f - this.getAbsorptionHearts(), 0.0F);
+            this.setAbsorptionHearts(this.getAbsorptionHearts() - (f1 - f));
+            if (f != 0.0F) {
+                this.applyExhaustion(damagesource.getExhaustionCost());
+                float f2 = this.getHealth();
+                this.setHealth(this.getHealth() - f);
+                this.bs().a(damagesource, f2, f);
+                if (f < 3.4028235E37F) {
+                    this.a(StatisticList.x, Math.round(f * 10.0F));
+                }
+            }
+        }
+        return false; // CraftBukkit
     }
 
     public void openSign(TileEntitySign tileentitysign) {
