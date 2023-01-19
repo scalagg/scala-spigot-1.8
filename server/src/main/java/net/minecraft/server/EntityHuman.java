@@ -1035,6 +1035,7 @@ public abstract class EntityHuman extends EntityLiving {
                                 preset.getExtraVertical(),
                                 MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
                         );
+                        this.setApplyingSprintKnockback(false);
 
                         // Fix Random Decrease in Entity Motion
                         var extraHorz = preset.getExtraHorizontal();
