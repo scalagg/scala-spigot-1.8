@@ -1450,7 +1450,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                 break;
 
             case 3:
-                this.player.b(AchievementList.f);
         }
 
     }
