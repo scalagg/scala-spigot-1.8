@@ -1349,7 +1349,12 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         this.player.resetIdleTimer();
 
         if (entity != null) {
+            boolean flag = this.player.hasLineOfSight(entity);
             double d0 = 36.0D;
+
+            if (!flag) {
+                d0 = 9.0D;
+            }
 
             if (this.player.h(entity) < d0) {
                 ItemStack itemInHand = this.player.inventory.getItemInHand();

@@ -403,6 +403,9 @@ public class EntityTrackerEntry {
                     this.trackedPlayerMap.put(entityplayer, true); // PaperBukkit
                     Packet packet = this.c();
 
+                    if (packet == null)  // ScalaSpigot - Don't send packet if the entity is dead
+                        return;
+
                     entityplayer.playerConnection.sendPacket(packet);
                     if (!this.tracker.getDataWatcher().d()) {
                         entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(this.tracker.getId(), this.tracker.getDataWatcher(), true));

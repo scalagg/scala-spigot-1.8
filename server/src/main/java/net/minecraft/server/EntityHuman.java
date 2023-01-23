@@ -517,15 +517,11 @@ public abstract class EntityHuman extends EntityLiving {
             this.inventory.n();
         }
 
-        if (damagesource != null) {
-            this.motX = (double) (-gg.scala.spigot.util.MathHelper.cos((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
-            this.motZ = (-gg.scala.spigot.util.MathHelper.sin((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
-        } else {
-            this.motX = this.motZ = 0.0D;
-        }
+        this.motX = (-MathHelper.cos((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
+        this.motZ = (-MathHelper.sin((this.aw + this.yaw) * 3.1415927F / 180.0F) * 0.1F);
 
-        this.b(StatisticList.y);
-        this.a(StatisticList.h);
+//        this.b(StatisticList.y);
+//        this.a(StatisticList.h);
     }
 
     protected String bo() {
@@ -804,46 +800,23 @@ public abstract class EntityHuman extends EntityLiving {
     }
 
     public boolean damageEntity(DamageSource damagesource, float f) {
-        if (this.isInvulnerable(damagesource)) {
+        if (isInvulnerable(damagesource) || (this.abilities.isInvulnerable && !damagesource.ignoresInvulnerability()))
             return false;
-        } else if (this.abilities.isInvulnerable && !damagesource.ignoresInvulnerability()) {
+        this.ticksFarFromPlayer = 0;
+        if (getHealth() <= 0.0F)
             return false;
-        } else {
-            this.ticksFarFromPlayer = 0;
-            if (this.getHealth() <= 0.0F) {
+        if (isSleeping())
+            a(true, true, false);
+        if (damagesource.r()) {
+            if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL)
                 return false;
-            } else {
-                if (this.isSleeping() && !this.world.isClientSide) {
-                    this.a(true, true, false);
-                }
-
-                if (damagesource.r()) {
-                    if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
-                        return false; // CraftBukkit - f = 0.0f -> return false
-                    }
-
-                    if (this.world.getDifficulty() == EnumDifficulty.EASY) {
-                        f = f / 2.0F + 1.0F;
-                    }
-
-                    if (this.world.getDifficulty() == EnumDifficulty.HARD) {
-                        f = f * 3.0F / 2.0F;
-                    }
-                }
-// Dead Code
-//                if (false && f == 0.0F) { // CraftBukkit - Don't filter out 0 damage
-//                    return false;
-//                } else {
-                    Entity entity = damagesource.getEntity();
-
-                    if (entity instanceof EntityArrow && ((EntityArrow) entity).shooter != null) {
-                        entity = ((EntityArrow) entity).shooter;
-                    }
-
-                    return super.damageEntity(damagesource, f);
-                }
-            }
+            else if (this.world.getDifficulty() == EnumDifficulty.EASY)
+                f = f / 2.0F + 1.0F;
+            else if (this.world.getDifficulty() == EnumDifficulty.HARD)
+                f = f * 3.0F / 2.0F;
         }
+        return super.damageEntity(damagesource, f);
+    }
 
     public boolean a(net.minecraft.server.EntityHuman entityhuman) {
         // CraftBukkit start - Change to check OTHER player's scoreboard team according to API
@@ -1029,13 +1002,13 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
 
                 if (damaged) {
-                    if (this.isApplyingSprintKnockback()) {
+                    if (this.isSprinting()) {
                         entity.g(
                                 -MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal(),
                                 preset.getExtraVertical(),
                                 MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * preset.getExtraHorizontal()
                         );
-                        this.setApplyingSprintKnockback(false);
+                        this.setSprinting(false);
 
                         // Fix Random Decrease in Entity Motion
                         var extraHorz = preset.getExtraHorizontal();
@@ -1084,10 +1057,6 @@ public abstract class EntityHuman extends EntityLiving {
 
                     if (f1 > 0.0F) {
                         this.c(entity);
-                    }
-
-                    if (f >= 18.0F) {
-                        this.b(AchievementList.F);
                     }
 
                     this.p(entity);
@@ -1402,64 +1371,37 @@ public abstract class EntityHuman extends EntityLiving {
             int i;
 
             if (this.a(Material.WATER)) {
-                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
+                i = FastMath.round(MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
                 if (i > 0) {
-                    this.a(StatisticList.p, i);
-                    this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F); // PaperSpigot - Configurable swimming exhaustion
+                    this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F);
                 }
             } else if (this.V()) {
-                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
+                i = FastMath.round(MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
                 if (i > 0) {
-                    this.a(StatisticList.l, i);
-                    this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F); // PaperSpigot - Configurable swimming (diving) exhaustion
-                }
-            } else if (this.k_()) {
-                if (d1 > 0.0D) {
-                    this.a(StatisticList.n, (int) Math.round(d1 * 100.0D));
+                    this.applyExhaustion(world.paperSpigotConfig.playerSwimmingExhaustion * (float) i * 0.01F);
                 }
             } else if (this.onGround) {
-                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
+                i = FastMath.round(MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
                 if (i > 0) {
-                    this.a(StatisticList.i, i);
                     if (this.isSprinting()) {
-                        this.a(StatisticList.k, i);
                         this.applyExhaustion(0.099999994F * (float) i * 0.01F);
                     } else {
-                        if (this.isSneaking()) {
-                            this.a(StatisticList.j, i);
-                        }
-
                         this.applyExhaustion(0.01F * (float) i * 0.01F);
                     }
                 }
-            } else {
-                i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d2 * d2) * 100.0F);
-                if (i > 25) {
-                    this.a(StatisticList.o, i);
-                }
             }
-
         }
     }
 
     private void l(double d0, double d1, double d2) {
         if (this.vehicle != null) {
-            int i = (int) Math.round(gg.scala.spigot.util.MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
+            int i = FastMath.round(MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 100.0F);
 
             if (i > 0) {
                 if (this.vehicle instanceof EntityMinecartAbstract) {
-                    this.a(StatisticList.q, i);
                     if (this.e == null) {
                         this.e = new BlockPosition(this);
-                    } else if (this.e.c((double) gg.scala.spigot.util.MathHelper.floor(this.locX), (double) gg.scala.spigot.util.MathHelper.floor(this.locY), (double) gg.scala.spigot.util.MathHelper.floor(this.locZ)) >= 1000000.0D) {
-                        this.b((Statistic) AchievementList.q);
                     }
-                } else if (this.vehicle instanceof EntityBoat) {
-                    this.a(StatisticList.r, i);
-                } else if (this.vehicle instanceof EntityPig) {
-                    this.a(StatisticList.s, i);
-                } else if (this.vehicle instanceof EntityHorse) {
-                    this.a(StatisticList.t, i);
                 }
             }
         }
@@ -1468,10 +1410,6 @@ public abstract class EntityHuman extends EntityLiving {
 
     public void e(float f, float f1) {
         if (!this.abilities.canFly) {
-            if (f >= 2.0F) {
-                this.a(StatisticList.m, (int) Math.round((double) f * 100.0D));
-            }
-
             super.e(f, f1);
         }
     }

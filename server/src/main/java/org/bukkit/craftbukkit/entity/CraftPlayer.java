@@ -1613,8 +1613,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			// Send the new velocity to the player's client immediately, so it isn't affected by
 			// any movement packets from this player that may be processed before the end of the tick.
 			// Without this, player velocity changes tend to be very inconsistent.
-
+			super.setVelocity(vel);
 			this.getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(this.getHandle()));
+			this.getHandle().velocityChanged = false;
 		}
 
 		// Note that cancelling the event does not restore the old velocity, it only prevents

@@ -328,14 +328,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
         try {
             super.t_();
 
-            for (int i = 0; i < this.potions.size(); ++i) {
-                EntityPotion entityPotion = this.potions.get(i);
-
-                if (entityPotion.dead || this.potions.size() > 9) {
-                    this.potions.remove(i--);
-                }
-            }
-
             for (int i = 0; i < this.inventory.getSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
 
@@ -380,10 +372,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 this.playerConnection.sendPacket(new PacketPlayOutExperience(this.exp, this.expTotal, this.expLevel));
             }
 
-            if (this.ticksLived % 20 * 5 == 0 && !this.getStatisticManager().hasAchievement(AchievementList.L)) {
-                this.i_();
-            }
-
             // CraftBukkit start - initialize oldLevel and fire PlayerLevelChangeEvent
             if (this.oldLevel == -1) {
                 this.oldLevel = this.expLevel;
@@ -404,41 +392,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     }
 
     protected void i_() {
-        BiomeBase biomebase = this.world.getBiome(new BlockPosition(gg.scala.spigot.util.MathHelper.floorD(this.locX), 0, gg.scala.spigot.util.MathHelper.floorD(this.locZ)));
-        String s = biomebase.ah;
-        AchievementSet achievementset = this.getStatisticManager().b((Statistic) AchievementList.L);
-
-        if (achievementset == null) {
-            achievementset = this.getStatisticManager().a(AchievementList.L, new AchievementSet());
-        }
-
-        achievementset.add(s);
-        if (this.getStatisticManager().b(AchievementList.L) && achievementset.size() >= BiomeBase.n.size()) {
-            HashSet hashset = Sets.newHashSet(BiomeBase.n);
-            Iterator iterator = achievementset.iterator();
-
-            while (iterator.hasNext()) {
-                String s1 = (String) iterator.next();
-                Iterator iterator1 = hashset.iterator();
-
-                while (iterator1.hasNext()) {
-                    BiomeBase biomebase1 = (BiomeBase) iterator1.next();
-
-                    if (biomebase1.ah.equals(s1)) {
-                        iterator1.remove();
-                    }
-                }
-
-                if (hashset.isEmpty()) {
-                    break;
-                }
-            }
-
-            if (hashset.isEmpty()) {
-                this.b(AchievementList.L);
-            }
-        }
-
     }
 
     public void die(DamageSource damagesource) {
@@ -560,47 +513,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     }
 
     public void c(int i) {
-        // PaperSpigot start - Allow configurable end portal credits
         boolean endPortal = this.dimension == 1 && i == 1;
-        if (endPortal) {
-            this.b(AchievementList.D);
-            if (!world.paperSpigotConfig.disableEndCredits) {
-                this.world.kill(this);
-                this.viewingCredits = true;
-                this.playerConnection.sendPacket(new PacketPlayOutGameStateChange(4, 0.0F));
-            }
-            // PaperSpigot end
-        } else {
-            if (this.dimension == 0 && i == 1) {
-                this.b(AchievementList.C);
-                // CraftBukkit start - Rely on custom portal management
-                /*
-                BlockPosition blockposition = this.server.getWorldServer(i).getDimensionSpawn();
-
-                if (blockposition != null) {
-                    this.playerConnection.a((double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ(), 0.0F, 0.0F);
-                }
-
-                i = 1;
-                */
-                // CraftBukkit end
-            } else {
-                this.b(AchievementList.y);
-            }
-        }
-
-        // PaperSpigot start - Allow configurable end portal credits
-        if (!endPortal || world.paperSpigotConfig.disableEndCredits) {
-            // CraftBukkit start
-            TeleportCause cause = (endPortal || (this.dimension == 1 || i == 1)) ? TeleportCause.END_PORTAL : TeleportCause.NETHER_PORTAL;
-            this.server.getPlayerList().changeDimension(this, i, cause);
-            // CraftBukkit end
-            this.lastSentExp = -1;
-            this.bM = -1.0F;
-            this.bN = -1;
-        }
-        // PaperSpigot end
-
+        // CraftBukkit start
+        TeleportCause cause = (endPortal || (this.dimension == 1 || i == 1)) ? TeleportCause.END_PORTAL : TeleportCause.NETHER_PORTAL;
+        this.server.getPlayerList().changeDimension(this, i, cause);
+        // CraftBukkit end
+        this.lastSentExp = -1;
+        this.bM = -1.0F;
+        this.bN = -1;
     }
 
     public boolean a(net.minecraft.server.EntityPlayer entityplayer) {

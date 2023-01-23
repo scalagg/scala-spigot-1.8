@@ -109,6 +109,8 @@ data class ScalaSpigotConfig(
     val handleMobSpawnerTicking: Boolean = false,
     val aiGoalSelectionSpeed: Int = 20,
     val fixNoDamageTicks: Boolean = true,
+    val footstepSounds: Boolean = true,
+    val footstepParticles: Boolean = true,
 
 
     @TomlComment(

@@ -129,6 +129,26 @@ public abstract class EntityLiving extends Entity {
         this.S = 0.6F;
     }
 
+    public void updateEntityEquipment() {
+        for (int j = 0; j < 5; ++j) {
+            ItemStack itemstack = this.h[j];
+            ItemStack itemstack1 = this.getEquipment(j);
+
+            if (!ItemStack.matches(itemstack1, itemstack)) {
+                ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutEntityEquipment(this.getId(), j, itemstack1)));
+                if (itemstack != null) {
+                    this.c.a(itemstack.B());
+                }
+
+                if (itemstack1 != null) {
+                    this.c.b(itemstack1.B());
+                }
+
+                this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
+            }
+        }
+    }
+
     protected void h() {
         this.datawatcher.a(7, 0);
         this.datawatcher.a(8, (byte) 0);
@@ -147,7 +167,8 @@ public abstract class EntityLiving extends Entity {
             this.W();
         }
 
-        if (!this.world.isClientSide && this.fallDistance > 3.0F && flag) {
+
+        if (ScalaSpigot.INSTANCE.getConfig().getFootstepParticles() && !this.world.isClientSide && this.fallDistance > 3.0F && flag) {
             IBlockData iblockdata = this.world.getType(blockposition);
             Block block1 = iblockdata.getBlock();
             float f = (float) gg.scala.spigot.util.MathHelper.f(this.fallDistance - 3.0F);
@@ -161,11 +182,11 @@ public abstract class EntityLiving extends Entity {
 
                 int i = (int) (150.0D * d1);
 
-                if (this instanceof EntityPlayer) {
-                    ((WorldServer) this.world).sendParticles((EntityPlayer) this, EnumParticle.BLOCK_DUST, false, this.locX, this.locY, this.locZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[]{Block.getCombinedId(iblockdata)});
-                } else {
-                    ((WorldServer) this.world).a(EnumParticle.BLOCK_DUST, this.locX, this.locY, this.locZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[]{Block.getCombinedId(iblockdata)});
-                }
+                    if (this instanceof EntityPlayer) {
+                        ((WorldServer) this.world).sendParticles((EntityPlayer) this, EnumParticle.BLOCK_DUST, false, this.locX, this.locY, this.locZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[]{Block.getCombinedId(iblockdata)});
+                    } else {
+                        ((WorldServer) this.world).a(EnumParticle.BLOCK_DUST, this.locX, this.locY, this.locZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D, new int[]{Block.getCombinedId(iblockdata)});
+                    }
             }
         }
 
@@ -828,24 +849,19 @@ public abstract class EntityLiving extends Entity {
                 }
 
 
-                if (knockbackCancelled) this.world.broadcastEntityEffect(this, (byte) 2); // PaperSpigot
+                if (knockbackCancelled)
+                    this.world.broadcastEntityEffect(this, (byte) 2); // PaperSpigot
 
-                String s;
-
-                if (this.getHealth() <= 0.0F) {
-                    s = this.bp();
-                    if (flag && s != null) {
-                        this.makeSound(s, this.bB(), this.bC());
-                    }
-
-                    this.die(damagesource);
+                if (getHealth() <= 0.0F) {
+                    String s = bp();
+                    if (flag && s != null)
+                        makeSound(s, bB(), bC());
+                    die(damagesource);
                 } else {
-                    s = this.bo();
-                    if (flag && s != null) {
-                        this.makeSound(s, this.bB(), this.bC());
-                    }
+                    String s = bo();
+                    if (flag && s != null)
+                        makeSound(s, bB(), bC());
                 }
-
                 return true;
             }
         }
@@ -979,10 +995,12 @@ public abstract class EntityLiving extends Entity {
             int l = (int) gg.scala.spigot.util.MathHelper.floor(this.locZ);
             Block block = this.world.getType(new BlockPosition(j, k, l)).getBlock();
 
-            if (block.getMaterial() != Material.AIR) {
-                Block.StepSound block_stepsound = block.stepSound;
+            if (ScalaSpigot.INSTANCE.getConfig().getFootstepSounds()) {
+                if (block.getMaterial() != Material.AIR) {
+                    Block.StepSound block_stepsound = block.stepSound;
 
-                this.makeSound(block_stepsound.getStepSound(), block_stepsound.getVolume1() * 0.5F, block_stepsound.getVolume2() * 0.75F);
+                    this.makeSound(block_stepsound.getStepSound(), block_stepsound.getVolume1() * 0.5F, block_stepsound.getVolume2() * 0.75F);
+                }
             }
         }
 
@@ -1500,25 +1518,41 @@ public abstract class EntityLiving extends Entity {
 
     public void t_() {
         super.t_();
-        if (!this.world.isClientSide) {
-            int i = this.bv();
+        int i = this.bv();
 
-            if (i > 0) {
-                if (this.at <= 0) {
-                    this.at = 20 * (30 - i);
-                }
-
-                --this.at;
-                if (this.at <= 0) {
-                    this.o(i - 1);
-                }
+        if (i > 0) {
+            if (this.at <= 0) {
+                this.at = 20 * (30 - i);
             }
 
-            updateEntityEquipment();
-
-            if (this.ticksLived % 20 == 0) {
-                this.bs().g();
+            --this.at;
+            if (this.at <= 0) {
+                this.o(i - 1);
             }
+        }
+
+        for (int j = 0; j < 5; ++j) {
+            ItemStack itemstack = this.h[j];
+            ItemStack itemstack1 = this.getEquipment(j);
+
+            // if (!ItemStack.matches(itemstack1, itemstack)) {
+            if (!ItemStack.fastMatches(itemstack1, itemstack)) { // Spigot
+                ((WorldServer) this.world).getTracker().a(this,
+                        new PacketPlayOutEntityEquipment(this.getId(), j, itemstack1));
+                if (itemstack != null) {
+                    this.c.a(itemstack.B());
+                }
+
+                if (itemstack1 != null) {
+                    this.c.b(itemstack1.B());
+                }
+
+                this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
+            }
+        }
+
+        if (this.ticksLived % 20 == 0) {
+            this.bs().g();
         }
 
         this.m();
@@ -1559,26 +1593,6 @@ public abstract class EntityLiving extends Entity {
 
         this.world.methodProfiler.b();
         this.aT += f2;
-    }
-
-    public void updateEntityEquipment() {
-        for (int j = 0; j < 5; ++j) {
-            ItemStack itemstack = this.h[j];
-            ItemStack itemstack1 = this.getEquipment(j);
-
-            if (!ItemStack.matches(itemstack1, itemstack)) {
-                ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutEntityEquipment(this.getId(), j, itemstack1)));
-                if (itemstack != null) {
-                    this.c.a(itemstack.B());
-                }
-
-                if (itemstack1 != null) {
-                    this.c.b(itemstack1.B());
-                }
-
-                this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
-            }
-        }
     }
 
     protected float h(float f, float f1) {

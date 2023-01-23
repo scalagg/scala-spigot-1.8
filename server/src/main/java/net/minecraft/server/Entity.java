@@ -1011,6 +1011,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		}
 	}
 
+	//ScalaSpigot - Disable Footstep Particles
 	public void Y() {
 		if (this.isSprinting() && !this.V()) {
 			this.Z();
