@@ -523,7 +523,6 @@ public class EntityArmorStand extends EntityLiving {
 
             if (this.noTickEquipmentDirty) {
                 this.noTickEquipmentDirty = false;
-                updateEntityEquipment();
             }
 
             return;

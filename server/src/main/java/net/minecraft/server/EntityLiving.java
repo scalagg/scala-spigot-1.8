@@ -129,26 +129,6 @@ public abstract class EntityLiving extends Entity {
         this.S = 0.6F;
     }
 
-    public void updateEntityEquipment() {
-        for (int j = 0; j < 5; ++j) {
-            ItemStack itemstack = this.h[j];
-            ItemStack itemstack1 = this.getEquipment(j);
-
-            if (!ItemStack.matches(itemstack1, itemstack)) {
-                ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new PacketPlayOutEntityEquipment(this.getId(), j, itemstack1)));
-                if (itemstack != null) {
-                    this.c.a(itemstack.B());
-                }
-
-                if (itemstack1 != null) {
-                    this.c.b(itemstack1.B());
-                }
-
-                this.h[j] = itemstack1 == null ? null : itemstack1.cloneItemStack();
-            }
-        }
-    }
-
     protected void h() {
         this.datawatcher.a(7, 0);
         this.datawatcher.a(8, (byte) 0);

@@ -949,6 +949,8 @@ public abstract class EntityHuman extends EntityLiving {
     }
 
     public void attack(Entity entity) {
+        entity.b(((Statistic) AchievementList.f).d());
+
         if (entity.aD() && !entity.l(this) && !this.velocityChanged) {
             float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
             float f1;
