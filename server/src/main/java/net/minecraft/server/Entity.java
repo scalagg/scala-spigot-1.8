@@ -520,10 +520,6 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			this.lastMotX = this.motX;
 			this.lastMotY = this.motY;
 			this.lastMotZ = this.motZ;
-
-			if (world.movementCache.move(this)) {
-				return;
-			}
 			// IonSpigot end
 
 			// CraftBukkit start - Don't do anything if we aren't moving
@@ -773,8 +769,6 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 			if (d7 != d1) {
 				block.a(this.world, this);
 			}
-
-			world.movementCache.cache(this); // IonSpigot - Movement Cache
 
 			// CraftBukkit start
 			if (positionChanged && getBukkitEntity() instanceof Vehicle) {

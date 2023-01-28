@@ -940,7 +940,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             this.methodProfiler.b();
 
             worldserver.explosionDensityCache.clear();
-            worldserver.movementCache.clear(); // IonSpigot - Movement Cache
         }
 
         // Tick connections

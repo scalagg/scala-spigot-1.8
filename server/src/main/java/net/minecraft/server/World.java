@@ -146,8 +146,6 @@ public abstract class World implements IBlockAccess {
     public ExecutorService lightingExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("Paper - Lighting Thread").build()); // PaperSpigot - Asynchronous lighting updates
     public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<Explosion.CacheKey, Float>(); // PaperSpigot - Optimize explosions
 
-    public final MovementCache movementCache = new MovementCache(); // IonSpigot - Movement Cache
-
     public static long chunkToKey(int x, int z)
     {
         long k = ( ( ( (long) x ) & 0xFFFF0000L ) << 16 ) | ((((long) x) & 0x0000FFFFL));
@@ -418,8 +416,6 @@ public abstract class World implements IBlockAccess {
                     this.x(blockposition);
                     this.methodProfiler.b();
                 }
-
-                movementCache.clear();
 
                 // CraftBukkit start
                 if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
