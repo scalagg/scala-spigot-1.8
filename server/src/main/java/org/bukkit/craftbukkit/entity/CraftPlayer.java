@@ -7,6 +7,7 @@ import gg.scala.spigot.ScalaSpigot;
 import gg.scala.spigot.preset.KnockbackHandler;
 import gg.scala.spigot.preset.knockback.KnockbackPreset;
 import io.netty.buffer.Unpooled;
+import javolution.util.FastMap;
 import javolution.util.FastSet;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,7 +68,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	private boolean hasPlayedBefore = false;
 	private final ConversationTracker conversationTracker = new ConversationTracker();
 	private final Set<String> channels = new HashSet<>();
-	private final Set<UUID> hiddenPlayers = new HashSet<>();
+	private final FastMap<UUID, UUID> hiddenPlayers = new FastMap<UUID, UUID>().shared();
 	private int hash = 0;
 	private double health = 20;
 	private boolean scaledHealth = false;
@@ -1053,11 +1054,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return;
 		}
 
-		if (hiddenPlayers.contains(player.getUniqueId())) {
+		if (!canSee(player)) {
 			return;
 		}
 
-		hiddenPlayers.add(player.getUniqueId());
+		hiddenPlayers.put(player.getUniqueId(), null);
 
 		// remove this player from the hidden player's EntityTrackerEntry
 		EntityTracker tracker = ((WorldServer) entity.world).tracker;
@@ -1085,7 +1086,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return;
 		}
 
-		if (!hiddenPlayers.contains(player.getUniqueId())) {
+		if (canSee(player)) {
 			return;
 		}
 
@@ -1111,7 +1112,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
 	@Override
 	public boolean canSee(Player player) {
-		return !hiddenPlayers.contains(player.getUniqueId());
+		return hiddenPlayers.get(player.getUniqueId()) != null;
 	}
 
 	public boolean canSeeEntity(org.bukkit.entity.Entity entity) {
@@ -1716,7 +1717,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		@Override
 		public Set<Player> getHiddenPlayers() {
 			Set<Player> ret = new HashSet<Player>();
-			for (UUID u : hiddenPlayers) {
+			for (UUID u : hiddenPlayers.keySet()) {
 				ret.add(getServer().getPlayer(u));
 			}
 
