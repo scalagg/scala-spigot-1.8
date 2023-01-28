@@ -38,7 +38,8 @@ public abstract class PlayerList {
     private static final Logger f = MinecraftServer.LOGGER;
     private static final SimpleDateFormat g = new SimpleDateFormat("yyyy-MM-dd \'at\' HH:mm:ss z");
     private final MinecraftServer server;
-    private final Map<UUID, EntityPlayer> j = new Object2ObjectOpenHashMap<>();
+    private final Map<UUID, EntityPlayer> j = new Object2ObjectOpenHashMap<>(); Map<UUID, EntityPlayer> getUUIDMap() { return j; } // Titanium - Use fastutil // Paper - OBFHELPER
+    private final Map<UUID, EntityPlayer> pendingPlayers = new Object2ObjectOpenHashMap<>(); // Paper
     private final GameProfileBanList k;
     private final IpBanList l;
     private final OpList operators;
@@ -90,6 +91,13 @@ public abstract class PlayerList {
     }
 
     public void a(NetworkManager networkmanager, EntityPlayer entityplayer) {
+        // Paper start
+        EntityPlayer prev = pendingPlayers.put(entityplayer.getUniqueID(), entityplayer);
+        if (prev != null) {
+            disconnectPendingPlayer(prev);
+        }
+        entityplayer.networkManager = networkmanager;
+        // Paper end
         GameProfile gameprofile = entityplayer.getProfile();
         String s = gameprofile.getName();
 
@@ -98,7 +106,7 @@ public abstract class PlayerList {
         if (nbttagcompound != null && nbttagcompound.hasKey("bukkit")) {
             NBTTagCompound bukkit = nbttagcompound.getCompound("bukkit");
             s = bukkit.hasKeyOfType("lastKnownName", 8) ? bukkit.getString("lastKnownName") : s;
-        }
+        } String lastKnownName = s; // Paper
         // CraftBukkit end
 
         // PaperSpigot start - support PlayerInitialSpawnEvent
@@ -156,8 +164,38 @@ public abstract class PlayerList {
         playerconnection.sendPacket(new PacketPlayOutHeldItemSlot(entityplayer.inventory.itemInHandIndex));
         entityplayer.getStatisticManager().d();
         entityplayer.getStatisticManager().updateStatistics(entityplayer);
+
         this.sendScoreboard((ScoreboardServer) worldserver.getScoreboard(), entityplayer);
         this.server.aH();
+
+        // Paper start - async load spawn in chunk
+        worldserver.chunkProviderServer.getChunkAt(loc.getBlockX() >> 4, loc.getBlockZ() >> 4, () -> {
+            playerconnection.playerJoinReady = () -> {
+                this.postChunkLoadJoin(entityplayer, networkmanager, playerconnection, nbttagcompound, Objects.toString(networkmanager.getSocketAddress(), "local"), lastKnownName);
+            };
+        });
+    }
+
+    public EntityPlayer getActivePlayer(UUID uuid) {
+        EntityPlayer player = this.getUUIDMap().get(uuid);
+        return player != null ? player : pendingPlayers.get(uuid);
+    }
+
+    void disconnectPendingPlayer(EntityPlayer entityplayer) {
+        ChatComponentText msg = new ChatComponentText("You logged in from another location");
+        entityplayer.networkManager.sendPacket(new PacketPlayOutKickDisconnect(msg), (future) -> {
+            entityplayer.networkManager.close(msg);
+            entityplayer.networkManager = null;
+        });
+    }
+
+    private void postChunkLoadJoin(EntityPlayer entityplayer, NetworkManager networkmanager, PlayerConnection playerconnection, NBTTagCompound nbttagcompound, String s1, String s) {
+        pendingPlayers.remove(entityplayer.getUniqueID(), entityplayer);
+        if (!networkmanager.isConnected()) {
+            return;
+        }
+        entityplayer.didPlayerJoinEvent = true;
+        // Paper end
         // CraftBukkit start - login message is handled in the event
         // ChatMessage chatmessage;
 
@@ -174,7 +212,7 @@ public abstract class PlayerList {
         // this.sendMessage(chatmessage);
         this.onPlayerJoin(entityplayer, joinMessage);
         // CraftBukkit end
-        worldserver = server.getWorldServer(entityplayer.dimension);  // CraftBukkit - Update in case join event changed it
+        WorldServer worldserver = server.getWorldServer(entityplayer.dimension);  // CraftBukkit - Update in case join event changed it
         playerconnection.a(entityplayer.locX, entityplayer.locY, entityplayer.locZ, entityplayer.yaw, entityplayer.pitch);
         this.b(entityplayer, worldserver);
         if (this.server.getResourcePack().length() > 0) {
@@ -204,6 +242,7 @@ public abstract class PlayerList {
         f.info(entityplayer.getName() + " (" + players.size() + "/" + maxPlayers + ")" + " logged onto the server with entity id " + entityplayer.getId() + ".");
         // ScalaSpigot end
     }
+
 
     public void sendScoreboard(ScoreboardServer scoreboardserver, EntityPlayer entityplayer) {
         HashSet hashset = Sets.newHashSet();
@@ -295,6 +334,7 @@ public abstract class PlayerList {
     }
 
     protected void savePlayerFile(EntityPlayer entityplayer) {
+        if (!entityplayer.didPlayerJoinEvent) return; // Paper - If we never fired PJE, we disconnected during login. Data has not changed, and additionally, our saved vehicle is not loaded! If we save now, we will lose our vehicle (CraftBukkit bug)
         this.playerFileData.save(entityplayer);
         ServerStatisticManager serverstatisticmanager = (ServerStatisticManager) this.o.get(entityplayer.getUniqueID());
 
@@ -361,7 +401,7 @@ public abstract class PlayerList {
 
         Player bukkit = cserver.getPlayer(entityplayer); // KigPaper
         PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), "\u00A7e" + entityplayer.getName() + " left the game.");
-        cserver.getPluginManager().callEvent(playerQuitEvent);
+        if (entityplayer.didPlayerJoinEvent) cserver.getPluginManager().callEvent(playerQuitEvent); // Paper - if we disconnected before join ever fired, don't fire quit
         entityplayer.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
         // CraftBukkit end
 
@@ -385,6 +425,14 @@ public abstract class PlayerList {
             this.o.remove(uuid);
         }
 
+        // Paper start
+        entityplayer1 = pendingPlayers.get(uuid);
+        if (entityplayer1 == entityplayer) {
+            pendingPlayers.remove(uuid);
+        }
+        entityplayer.networkManager = null;
+        // Paper end
+
         // CraftBukkit start
         //  this.sendAll(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new EntityPlayer[] { entityplayer}));
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityplayer);
@@ -399,7 +447,7 @@ public abstract class PlayerList {
 
         ChunkIOExecutor.adjustPoolSize(this.getPlayerCount()); // CraftBukkit
 
-        return playerQuitEvent.getQuitMessage(); // CraftBukkit
+        return entityplayer.didPlayerJoinEvent ? playerQuitEvent.getQuitMessage() : null; // CraftBukkit // Paper - don't print quit if we never printed join
     }
 
     // CraftBukkit start - Whole method, SocketAddress to LoginListener, added hostname to signature, return EntityPlayer
@@ -416,6 +464,14 @@ public abstract class PlayerList {
                 arraylist.add(entityplayer);
             }
         }
+
+        // Paper start - check pending players too
+        entityplayer = pendingPlayers.get(uuid);
+        if (entityplayer != null) {
+            this.pendingPlayers.remove(uuid);
+            disconnectPendingPlayer(entityplayer);
+        }
+        // Paper end
 
         Iterator iterator = arraylist.iterator();
 
@@ -472,6 +528,8 @@ public abstract class PlayerList {
         }
         return entity;
     }
+
+    public EntityPlayer getPlayer(UUID uuid) { return this.a(uuid); } // Paper - OBFHELPER
 
     public EntityPlayer processLogin(GameProfile gameprofile, EntityPlayer player) { // CraftBukkit - added EntityPlayer
         /* CraftBukkit startMoved up

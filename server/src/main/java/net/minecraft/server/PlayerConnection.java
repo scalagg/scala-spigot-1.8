@@ -73,6 +73,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private int lastSequentialSwingTick;
     private int forwardSwingTick;
     private boolean processedDisconnect;
+    public Runnable playerJoinReady; // Paper
 
     // ScalaSpigot Start - Running and eating
     private boolean expectingStartPlace;
@@ -117,6 +118,14 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         this.h = false;
 
         ++this.e;
+
+        // Paper start - login async
+        Runnable playerJoinReady = this.playerJoinReady;
+        if (playerJoinReady != null) {
+            this.playerJoinReady = null;
+            playerJoinReady.run();
+        }
+        // Paper end
 
         this.minecraftServer.methodProfiler.a("keepAlive");
 

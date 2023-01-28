@@ -84,6 +84,14 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
         }
     }
 
+    // Titanium start - compatibility
+    public void sendPacket(Packet<?> packet) { this.handle(packet); }
+
+    public void sendPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> genericfuturelistener) {
+        this.a(packet, genericfuturelistener, null);
+    }
+    // Titanium end
+
     public void enableAutomaticFlush() {
         synchronized (this.flushLock) {
             this.canFlush = true;

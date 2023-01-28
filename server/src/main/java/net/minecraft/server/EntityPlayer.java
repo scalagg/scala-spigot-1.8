@@ -67,6 +67,9 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
     private float pluginRainPosition;
     private float pluginRainPositionPrevious;
 
+    public NetworkManager networkManager; // Paper
+    public boolean didPlayerJoinEvent = false; // Paper
+
     public List<EntityPotion> potions = new ArrayList<>(); // IonSpigot - Lag Compensated Potions
 
     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
