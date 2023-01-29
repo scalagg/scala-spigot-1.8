@@ -176,7 +176,7 @@ public class ServerConnection {
                                 .addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this))
                                 .addLast("splitter", new PacketSplitter())
                                 .addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND))
-                                .addLast("prepender", new PacketPrepender())
+                                .addLast("prepender", PacketPrepender.INSTANCE)
                                 .addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
 
                             final NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
