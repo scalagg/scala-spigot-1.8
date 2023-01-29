@@ -68,7 +68,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 	private boolean hasPlayedBefore = false;
 	private final ConversationTracker conversationTracker = new ConversationTracker();
 	private final Set<String> channels = new HashSet<>();
-	private final FastMap<UUID, UUID> hiddenPlayers = new FastMap<UUID, UUID>().shared();
+
+	private final FastSet<UUID> hiddenPlayers =
+		new FastMap<UUID, UUID>().keySet().shared();
+
 	private int hash = 0;
 	private double health = 20;
 	private boolean scaledHealth = false;
@@ -1058,7 +1061,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 			return;
 		}
 
-		hiddenPlayers.put(player.getUniqueId(), null);
+		hiddenPlayers.add(player.getUniqueId());
 
 		// remove this player from the hidden player's EntityTrackerEntry
 		EntityTracker tracker = ((WorldServer) entity.world).tracker;
@@ -1112,7 +1115,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
 	@Override
 	public boolean canSee(Player player) {
-		return hiddenPlayers.get(player.getUniqueId()) != null;
+		return !hiddenPlayers.contains(player.getUniqueId());
 	}
 
 	public boolean canSeeEntity(org.bukkit.entity.Entity entity) {
@@ -1717,7 +1720,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 		@Override
 		public Set<Player> getHiddenPlayers() {
 			Set<Player> ret = new HashSet<Player>();
-			for (UUID u : hiddenPlayers.keySet()) {
+			for (UUID u : hiddenPlayers) {
 				ret.add(getServer().getPlayer(u));
 			}
 
