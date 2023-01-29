@@ -277,7 +277,6 @@ public class CraftWorld implements World {
             return world.chunkProviderServer.getChunkAt(x, z) != null;
         }
 
-        world.chunkProviderServer.unloadQueue.remove(x);
         net.minecraft.server.Chunk chunk = world.chunkProviderServer.chunks.get(LongHash.toLong(x, z));
 
         if (chunk == null) {
@@ -285,6 +284,8 @@ public class CraftWorld implements World {
 
             chunkLoadPostProcess(chunk, x, z);
         }
+
+        world.chunkProviderServer.unloadQueue.remove(x);
         return chunk != null;
     }
 

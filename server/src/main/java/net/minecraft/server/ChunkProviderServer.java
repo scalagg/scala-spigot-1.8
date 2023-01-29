@@ -138,7 +138,6 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public Chunk getChunkAt(int i, int j, Runnable runnable) {
         long key = LongHash.toLong(i, j); // IonSpigot - Only create key once
-        unloadQueue.remove(key); // TacoSpigot - directly invoke LongHash
         Chunk chunk = chunks.get(key);
         ChunkRegionLoader loader = null;
 
@@ -165,6 +164,7 @@ public class ChunkProviderServer implements IChunkProvider {
             chunk = originalGetChunkAt(i, j);
         }
 
+        unloadQueue.remove(key); // SportPaper
         // If we didn't load the chunk async and have a callback run it now
         if (runnable != null) {
             runnable.run();
@@ -174,7 +174,6 @@ public class ChunkProviderServer implements IChunkProvider {
     }
     public Chunk originalGetChunkAt(int i, int j) {
         long key = LongHash.toLong(i, j); // IonSpigot - Only create key once
-        this.unloadQueue.remove(key); // TacoSpigot - directly invoke LongHash
         Chunk chunk = (Chunk) this.chunks.get(key);
         boolean newChunk = false;
         // CraftBukkit end
@@ -247,6 +246,7 @@ public class ChunkProviderServer implements IChunkProvider {
             chunk.loadNearby(this, this, i, j);
         }
 
+        unloadQueue.remove(key); // SportPaper
         return chunk;
     }
 
