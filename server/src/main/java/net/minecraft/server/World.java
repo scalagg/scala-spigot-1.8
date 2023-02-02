@@ -1480,10 +1480,12 @@ public abstract class World implements IBlockAccess {
         this.M = true;
         // CraftBukkit start - From below, clean up tile entities before ticking them
         if (!this.c.isEmpty()) {
-            // SpigotX start - use OptimizedRemoveUtil
-            //this.tileEntityList.removeAll(this.setServerIp);
-            tileTickPosition = OptimizedRemoveUtil.removeAll(this.tileEntityList, this.c, tileTickPosition);
-            // SpigotX end
+            // PandaSpigot start - Use alternate implementation with faster contains
+            java.util.Set<TileEntity> toRemove = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+            toRemove.addAll(c);
+            this.tileEntityList.removeAll(toRemove);
+            // PandaSpigot end
+
             //this.h.removeAll(this.setServerIp); // PaperSpigot - Remove unused list
             this.c.clear();
         }
