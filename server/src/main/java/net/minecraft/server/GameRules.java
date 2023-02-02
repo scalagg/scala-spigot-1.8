@@ -3,7 +3,7 @@ package net.minecraft.server;
 import java.util.*;
 
 public class GameRules {
-    private Map<String, GameRuleValue> a = new HashMap<>(); // PaperBin - TreeMap -> HashMap - Faster Game Rules Lookup
+    private Map<String, GameRuleValue> a = new LinkedHashMap<>(); // PaperBin - TreeMap -> HashMap - Faster Game Rules Lookup
 
     public GameRules() {
         this.a("doFireTick", "true", GameRules.EnumGameRuleType.BOOLEAN_VALUE);
