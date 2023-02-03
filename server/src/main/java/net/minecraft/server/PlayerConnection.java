@@ -39,15 +39,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerListBox {
-
-    // PandaSpigot start - Smooth teleportation
-    private static final Set<PacketPlayOutPosition.EnumPlayerTeleportFlags> TELEPORT_NO_ROT =
-            com.google.common.collect.Sets.immutableEnumSet(
-                    PacketPlayOutPosition.EnumPlayerTeleportFlags.X_ROT,
-                    PacketPlayOutPosition.EnumPlayerTeleportFlags.Y_ROT
-            );
-    // PandaSpigot end
-
     private static final Logger c = MinecraftServer.LOGGER;
     public final NetworkManager networkManager;
     private final MinecraftServer minecraftServer;
@@ -95,6 +86,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
     private final org.bukkit.craftbukkit.CraftServer server;
     private int lastTick = MinecraftServer.currentTick;
+    private long nextValidSwingTick = MinecraftServer.currentTick;
     private int lastDropTick = MinecraftServer.currentTick;
     private int dropCount = 0;
     private static final int SURVIVAL_PLACE_DISTANCE_SQUARED = 6 * 6;
@@ -108,6 +100,13 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private boolean justTeleported = false;
     private boolean hasMoved;
 
+    // ScalaSpigot start - backport 1.12.2 keepalive
+    private boolean awaitingKeepAlive;
+    private boolean disconnecting;
+    private boolean noKeepalives; // Prevent spamming the warning
+
+    public static final long KEEPALIVE_LIMIT = 30000;
+
     public CraftPlayer getPlayer() {
         return (this.player == null) ? null : this.player.getBukkitEntity();
     }
@@ -116,8 +115,38 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
     public void c() {
         this.h = false;
-
         ++this.e;
+
+        // Scala - back port 1.12.2 keepalive handling
+        if (!ScalaSpigot.INSTANCE.getConfig().getBetterKeepAlive()) {
+            if ((long) this.e - this.k > 40L) {
+                this.k = this.e;
+                this.j = this.d();
+                this.i = (int) this.j;
+                this.sendPacket(new PacketPlayOutKeepAlive(this.i));
+            }
+        } else {
+            // Paper Start - give clients enter longer time to respond to pings as per pre 1.12.2 timings
+            // This should effectively place the keepalive handling back to "as it was" before 1.12.2
+            long currentTime = SystemUtils.getMonotonicMillis();
+            long elapsedTime = currentTime - this.getLastPing();
+
+            if (this.isPendingPing()) {
+                if (!this.processedDisconnect && elapsedTime >= KEEPALIVE_LIMIT) { // check keepalive limit, don't fire if already disconnected
+                    c.warn("{} was kicked due to keepalive timeout!", this.player.getName()); // more info
+                    this.disconnect("Timed out");
+                }
+            } else {
+                if (elapsedTime >= 15000L) { // 15 seconds
+                    this.setPendingPing(true);
+                    this.setLastPing(currentTime);
+                    this.setKeepAliveID((int) currentTime);
+                    this.sendPacket(new PacketPlayOutKeepAlive(this.getKeepAliveID()));
+                }
+            }
+            // Paper end
+        }
+        // Scala end
 
         // Paper start - login async
         Runnable playerJoinReady = this.playerJoinReady;
@@ -149,6 +178,42 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
             this.disconnect("You have been idle for too long!");
         }
     }
+
+    // Scala start - Improve KeepAlive handling
+    public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
+        if (!ScalaSpigot.INSTANCE.getConfig().getBetterKeepAlive()) {
+            if (packetplayinkeepalive.a() == this.i) {
+                int i = (int) (this.d() - this.j);
+
+                this.player.ping = (this.player.ping * 3 + i) / 4;
+            }
+            return;
+        }
+
+
+        // Prevent spam
+        if (this.noKeepalives) {
+            return;
+        }
+
+        if (this.awaitingKeepAlive && packetplayinkeepalive.a() == getKeepAliveID()) {
+            int i = (int) (SystemUtils.getMonotonicMillis() - this.getLastPing());
+            this.player.ping = (this.player.ping * 3 + i) / 4;
+            this.awaitingKeepAlive = false;
+            return;
+        }
+
+        // Allow 1.8.8 clients to safely download and load worlds
+        // without being disconnected for not responding during that
+        if (packetplayinkeepalive.a() == 0) {
+            return;
+        }
+
+        this.noKeepalives = true;
+        c.warn("{} sent an invalid keepalive! pending keepalive: {} got id: {} expected id: {}", this.player.getName(), this.isPendingPing(), packetplayinkeepalive.a(), this.getKeepAliveID());
+        this.minecraftServer.postToMainThread(() -> disconnect("invalid keepalive"));
+    }
+    // Scala end
 
     public NetworkManager a() {
         return this.networkManager;
@@ -197,7 +262,11 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     }
 
     private boolean b(PacketPlayInFlying packetplayinflying) {
-        return !Doubles.isFinite(packetplayinflying.a()) || !Doubles.isFinite(packetplayinflying.b()) || !Doubles.isFinite(packetplayinflying.c()) || !Floats.isFinite(packetplayinflying.e()) || !Floats.isFinite(packetplayinflying.d());
+        return !Doubles.isFinite(packetplayinflying.a()) || !Doubles.isFinite(packetplayinflying.b()) || !Doubles.isFinite(packetplayinflying.c()) || !Floats.isFinite(packetplayinflying.e()) || !Floats.isFinite(packetplayinflying.d())
+                // Scala START: FIX PITCH/YAW EXPLOITS;
+                || !Floats.isFinite(packetplayinflying.pitch) || !Float.isFinite(packetplayinflying.yaw) || Double.isNaN(packetplayinflying.x) || Double.isNaN(packetplayinflying.y) || Double.isNaN(packetplayinflying.z)
+                // Scala END
+                ;
     }
 
     public void a(PacketPlayInFlying packetplayinflying) {
@@ -257,12 +326,14 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                 Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch);
                 Location to = player.getLocation().clone();
 
-                if (packetplayinflying.hasPos && !(packetplayinflying.hasPos && packetplayinflying.y == -999.0D)) {
+                // If the packet contains movement information then we update the To location with the correct XYZ.
+                if (packetplayinflying.hasPos && packetplayinflying.y != -999.0D) {
                     to.setX(packetplayinflying.x);
                     to.setY(packetplayinflying.y);
                     to.setZ(packetplayinflying.z);
                 }
 
+                // If the packet contains look information then we update the To location with the correct Yaw & Pitch.
                 if (packetplayinflying.hasLook) {
                     to.setYaw(packetplayinflying.yaw);
                     to.setPitch(packetplayinflying.pitch);
@@ -720,36 +791,71 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
             int itemstackAmount = itemstack.count;
 
+            // Spigot start - skip the event if throttled
             if (!throttled) {
-                boolean cancelled = false;
+                // Raytrace to look for 'rogue armswings'
+                float f1 = this.player.pitch;
+                float f2 = this.player.yaw;
+                double d0 = this.player.locX;
+                double d1 = this.player.locY + (double) this.player.getHeadHeight();
+                double d2 = this.player.locZ;
+                Vec3D vec3d = new Vec3D(d0, d1, d2);
 
-                if (packetplayinblockplace.getFace() == 255) {
-                    org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.player, Action.RIGHT_CLICK_AIR, itemstack);
+                float f3 = MathHelper.cos(-f2 * 0.017453292F - 3.1415927F);
+                float f4 = MathHelper.sin(-f2 * 0.017453292F - 3.1415927F);
+                float f5 = -MathHelper.cos(-f1 * 0.017453292F);
+                float f6 = MathHelper.sin(-f1 * 0.017453292F);
+                float f7 = f4 * f5;
+                float f8 = f3 * f5;
+                double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
+                Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
+                MovingObjectPosition movingobjectposition = this.player.world.rayTrace(vec3d, vec3d1, false);
+
+                boolean cancelled;
+                if (movingobjectposition == null || movingobjectposition.type != MovingObjectPosition.EnumMovingObjectType.BLOCK) {
+                    PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.player, Action.RIGHT_CLICK_AIR, itemstack);
                     cancelled = event.useItemInHand() == Event.Result.DENY;
                 } else {
                     if (player.playerInteractManager.firedInteract) {
                         player.playerInteractManager.firedInteract = false;
                         cancelled = player.playerInteractManager.interactResult;
                     } else {
-                        EnumDirection enumDirection = NotchUtil.getDirection(
-                                this.player.pitch,
-                                this.player.yaw,
-                                this.player.locX,
-                                this.player.locY + this.player.getHeadHeight(),
-                                this.player.locZ,
-                                player.playerInteractManager.getGameMode()
-                        );
-
-                        org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK,
-                                packetplayinblockplace.a(), itemstack, true, enumDirection);
+                        PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, movingobjectposition.a(), itemstack, true, movingobjectposition.direction);
                         cancelled = event.useItemInHand() == Event.Result.DENY;
                     }
                 }
 
                 if (!cancelled) {
                     this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
+                } else {
+                    this.player.getBukkitEntity().updateInventory(); // SPIGOT-2524
+                    // SportPaper start - Fix client desync
+                    if (itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY)) {
+                        MovingObjectPosition movingObjectPosition1 = this.player.world.rayTrace(vec3d, vec3d1, true,
+                                false, false);
+                        if (movingObjectPosition1 != null) {
+                            BlockPosition blockPosition = movingObjectPosition1.a().up();
+                            org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(worldserver,
+                                            blockPosition.getX(), blockPosition.getY(), blockPosition.getZ())
+                                    .update(true, false);
+                        }
+
+                    } else if (itemstack.getItem() == Items.BUCKET) {
+                        MovingObjectPosition movingObjectPosition1 = this.player.world.rayTrace(vec3d, vec3d1, true,
+                                false, false);
+                        if (movingObjectPosition1 != null) {
+                            BlockPosition blockPosition = movingObjectPosition1.a();
+                            org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(worldserver,
+                                            blockPosition.getX(), blockPosition.getY(), blockPosition.getZ())
+                                    .update(true, false);
+                        }
+                    }
                 }
+                // SportPaper end
+            } else if (MinecraftServer.currentTick - lastDropTick > 1) {
+                this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
             }
+            // Spigot end
 
             always = (itemstack.count != itemstackAmount) || itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY);
         } else if (blockposition.getY() >= this.minecraftServer.getMaxBuildHeight() - 1 && (enumdirection == EnumDirection.UP || blockposition.getY() >= this.minecraftServer.getMaxBuildHeight())) {
@@ -1199,71 +1305,57 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     }
 
     public void a(PacketPlayInArmAnimation packetplayinarmanimation) {
-        if (this.player.dead) {
-            return;
-        }
+        if (this.player.dead) return; // CraftBukkit
+        PlayerConnectionUtils.ensureMainThread(packetplayinarmanimation, this, this.player.u());
+        this.player.resetIdleTimer();
+        // CraftBukkit start - Raytrace to look for 'rogue armswings'
+        if (!ScalaSpigot.INSTANCE.getConfig().getNoCheckRogueSwings()) {
+            float f1 = this.player.pitch;
+            float f2 = this.player.yaw;
+            double d0 = this.player.locX;
+            double d1 = this.player.locY + (double) this.player.getHeadHeight();
+            double d2 = this.player.locZ;
+            Vec3D vec3d = new Vec3D(d0, d1, d2);
 
-        if (ScalaSpigot.INSTANCE.getConfig().getKickForInvalidArmAnimation()) {
-            if (lastSwingTick != MinecraftServer.currentTick) {
-                swings = 0;
-                lastSwingTick = MinecraftServer.currentTick;
-            } else {
-                if (swings > 5) {
-                    if (MinecraftServer.currentTick - 1 == lastSequentialSwingTick) {
-                        sequentialSwingRateLimits++;
-                    } else if (MinecraftServer.currentTick != lastSequentialSwingTick) {
-                        sequentialSwingRateLimits = 0;
-                    } else if (75 < sequentialSwingRateLimits) {
-                        this.disconnect("Invalid arm animations");
-                    }
-                    lastSequentialSwingTick = MinecraftServer.currentTick;
-                    return;
-                }
-                swings++;
+            float f3 = MathHelper.cos(-f2 * 0.017453292F - 3.1415927F);
+            float f4 = MathHelper.sin(-f2 * 0.017453292F - 3.1415927F);
+            float f5 = -MathHelper.cos(-f1 * 0.017453292F);
+            float f6 = MathHelper.sin(-f1 * 0.017453292F);
+            float f7 = f4 * f5;
+            float f8 = f3 * f5;
+            double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
+            Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
+            MovingObjectPosition movingobjectposition = this.player.world.rayTrace(vec3d, vec3d1, false);
+
+            if (movingobjectposition == null || movingobjectposition.type != MovingObjectPosition.EnumMovingObjectType.BLOCK) {
+                CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_AIR, this.player.inventory.getItemInHand());
             }
         }
+        // CraftBukkit end
 
-        PlayerConnectionUtils.ensureMainThread(packetplayinarmanimation, this, this.player.u());
-
-        this.player.resetIdleTimer();
-
-        float pitch = this.player.pitch;
-        float yaw = this.player.yaw;
-        double locX = this.player.locX;
-        double locY = this.player.locY + (double) this.player.getHeadHeight();
-        double locZ = this.player.locZ;
-        Vec3D vec3d = new Vec3D(locX, locY, locZ);
-        float f3 = (float) gg.scala.spigot.util.MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
-        float f4 = (float) gg.scala.spigot.util.MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
-        float f5 = (float) -gg.scala.spigot.util.MathHelper.cos(-pitch * 0.017453292F);
-        float f6 = (float) gg.scala.spigot.util.MathHelper.sin(-pitch * 0.017453292F);
-        float f7 = f4 * f5;
-        float f8 = f3 * f5;
-        double d3 = player.playerInteractManager.getGameMode() == WorldSettings.EnumGamemode.CREATIVE ? 5.0D : 4.5D;
-        Vec3D vec3d1 = vec3d.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
-
-        MovingObjectPosition movingobjectposition = this.player.world.rayTrace(vec3d, vec3d1, false);
-
-        if (movingobjectposition == null || movingobjectposition.type != MovingObjectPosition.EnumMovingObjectType.BLOCK) {
-            CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_AIR, this.player.inventory.getItemInHand());
-        }
-
-        PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());
-
-        this.server.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        if (MinecraftServer.currentTick >= this.forwardSwingTick) {
-            this.player.bw();
-            this.forwardSwingTick = MinecraftServer.currentTick + 5;
-        }
-
+        // Carbon start - Optimize Arm Swings
+        // stop blocking after swinging in case the state was wrong
         if (this.player.isBlocking()) {
             this.player.bU();
         }
+
+        // Arm swing animation
+        if (ScalaSpigot.INSTANCE.getConfig().getFireArmAnimationEvent()) {
+            PlayerAnimationEvent event = new PlayerAnimationEvent(this.getPlayer());
+            this.server.getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) return;
+        }
+
+
+        // Only send swings to client every 5 ticks (current tick + 4)
+        if (ScalaSpigot.INSTANCE.getConfig().getOptimizeArmSwings() && (MinecraftServer.currentTick >= this.nextValidSwingTick)) {
+            this.player.bw();
+            this.nextValidSwingTick = MinecraftServer.currentTick + 4;
+        } else {
+            this.player.bw();
+        }
+        // Carbon end
     }
 
     public void a(PacketPlayInEntityAction packetplayinentityaction) {
@@ -1973,15 +2065,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
     }
 
-    public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
-        if (packetplayinkeepalive.a() == this.i) {
-            int i = (int) (this.d() - this.j);
-
-            this.player.ping = (this.player.ping * 3 + i) / 4;
-        }
-
-    }
-
     private long d() {
         return System.nanoTime() / 1000000L;
     }
@@ -2375,6 +2458,36 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
             }
 
         }
+    }
+    private void setPendingPing(boolean isPending) {
+        this.awaitingKeepAlive = isPending;
+    }
+    private boolean isPendingPing() {
+        return this.awaitingKeepAlive;
+    }
+
+
+    public boolean isDisconnecting() {
+        return disconnecting;
+    }
+    public void setDisconnecting(boolean disconnecting) {
+        this.disconnecting = disconnecting;
+    }
+
+    private void setLastPing(final long lastPing) {
+        this.j = lastPing;
+    }
+
+    private long getLastPing() {
+        return this.j;
+    }
+
+    private void setKeepAliveID(final int keepAliveID) {
+        this.i = keepAliveID;
+    }
+
+    private int getKeepAliveID() {
+        return this.i;
     }
 
 }

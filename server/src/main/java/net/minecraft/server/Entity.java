@@ -388,7 +388,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 					this.fireTicks = 0;
 				}
 			} else {
-				if (this.fireTicks % DedicatedServer.TPS == 0) { // SpigotX - change default to TPS instead of 20
+				if (this.fireTicks % 20 == 0) {
 					this.damageEntity(DamageSource.BURN, 1.0F);
 				}
 

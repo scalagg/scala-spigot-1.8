@@ -1,7 +1,11 @@
 package net.minecraft.server;
 
+import gg.scala.spigot.ScalaSpigotService;
+import gg.scala.spigot.console.ScalaSpigotCommandSender;
 import javolution.util.FastSet;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -74,9 +78,12 @@ public class EntityTrackerEntry {
         this.b = i;
         this.c = j;
         this.u = flag;
-        this.xLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locX * 32.0D);
-        this.yLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locY * 32.0D);
-        this.zLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locZ * 32.0D);
+
+        // ScalaSpigot - Fix Rounding calculation error for Position
+        this.xLoc = (int) Math.round(entity.locX * 32.0D);
+        this.yLoc = (int) Math.round(entity.locY * 32.0D);
+        this.zLoc = (int) Math.round(entity.locZ * 32.0D);
+
         this.yRot = gg.scala.spigot.util.MathHelper.d(entity.yaw * 256.0F / 360.0F);
         this.xRot = gg.scala.spigot.util.MathHelper.d(entity.pitch * 256.0F / 360.0F);
         this.i = gg.scala.spigot.util.MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
@@ -84,7 +91,7 @@ public class EntityTrackerEntry {
     }
 
     public boolean equals(Object object) {
-        return object instanceof EntityTrackerEntry && ((EntityTrackerEntry) object).tracker.getId() == this.tracker.getId();
+        return object instanceof EntityTrackerEntry ? ((EntityTrackerEntry) object).tracker.getId() == this.tracker.getId() : false;
     }
 
     public int hashCode() {
@@ -277,7 +284,6 @@ public class EntityTrackerEntry {
         ++this.m;
         if (this.tracker.velocityChanged) {
             // CraftBukkit start - Create PlayerVelocity event
-            /*
             boolean cancelled = false;
 
             if (this.tracker instanceof EntityPlayer) {
@@ -297,7 +303,6 @@ public class EntityTrackerEntry {
             if (!cancelled) {
                 this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
             }
-            */
             // CraftBukkit end
             this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
             this.tracker.velocityChanged = false;
@@ -389,6 +394,7 @@ public class EntityTrackerEntry {
     }
 
     public void updatePlayer(EntityPlayer entityplayer) {
+        org.spigotmc.AsyncCatcher.catchOp( "player tracker update"); // Spigot
         if (entityplayer != this.tracker) {
             boolean isPlayerEntityTracked = this.trackedPlayers.contains(entityplayer);
 
@@ -483,7 +489,7 @@ public class EntityTrackerEntry {
                         }
                     }
                 }
-            } else if (isPlayerEntityTracked) {
+            } else if (this.trackedPlayers.contains(entityplayer)) {
                 this.trackedPlayers.remove(entityplayer);
                 entityplayer.d(this.tracker);
 
@@ -506,15 +512,7 @@ public class EntityTrackerEntry {
     }
 
     public void scanPlayers(List<EntityHuman> list) {
-        for (final EntityHuman entityHuman : list) {
-            if (
-                entityHuman instanceof EntityPlayer &&
-                    entityHuman.bukkitEntity != null &&
-                    !((EntityPlayer) entityHuman).getBukkitEntity().canSeeEntity((this.tracker).getBukkitEntity())
-            ) {
-                continue;
-            }
-
+        for (EntityHuman entityHuman : list) {
             this.updatePlayer((EntityPlayer) entityHuman);
         }
     }

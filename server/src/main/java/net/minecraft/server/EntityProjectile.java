@@ -146,7 +146,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
                         //ScalaSpigot end
 
                         if (movingobjectposition1 != null) {
-                            double d1 = Math.pow(entity1.locX - this.locX, 2.0) + Math.pow(entity1.locY - this.locY, 2.0) + Math.pow(entity1.locZ - this.locZ, 2.0);
+                            double d1 = vec3d.distanceSquared(movingobjectposition1.pos);
 
                             if (d1 < d0 || d0 == 0.0D) {
                                 entity = entity1;

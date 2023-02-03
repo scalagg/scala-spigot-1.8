@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -10,15 +11,12 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.kqueue.KQueue;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.kqueue.KQueueServerSocketChannel;
-import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -29,66 +27,25 @@ import java.util.concurrent.Callable;
 
 public class ServerConnection {
 
-    public enum EventGroupType {
-        EPOLL,
-        KQUEUE,
-        NIO,
-        DEFAULT
-    }
-
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final WriteBufferWaterMark SERVER_WRITE_MARK = new WriteBufferWaterMark(1 << 20, 1 << 21);
 
-    private static final Logger e = MinecraftServer.LOGGER;
-    public static final LazyInitVar<NioEventLoopGroup> a = new LazyInitVar() {
-        private NioEventLoopGroup a() {
-            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).build());
-        }
+    private final EventGroupType eventGroupType;
+    public static LazyInitVar<EventLoopGroup> a, b; // a = boss, b = worker
+    public static final LazyInitVar<DefaultEventLoopGroup> c = new LazyInitVar<>(() -> new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build()));
 
-        protected Object init() {
-            return this.a();
-        }
-    };
-    public static final LazyInitVar<EpollEventLoopGroup> b = new LazyInitVar() {
-        private EpollEventLoopGroup a() {
-            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
-        }
-
-        protected Object init() {
-            return this.a();
-        }
-    };
-    public static final LazyInitVar<LocalEventLoopGroup> c = new LazyInitVar() {
-        private LocalEventLoopGroup a() {
-            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
-        }
-
-        protected Object init() {
-            return this.a();
-        }
-    };
     private final MinecraftServer server;
     public volatile boolean started;
+
     private final List<ChannelFuture> g = Collections.synchronizedList(Lists.newArrayList());
     private final List<NetworkManager> h = Collections.synchronizedList(Lists.newArrayList());
-
-    // Paper start - prevent blocking on adding a new network manager while the server is ticking
-    private final List<NetworkManager> pending = Collections.synchronizedList(Lists.newArrayList());
-
-    private void addPending() {
-        synchronized (pending) {
-            this.h.addAll(pending); // Paper - OBFHELPER - List of network managers
-            pending.clear();
-        }
-    }
-    // Paper end
-
-    private final EventGroupType eventGroupType;
 
     public ServerConnection(MinecraftServer minecraftserver) {
         this.server = minecraftserver;
         this.started = true;
 
-        if (server.ai()) /* use-native-transport */ {
+        if (server.ai())
+            /* use-native-transport */ {
             if (Epoll.isAvailable()) {
                 this.eventGroupType = EventGroupType.EPOLL;
                 return;
@@ -101,109 +58,139 @@ public class ServerConnection {
         this.eventGroupType = server.getTransport();
     }
 
+    // Paper start - prevent blocking on adding a new network manager while the
+    // server is ticking
+    public final java.util.Queue<NetworkManager> pending = new java.util.concurrent.ConcurrentLinkedQueue<>();
+
+    private void addPending() {
+        NetworkManager manager;
+        while ((manager = pending.poll()) != null) {
+            this.getConnectedChannels().add(manager);
+        }
+    }
+    // Paper end
+
     public void a(InetAddress inetaddress, int i) throws IOException {
         bind(new java.net.InetSocketAddress(inetaddress, i));
     }
 
-    public static EventLoopGroup boss, worker;
-
     public void bind(java.net.SocketAddress address) throws IOException {
-        // PandaSpigot end
-        synchronized (this.g) {
-            Class<? extends ServerChannel> channel;
+        synchronized (this.getListeningChannels()) {
+            Class<? extends ServerChannel> channel = null;
             final int workerThreadCount = Runtime.getRuntime().availableProcessors();
 
+            // First time using fall-through, lol
             switch (eventGroupType) {
                 default:
                 case DEFAULT: {
-                    MinecraftServer.LOGGER.info("[binder] Finding best event group type using fall-through.");
+                    LOGGER.info("Finding best event group type using fall-through");
                 }
+
                 case EPOLL: {
                     if (Epoll.isAvailable()) {
-                        boss = new EpollEventLoopGroup(0);
-                        worker = new EpollEventLoopGroup(workerThreadCount);
+                        a = new LazyInitVar<>(() -> new EpollEventLoopGroup(2));
+                        b = new LazyInitVar<>(() -> new EpollEventLoopGroup(workerThreadCount));
 
                         channel = EpollServerSocketChannel.class;
 
-                        MinecraftServer.LOGGER.info("[binder] Using Epoll, best of fall-through.");
+                        LOGGER.info("Using epoll");
 
                         break;
                     }
                 }
                 case KQUEUE: {
                     if (KQueue.isAvailable()) {
-                        boss = new KQueueEventLoopGroup(0);
-                        worker = new KQueueEventLoopGroup(workerThreadCount);
+                        a = new LazyInitVar<>(() -> new KQueueEventLoopGroup(2));
+                        b = new LazyInitVar<>(() -> new KQueueEventLoopGroup(workerThreadCount));
 
                         channel = KQueueServerSocketChannel.class;
 
-                        MinecraftServer.LOGGER.info("[binder] Using KQueue, second-best of fall-through.");
+                        LOGGER.info("Using kqueue");
+
                         break;
                     }
                 }
                 case NIO: {
-                    boss = new NioEventLoopGroup(0);
-                    worker = new NioEventLoopGroup(workerThreadCount);
+                    a = new LazyInitVar<>(() -> new NioEventLoopGroup(2));
+                    b = new LazyInitVar<>(() -> new NioEventLoopGroup(workerThreadCount));
 
                     channel = NioServerSocketChannel.class;
 
-                    MinecraftServer.LOGGER.info("[binder] Using NIO, last element of fall-through.");
+                    LOGGER.info("Using NIO");
 
                     break;
                 }
             }
 
-            this.g.add(
-                ((new ServerBootstrap().channel(channel))
-                    .childHandler(new ChannelInitializer<Channel>() {
-                        protected void initChannel(@NotNull Channel channel) {
+            this.g.add((new ServerBootstrap())
+                    .channel(channel)
+                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, SERVER_WRITE_MARK)
+                    .childHandler(new ChannelInitializer() {
+                        protected void initChannel(Channel channel) throws Exception {
                             try {
-                                channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);
-                                channel.config().setOption(ChannelOption.IP_TOS, 0x18);
-                            } catch (ChannelException channelexception) {
-                                // Ignore
+                                ChannelConfig config = channel.config();
+                                config.setOption(ChannelOption.TCP_NODELAY, true);
+                                config.setOption(ChannelOption.TCP_FASTOPEN, 1);
+                                config.setOption(ChannelOption.TCP_FASTOPEN_CONNECT, true);
+                                config.setOption(ChannelOption.IP_TOS, 0x18);
+                                config.setAllocator(ByteBufAllocator.DEFAULT);
+                            } catch (ChannelException e) {
+                                e.printStackTrace();
                             }
 
-                            channel
-                                .pipeline()
-                                .addLast("timeout", new ReadTimeoutHandler(30))
-                                .addLast("legacy_query", new LegacyPingHandler(net.minecraft.server.ServerConnection.this))
-                                .addLast("splitter", new PacketSplitter())
-                                .addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND))
-                                .addLast("prepender", PacketPrepender.INSTANCE)
-                                .addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
-
-                            final NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
-                            pending.add(networkmanager); // Paper
-
+                            channel.pipeline()
+                                    .addLast("timeout", new ReadTimeoutHandler(30))
+                                    .addLast("legacy_query", new LegacyPingHandler(ServerConnection.this))
+                                    .addLast("splitter", new PacketSplitter())
+                                    .addLast("decoder", new PacketDecoder(EnumProtocolDirection.SERVERBOUND))
+                                    .addLast("prepender", new PacketPrepender())
+                                    .addLast("encoder", new PacketEncoder(EnumProtocolDirection.CLIENTBOUND));
+                            NetworkManager networkmanager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
+                            h.add(networkmanager);
                             channel.pipeline().addLast("packet_handler", networkmanager);
-                            networkmanager.setPacketListener((new HandshakeListener(server, networkmanager)));
+                            networkmanager.a(new HandshakeListener(server, networkmanager));
+                            io.papermc.paper.network.ChannelInitializeListenerHolder.callListeners(channel); // Paper's injection API
                         }
-                    })
-                    .group(boss, worker)
-                    .localAddress(address))
-                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, SERVER_WRITE_MARK)
+                    }).group(a.get(), b.get())
+                    .localAddress(address)
                     .bind()
-                    .syncUninterruptibly()
-            ); // PandaSpigot - Unix domain socket support
+                    .syncUninterruptibly());
         }
     }
 
-    public void b() {
+    public void stopServer() throws InterruptedException {
         this.started = false;
-
-        for (final ChannelFuture future : this.g) {
+        LOGGER.info("Shutting down event loops");
+        for (ChannelFuture channelfuture : this.g) {
             try {
-                future.channel().close().sync();
-            } catch (InterruptedException interruptedexception) {
-                e.error("Interrupted whilst closing channel");
+                channelfuture.channel().close().sync();
+            } finally {
+                a.get().shutdownGracefully();
+                b.get().shutdownGracefully();
+                c.get().shutdownGracefully();
             }
+        }
+
+    }
+
+    public void b() {
+        try {
+            this.stopServer();
+        } catch (InterruptedException e) {
+            LOGGER.info("Error occurred while flushing and closing netty channels!");
         }
     }
 
     public void c() {
         synchronized (this.h) {
-            addPending(); // Paper
+            // Spigot Start
+            this.addPending(); // Paper
+            // This prevents players from 'gaming' the server, and strategically relogging to increase their position in the tick order
+            if ( org.spigotmc.SpigotConfig.playerShuffle > 0 && MinecraftServer.currentTick % org.spigotmc.SpigotConfig.playerShuffle == 0 )
+            {
+                Collections.shuffle( this.h );
+            }
+            // Spigot End
             Iterator iterator = this.h.iterator();
 
             while (iterator.hasNext()) {
@@ -211,10 +198,10 @@ public class ServerConnection {
 
                 if (!networkmanager.h()) {
                     if (!networkmanager.g()) {
-                        if (networkmanager.preparing) {
-                            continue;
-                        }
-
+                        // Spigot Start
+                        // Fix a race condition where a NetworkManager could be unregistered just before connection.
+                        if (networkmanager.preparing) continue;
+                        // Spigot End
                         iterator.remove();
                         networkmanager.l();
                     } else {
@@ -237,24 +224,37 @@ public class ServerConnection {
                                 throw new ReportedException(crashreport);
                             }
 
-                            e.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
-                            final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
+                            ServerConnection.LOGGER.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
+                            ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
 
-                            networkmanager.a(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener() {
-                                public void operationComplete(Future future) throws Exception {
-                                    networkmanager.close(chatcomponenttext);
-                                }
-                            }, new GenericFutureListener[0]);
+                            networkmanager.handleConnectionPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), future -> networkmanager.close(chatcomponenttext));
                             networkmanager.k();
                         }
                     }
                 }
             }
+
         }
+    }
+
+    public enum EventGroupType {
+        EPOLL, KQUEUE, NIO, DEFAULT
     }
 
     public MinecraftServer d() {
         return this.server;
     }
 
+    public List<ChannelFuture> getListeningChannels() {
+        return this.g;
+    }
+    public List<NetworkManager> getConnectedChannels() {
+        return this.h;
+    }
+    public List<NetworkManager> getNetworkManagers() { //OBF Helpers
+        return this.h;
+    }
+    public List<ChannelFuture> getListeners() { //OBF Helpers
+        return this.g;
+    }
 }

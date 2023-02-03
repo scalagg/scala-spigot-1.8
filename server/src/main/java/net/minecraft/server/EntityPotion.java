@@ -94,6 +94,8 @@ public class EntityPotion extends EntityProjectile {
 
                             if (entityliving == movingobjectposition.entity) {
                                 d1 = 1.0D;
+                            } else if (Math.hypot(this.motX, this.motZ) > 0.4D && d1 > 0.8D) {
+                                d1 = 1.0D;
                             }
 
                             // CraftBukkit start

@@ -181,30 +181,7 @@ public class Main {
                 System.out.println("Libraries are loading, please wait...");
                 startup = System.nanoTime();
 
-                // PandaSpigot start - Modern tick loop
-                net.minecraft.server.DispenserRegistry.c();
-                OptionSet finalOptions = options;
-
-                net.minecraft.server.DedicatedServer server = MinecraftServer.spin(thread -> {
-                    net.minecraft.server.DedicatedServer dedicatedserver = new net.minecraft.server.DedicatedServer(finalOptions, thread);
-
-                    if (finalOptions.has("port")) {
-                        int port = (Integer) finalOptions.valueOf("port");
-                        if (port > 0) {
-                            dedicatedserver.setPort(port);
-                        }
-                    }
-
-                    if (finalOptions.has("universe")) {
-                        dedicatedserver.universe = (File) finalOptions.valueOf("universe");
-                    }
-
-                    if (finalOptions.has("world")) {
-                        dedicatedserver.setWorld((String) finalOptions.valueOf("world"));
-                    }
-                    return dedicatedserver;
-                });
-                // PandaSpigot end - Modern tick loop
+                MinecraftServer.main(options);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

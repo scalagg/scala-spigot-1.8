@@ -1769,15 +1769,20 @@ public final class CraftServer implements Server {
         return CraftMagicNumbers.INSTANCE;
     }
 
-    private final Spigot spigot = new Spigot() {
+    private final Spigot spigot = new Spigot()
+    {
 
         // PaperSpigot start - Add getTPS (Further improve tick loop)
         @Override
         public double[] getTPS() {
-            return new double[]{
-                MinecraftServer.getServer().tps1.getAverage(),
-                MinecraftServer.getServer().tps5.getAverage(),
-                MinecraftServer.getServer().tps15.getAverage()
+            MinecraftServer mc = MinecraftServer.getServer();
+            return new double[] {
+                    mc.tps1.getAverage(),
+                    mc.tps5.getAverage(),
+                    mc.tps15.getAverage(),
+                    0,
+                    mc.tps.getAverage()
+
             };
         }
         // PaperSpigot end

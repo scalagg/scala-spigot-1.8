@@ -1,5 +1,8 @@
 package net.minecraft.server;
 
+import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import gg.scala.spigot.console.ScalaSpigotConsole;
 import gg.scala.spigot.ScalaSpigotServerProperties;
 import gg.scala.spigot.event.ServerLoadedEvent;
@@ -7,6 +10,7 @@ import gg.scala.spigot.server.command.KnockbackCommand;
 import gg.scala.spigot.server.command.PotionCommand;
 import gg.scala.spigot.server.command.SpigotReloadCommand;
 import gg.scala.spigot.ScalaSpigot;
+import joptsimple.OptionSet;
 import kotlin.Unit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -41,10 +45,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
     private boolean s;
 
     // CraftBukkit start - Signature changed
-    // PandaSpigot start - Modern tick loop
-    public DedicatedServer(joptsimple.OptionSet options, Thread serverThread) {
-        super(options, Proxy.NO_PROXY, DedicatedServer.a, serverThread);
-        // PandaSpigot end
+    public DedicatedServer(joptsimple.OptionSet options) {
+        super(options, Proxy.NO_PROXY, DedicatedServer.a);
         // CraftBukkit end
         Thread thread = new Thread("Server Infinisleeper") {
             {
@@ -63,6 +65,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
             }
         };
     }
+
 
     protected boolean init() throws IOException {
         Thread thread = new Thread("Server console handler") {
@@ -380,6 +383,18 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
     public boolean getSpawnMonsters() {
         return this.propertyManager.getBoolean("spawn-monsters", true);
+    }
+
+
+    @Override
+    public void a(MojangStatisticsGenerator mojangstatisticsgenerator) {
+        mojangstatisticsgenerator.a("whitelist_enabled", Boolean.valueOf(this.aP().getHasWhitelist()));
+        mojangstatisticsgenerator.a("whitelist_count", Integer.valueOf(this.aP().getWhitelisted().length));
+    }
+
+    @Override
+    public void b(MojangStatisticsGenerator mojangStatisticsGenerator) {
+
     }
 
     public boolean getSnooperEnabled() {

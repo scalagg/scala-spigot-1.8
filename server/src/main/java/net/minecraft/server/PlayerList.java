@@ -183,7 +183,7 @@ public abstract class PlayerList {
 
     void disconnectPendingPlayer(EntityPlayer entityplayer) {
         ChatComponentText msg = new ChatComponentText("You logged in from another location");
-        entityplayer.networkManager.sendPacket(new PacketPlayOutKickDisconnect(msg), (future) -> {
+        entityplayer.networkManager.a(new PacketPlayOutKickDisconnect(msg), (future) -> {
             entityplayer.networkManager.close(msg);
             entityplayer.networkManager = null;
         });

@@ -3,6 +3,7 @@ package net.minecraft.server;
 // CraftBukkit start
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.player.PlayerTeleportEvent;
 // CraftBukkit end
@@ -26,6 +27,8 @@ public class EntityEnderPearl extends EntityProjectile {
     protected void a(MovingObjectPosition movingobjectposition) {
         EntityLiving entityliving = this.getShooter();
 
+        double fixedY = -0.0000001;
+
         if (movingobjectposition.entity != null) {
             if (movingobjectposition.entity == this.c) {
                 return;
@@ -40,31 +43,17 @@ public class EntityEnderPearl extends EntityProjectile {
         }
         // PaperSpigot end
 
-        // FlamePaper start - 0117-Pearl-through-blocks
-        BlockPosition blockPosition = movingobjectposition.a();
 
-        if (blockPosition != null) {
-            IBlockData blockData = world.getType(blockPosition);
-            Block block = blockData.getBlock();
-            boolean collides = (block == Blocks.TALLGRASS);
-            if (collides) {
-                return;
-            }
+        for (int i = 0; i < 32; ++i) {
+            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
         }
-        // FlamePaper end
-
-//        for (int i = 0; i < 32; ++i) {
-//            this.world.addParticle(EnumParticle.PORTAL, this.locX, this.locY + this.random.nextDouble() * 2.0D, this.locZ, this.random.nextGaussian(), 0.0D, this.random.nextGaussian(), new int[0]);
-//        }
 
         if (!this.world.isClientSide) {
             if (entityliving instanceof EntityPlayer) {
                 EntityPlayer entityplayer = (EntityPlayer) entityliving;
 
                 if (entityplayer.playerConnection.a().g() && entityplayer.world == this.world && !entityplayer.isSleeping()) {
-                    // CraftBukkit start - Fire PlayerTeleportEvent
-                    org.bukkit.craftbukkit.entity.CraftPlayer player = entityplayer.getBukkitEntity();
-
+                    CraftPlayer player = entityplayer.getBukkitEntity();
                     Location location = this.lastValidTeleport.clone();
 
                     location.setPitch(player.getLocation().getPitch());
@@ -72,6 +61,9 @@ public class EntityEnderPearl extends EntityProjectile {
 
                     // ScalaSpigot Start - Fix an issue with
                     // the player not landing on the ground, instead of going into the air.
+                    if (fixedY != -0.0000001) {
+                        location.setY(fixedY);
+                    }
                     location.setY((int) location.getY());
                     // ScalaSpigot End
 
@@ -79,13 +71,14 @@ public class EntityEnderPearl extends EntityProjectile {
                     Bukkit.getPluginManager().callEvent(teleEvent);
 
                     if (!teleEvent.isCancelled() && !entityplayer.playerConnection.isDisconnected()) {
-                        if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
-                            EntityEndermite entityendermite = new EntityEndermite(this.world);
-
-                            entityendermite.a(true);
-                            entityendermite.setPositionRotation(entityliving.locX, entityliving.locY, entityliving.locZ, entityliving.yaw, entityliving.pitch);
-                            this.world.addEntity(entityendermite);
-                        }
+                        //Remove Endermite, because why tf do we need it + it gets disabled.
+//                        if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
+//                            EntityEndermite entityendermite = new EntityEndermite(this.world);
+//
+//                            entityendermite.a(true);
+//                            entityendermite.setPositionRotation(entityliving.locX, entityliving.locY, entityliving.locZ, entityliving.yaw, entityliving.pitch);
+//                            this.world.addEntity(entityendermite);
+//                        }
 
                         if (entityliving.au()) {
                             entityliving.mount((Entity) null);

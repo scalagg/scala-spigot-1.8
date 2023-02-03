@@ -1804,6 +1804,11 @@ public abstract class EntityLiving extends Entity {
     }
 
     public Vec3D d(float f) {
+        // Supposedly uses raw and fastest updated yaw & pitch (stupid)
+        if (this instanceof EntityPlayer) {
+            return super.d(f);
+        }
+
         return this.f(this.pitch, this.yaw);
     }
 

@@ -20,11 +20,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
+import io.netty.util.ResourceLeakDetector;
 import joptsimple.OptionSet;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.util.ServerShutdownThread;
 import org.bukkit.event.server.ServerStopEvent;
 import org.spigotmc.SpigotConfig;
 
@@ -32,6 +34,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Proxy;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
@@ -40,26 +44,16 @@ import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.*;
 
-public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTick> implements Runnable, ICommandListener, IAsyncTaskHandler {
+public abstract class MinecraftServer implements Runnable, ICommandListener, IAsyncTaskHandler, IMojangStatistics {
 
     public static final Logger LOGGER = LogManager.getLogger(MinecraftServer.class);
 
     public static final File a = new File("usercache.json");
-    public static final long SEC_IN_NANO = 1000000000;
-    public static long LAST_TICK_TIME;
     public static int currentTick = 0;
-    public static int TPS = 20;
-    private static final int SAMPLE_INTERVAL = TPS;
-    public static long TICK_TIME = SEC_IN_NANO / TPS;
-    public static long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * (TPS * 3);
-    public static long NORMAL_TICK_TIME = TPS / 20;
     private static net.minecraft.server.MinecraftServer l;
     public final MethodProfiler methodProfiler = new MethodProfiler();
     public final long[] h = new long[100];
     public final Thread primaryThread;
-    public final RollingAverage tps1 = new RollingAverage(60);
-    public final RollingAverage tps5 = new RollingAverage(60 * 5);
-    public final RollingAverage tps15 = new RollingAverage(60 * 15);
     protected final ICommandHandler b;
     protected final Proxy e;
     protected final Queue<FutureTask<?>> j = new CachedSizeConcurrentLinkedQueue<>();
@@ -121,31 +115,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     private int autoSaveDelay = 0;
     private boolean autoSaveOrdered = false;
 
-    // PandaSpigot start - Modern tick loop
-    private long nextTickTime;
-    private long delayedTasksMaxNextTickTime;
-    private boolean mayHaveDelayedTasks;
-    private boolean forceTicks;
-    private volatile boolean isReady;
-    private long lastOverloadWarning;
-    public long serverStartTime;
-    public volatile Thread shutdownThread;
-    private long lastTick = 0;
-    private final long catchupTime = 0;
-
-    public static <S extends MinecraftServer> S spin(java.util.function.Function<Thread, S> serverFactory) {
-        java.util.concurrent.atomic.AtomicReference<S> reference = new java.util.concurrent.atomic.AtomicReference<>();
-        Thread thread = new Thread(() -> reference.get().run(), "Server thread");
-
-        thread.setUncaughtExceptionHandler((thread1, throwable) -> MinecraftServer.LOGGER.error(throwable));
-        S server = serverFactory.apply(thread);
-
-        reference.set(server);
-        thread.setPriority(Thread.NORM_PRIORITY + 2);
-        thread.start();
-        return server;
-    }
-
     public ServerConnection.EventGroupType getTransport() {
         try {
             return ServerConnection.EventGroupType.valueOf(this.getPropertyManager().getString("transport-to-use", "default").toUpperCase());
@@ -154,27 +123,19 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         }
     }
 
-    public MinecraftServer(OptionSet options, Proxy proxy, File file1, Thread thread) {
-        super("Server");
-        this.nextTickTime = getMillis();
-        this.primaryThread = thread;
-        this.serverThread = thread;
-        // PandaSpigot end
-        io.netty.util.ResourceLeakDetector.setEnabled(false);
-
+    public MinecraftServer(OptionSet options, Proxy proxy, File file1) {
+        io.netty.util.ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED); // Spigot - disable
         this.e = proxy;
-        l = this;
+        MinecraftServer.l = this;
         this.Z = new UserCache(this, file1);
         this.b = this.h();
         this.V = new YggdrasilAuthenticationService(proxy, UUID.randomUUID().toString());
         this.W = this.V.createMinecraftSessionService();
         this.Y = this.V.createProfileRepository();
-
         this.options = options;
 
-        Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
-
-//        this.serverThread = primaryThread = new Thread(this, "Server thread");
+        Runtime.getRuntime().addShutdownHook(new ServerShutdownThread(this));
+        this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main
     }
 
     public static void main(final OptionSet options) {
@@ -183,7 +144,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         LogCleanup.cleanup();
 
         try {
-            /* // PandaSpigot start - comment out
             DedicatedServer dedicatedserver = new DedicatedServer(options);
 
             if (options.has("port")) {
@@ -203,7 +163,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             }
 
             dedicatedserver.primaryThread.start();
-            */ // PandaSpigot end
         } catch (Exception exception) {
             LOGGER.fatal("Failed to start the minecraft server", exception);
         }
@@ -563,82 +522,146 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public void safeShutdown() {
         this.isRunning = false;
     }
+    // PaperSpigot start - Further improve tick loop
+    private static final int TPS = 20;
+    private static final long SEC_IN_NANO = 1000000000;
+    private static final long TICK_TIME = 50000000L;
+    private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
+    private static final int SAMPLE_INTERVAL = 20;
 
+    public static long NORMAL_TICK_TIME = TPS / 20;
+    private long lastTick = 0;
+    private long catchupTime = 0;
+    public final RollingAverage tps = new RollingAverage(1);
+    public final RollingAverage tps1 = new RollingAverage(60);
+    public final RollingAverage tps5 = new RollingAverage(60 * 5);
+    public final RollingAverage tps15 = new RollingAverage(60 * 15);
+    public double[] recentTps = new double[ 3 ]; // PaperSpigot - Fine have your darn compat with bad plugins
 
-    // PandaSpigot start - Modern tick loop
-    public static long getMillis() {
-        return getNanos() / 1000000L;
+    public static class RollingAverage {
+        private final int size;
+        private long time;
+        private java.math.BigDecimal total;
+        private int index = 0;
+        private final java.math.BigDecimal[] samples;
+        private final long[] times;
+
+        public RollingAverage(int size) {
+            this.size = size;
+            this.time = size * SEC_IN_NANO;
+            this.total = dec(TPS).multiply(dec(SEC_IN_NANO)).multiply(dec(size));
+            this.samples = new java.math.BigDecimal[size];
+            this.times = new long[size];
+            for (int i = 0; i < size; i++) {
+                this.samples[i] = dec(TPS);
+                this.times[i] = SEC_IN_NANO;
+            }
+        }
+
+        private static java.math.BigDecimal dec(long t) {
+            return new java.math.BigDecimal(t);
+        }
+
+        public void add(java.math.BigDecimal x, long t) {
+            time -= times[index];
+            total = total.subtract(samples[index].multiply(dec(times[index])));
+            samples[index] = x;
+            times[index] = t;
+            time += t;
+            total = total.add(x.multiply(dec(t)));
+            if (++index == size) {
+                index = 0;
+            }
+        }
+
+        public double getAverage() {
+            return total.divide(dec(time), 30, java.math.RoundingMode.HALF_UP).doubleValue();
+        }
     }
-
-    public static long getNanos() {
-        return System.nanoTime();
-    }
+    private static final java.math.BigDecimal TPS_BASE = new java.math.BigDecimal("1E9").multiply(new java.math.BigDecimal(SAMPLE_INTERVAL));
+    // PaperSpigot End
 
     public void run() {
         try {
-            this.serverStartTime = getNanos();
-            // PandaSpigot end
-
             if (this.init()) {
                 this.ab = az();
-
                 this.r.setMOTD(new ChatComponentText(this.motd));
                 this.r.setServerInfo(new ServerPing.ServerData("1.8.8", 47));
                 this.a(this.r);
 
                 // Spigot start
-                // PandaSpigot start - Modern tick loop
-                long start = System.nanoTime(), curTime, tickSection = start;
-                lastTick = start - TICK_TIME;
-                // PandaSpigot end
-
+                Arrays.fill( recentTps, 20 );
+                //long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
+                long start = System.nanoTime(), lastTick = start - TICK_TIME, nextTick = start + TICK_TIME, tickSection = start,  catchupTime = 0L;
                 while (this.isRunning) {
-                    // PandaSpigot start - Modern tick loop
-                    long i = ((curTime = System.nanoTime()) / (1000L * 1000L)) - this.nextTickTime; // Paper
+                    long curTime = System.nanoTime();
+                    if (nextTick > curTime) { // Carbon - Keep 20 TPS stable as it can be ;)
+                        Thread.sleep(1L);
+                    } else {
+                        // PaperSpigot start - Further improve tick loop
+                        long wait = TICK_TIME - (curTime - lastTick);
+                        if (wait > 0) {
+                            // TacoSpigot start - fix the tick loop improvements
+                            if (catchupTime < 2E6) {
+                                wait += Math.abs(catchupTime);
+                            } else if (wait < catchupTime) {
+                                catchupTime -= wait;
+                                wait = 0L;
+                            } else {
+                                wait -= catchupTime;
+                                catchupTime = 0L;
+                            }
+                            // TacoSpigot end
+                        }
+                        if (wait > 0L) {
+                            Thread.sleep(1L);
+                            wait = TICK_TIME - (curTime - lastTick);
+                        }
 
-                    if (i > 5000L && this.nextTickTime - this.lastOverloadWarning >= 30000L) { // CraftBukkit
-                        long j = i / 50L;
-                        if (this.server.getWarnOnOverload()) // CraftBukkit
-                            MinecraftServer.LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
-                        this.nextTickTime += j * 50L;
-                        this.lastOverloadWarning = this.nextTickTime;
+                        nextTick = curTime + (TICK_TIME - catchupTime);
+                        catchupTime = Math.min(MAX_CATCHUP_BUFFER, catchupTime - wait);
+
+                        if ( ++net.minecraft.server.MinecraftServer.currentTick % SAMPLE_INTERVAL == 0 )
+                        {
+                            final long diff = curTime - tickSection;
+                            //double currentTps = 1E9 / diff * SAMPLE_INTERVAL;
+                            java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
+                            tps1.add(currentTps, diff);
+                            tps5.add(currentTps, diff);
+                            tps15.add(currentTps, diff);
+                            // Backwards compat with bad plugins
+                            recentTps[0] = tps1.getAverage();
+                            recentTps[1] = tps5.getAverage();
+                            recentTps[2] = tps15.getAverage();
+                            tickSection = curTime;
+                            // PaperSpigot end
+                        }
+
+                        lastTick = curTime;
+
+                        // Carbon start - backport tick events from Paper
+                        this.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1));
+                        this.A();
+                        long endTime = System.nanoTime();
+                        long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
+                        this.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double)(endTime - lastTick) / 1000000D), remaining));
+                        // Carbon end
+                        this.Q = true;
                     }
-
-                    if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
-                        final long diff = curTime - tickSection;
-                        double currentTps = 1E9 / diff * SAMPLE_INTERVAL;
-                        tps1.add(currentTps, diff);
-                        tps5.add(currentTps, diff);
-                        tps15.add(currentTps, diff);
-                        // Paper end
-                        tickSection = curTime;
-                    }
-                    lastTick = curTime;
-
-                    LAST_TICK_TIME = System.currentTimeMillis();
-
-                    this.nextTickTime += 50L;
-                    this.methodProfiler.a("tick");
-                    this.A();
-                    this.methodProfiler.c("nextTickWait");
-                    this.mayHaveDelayedTasks = true;
-                    this.delayedTasksMaxNextTickTime = Math.max(getMillis() + 50L, this.nextTickTime);
-                    this.waitUntilNextTick();
-                    this.methodProfiler.b();
-                    this.isReady = true;
-                    // PandaSpigot end
                 }
+                // Spigot end
             } else {
                 this.a((CrashReport) null);
             }
         } catch (Throwable throwable) {
-            LOGGER.error("Encountered an unexpected exception", throwable);
-
-            if (throwable.getCause() != null) {
-                LOGGER.error("\tCause of unexpected exception was", throwable.getCause());
+            MinecraftServer.LOGGER.error("Encountered an unexpected exception", throwable);
+            // Spigot Start
+            if ( throwable.getCause() != null )
+            {
+                MinecraftServer.LOGGER.error( "\tCause of unexpected exception was", throwable.getCause() );
             }
-
-            CrashReport crashreport;
+            // Spigot End
+            CrashReport crashreport = null;
 
             if (throwable instanceof ReportedException) {
                 crashreport = this.b(((ReportedException) throwable).a());
@@ -649,91 +672,30 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             File file = new File(new File(this.y(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
 
             if (crashreport.a(file)) {
-                LOGGER.error("This crash report has been saved to: " + file.getAbsolutePath());
+                MinecraftServer.LOGGER.error("This crash report has been saved to: " + file.getAbsolutePath());
             } else {
-                LOGGER.error("We were unable to save this crash report to disk.");
+                MinecraftServer.LOGGER.error("We were unable to save this crash report to disk.");
             }
 
             this.a(crashreport);
         } finally {
             try {
-                org.spigotmc.WatchdogThread.doStop();
                 this.isStopped = true;
                 this.stop();
             } catch (Throwable throwable1) {
-                LOGGER.error("Exception stopping the server", throwable1);
+                MinecraftServer.LOGGER.error("Exception stopping the server", throwable1);
             } finally {
-                org.apache.logging.log4j.LogManager.shutdown(); // Paper
-
+                // CraftBukkit start - Restore terminal to original settings
                 try {
-//                    net.minecrell.terminalconsole.TerminalConsoleAppender.close();
+                    net.minecrell.terminalconsole.TerminalConsoleAppender.close(); // Paper - Use TerminalConsoleAppender
                 } catch (Exception ignored) {
                 }
-
+                // CraftBukkit end
                 this.z();
             }
+
         }
-
     }
-
-    // PandaSpigot start - Modern tick loop
-    private boolean haveTime() {
-        if (isOversleep) return canOversleep();
-        return this.forceTicks || this.runningTask() || getMillis() < (this.mayHaveDelayedTasks ? this.delayedTasksMaxNextTickTime : this.nextTickTime);
-    }
-
-    boolean isOversleep = false;
-
-    private boolean canOversleep() {
-        return this.mayHaveDelayedTasks && getMillis() < this.delayedTasksMaxNextTickTime;
-    }
-
-    private boolean canSleepForTickNoOversleep() {
-        return this.forceTicks || this.runningTask() || getMillis() < this.nextTickTime;
-    }
-
-    private void executeModerately() {
-        this.runAllRunnable();
-        java.util.concurrent.locks.LockSupport.parkNanos("executing tasks", 1000L);
-    }
-
-    protected void waitUntilNextTick() {
-        this.controlTerminate(() -> !this.canSleepForTickNoOversleep());
-    }
-
-    @Override
-    protected TasksPerTick packUpRunnable(Runnable runnable) {
-        // anything that does try to post to main during watchdog crash, run on watchdog
-        if (this.hasStopped && Thread.currentThread().equals(shutdownThread)) {
-            runnable.run();
-            runnable = () -> {
-            };
-        }
-        return new TasksPerTick(this.ticks, runnable);
-    }
-
-    @Override
-    protected boolean shouldRun(TasksPerTick task) {
-        return task.getTick() + 3 < this.ticks || this.haveTime();
-    }
-
-    @Override
-    public boolean drawRunnable() {
-        boolean flag = this.pollTaskInternal();
-
-        this.mayHaveDelayedTasks = flag;
-        return flag;
-    }
-
-    private boolean pollTaskInternal() {
-        return super.drawRunnable();
-    }
-
-    @Override
-    public Thread getMainThread() {
-        return serverThread;
-    }
-    // PandaSpigot end
 
     private void a(ServerPing serverping) {
         File file = this.d("server-icon.png");
@@ -773,9 +735,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     protected void A() throws ExceptionWorldConflict { // CraftBukkit - added throws
         long i = System.nanoTime();
 
-        isOversleep = true;
-        this.controlTerminate(() -> !this.canOversleep());
-        isOversleep = false;
         new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.ticks + 1).callEvent(); // Paper
         ++this.ticks;
 
@@ -808,12 +767,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                 this.autoSaveNextWorld(); // MinetickMod
             }
         }
-
-        // PandaSpigot start - Modern tick loop
-        long endTime = System.nanoTime();
-        long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
-        new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.ticks, ((double) (endTime - lastTick) / 1000000D), remaining).callEvent();
-        // PandaSpigot end
 
         this.methodProfiler.a("tallying");
         this.h[this.ticks % 100] = System.nanoTime() - i;
@@ -939,6 +892,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
         this.methodProfiler.b();
     }
+
 
     public boolean getAllowNether() {
         return true;
@@ -1411,46 +1365,5 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
     public Thread aM() {
         return this.serverThread;
-    }
-
-    public static class RollingAverage {
-
-        private final int size;
-        private final double[] samples;
-        private final long[] times;
-        private long time;
-        private double total;
-        private int index = 0;
-
-        RollingAverage(int size) {
-            this.size = size;
-            this.time = size * SEC_IN_NANO;
-            this.total = TPS * SEC_IN_NANO * size;
-            this.samples = new double[size];
-            this.times = new long[size];
-
-            for (int i = 0; i < size; i++) {
-                this.samples[i] = TPS;
-                this.times[i] = SEC_IN_NANO;
-            }
-        }
-
-        public void add(double x, long t) {
-            time -= times[index];
-            total -= samples[index] * times[index];
-            samples[index] = x;
-            times[index] = t;
-            time += t;
-            total += x * t;
-
-            if (++index == size) {
-                index = 0;
-            }
-        }
-
-        public double getAverage() {
-            return total / time;
-        }
-
     }
 }

@@ -1,7 +1,5 @@
 package gg.scala.spigot
 
-import gg.scala.spigot.preset.knockback.KnockbackPreset
-import gg.scala.spigot.preset.potion.PotionPreset
 import kotlinx.serialization.Serializable
 import net.peanuuutz.tomlkt.TomlComment
 
@@ -109,6 +107,11 @@ data class ScalaSpigotConfig(
     val handleMobSpawnerTicking: Boolean = false,
     val aiGoalSelectionSpeed: Int = 20,
     val fixNoDamageTicks: Boolean = true,
+    val betterKeepAlive: Boolean = true,
+    val noCheckRogueSwings: Boolean = false,
+    val fireArmAnimationEvent: Boolean = true,
+    val optimizeArmSwings: Boolean = false,
+    var removePacketQueue: Boolean = false,
 
 
     @TomlComment(

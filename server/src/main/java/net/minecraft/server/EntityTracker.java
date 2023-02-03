@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -117,7 +118,7 @@ public class EntityTracker {
 
             this.c.add(entitytrackerentry);
             this.trackedEntities.a(entity.getId(), entitytrackerentry);
-//            entitytrackerentry.scanPlayers(this.world.players); mhq
+            entitytrackerentry.scanPlayers(this.world.players);
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity To Track");
@@ -175,30 +176,26 @@ public class EntityTracker {
 
     }
 
-    private static final int TRACKER_THREADS = 4; // <-- 3 non-this threads, one this
-
-    private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(
-            TRACKER_THREADS - 1, new ThreadFactoryBuilder().setNameFormat("entity-tracker-%d").build()
-    );
-
     public void updatePlayers() {
-        final ArrayList<EntityPlayer> entities = Lists.newArrayList();
+        List<Entity> trackedList = Lists.newArrayList();
 
-        for (final EntityTrackerEntry entry : this.getTrackedEntities()) {
-            entry.track(this.world.players);
-
-            if (entry.playerEntitiesUpdated() && entry.getTracker() instanceof EntityPlayer) {
-                entities.add((EntityPlayer) entry.getTracker());
+        for ( EntityTrackerEntry entitytrackerentry : this.c ) {
+            entitytrackerentry.track(this.world.players);
+            if (entitytrackerentry.n && entitytrackerentry.tracker instanceof EntityPlayer) {
+                trackedList.add(entitytrackerentry.tracker);
             }
         }
 
-        for (final EntityPlayer entityplayer : entities) {
-            for (final EntityTrackerEntry entry : this.c) {
+        for ( Entity entity : trackedList ) {
+            EntityPlayer entityplayer = (EntityPlayer) entity;
+
+            for ( EntityTrackerEntry entry : this.c ) {
                 if (entry.tracker != entityplayer) {
                     entry.updatePlayer(entityplayer);
                 }
             }
         }
+
     }
 
     public void a(EntityPlayer entityplayer) {
