@@ -101,6 +101,8 @@ public class ServerConnection {
         this.eventGroupType = server.getTransport();
     }
 
+    private static final boolean DISABLE_FLUSH_CONSOLIDATION = Boolean.getBoolean("Paper.disableFlushConsolidate"); // PandaSpigot
+
     public void a(InetAddress inetaddress, int i) throws IOException {
         bind(new java.net.InetSocketAddress(inetaddress, i));
     }
@@ -164,6 +166,10 @@ public class ServerConnection {
                                 // Ignore
                             }
 
+                            if (!DISABLE_FLUSH_CONSOLIDATION) {
+                                channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
+                            }
+
                             channel
                                 .pipeline()
                                 .addLast("timeout", new ReadTimeoutHandler(30))
@@ -177,7 +183,11 @@ public class ServerConnection {
                             pending.add(networkmanager); // Paper
 
                             channel.pipeline().addLast("packet_handler", networkmanager);
-                            networkmanager.setPacketListener((new HandshakeListener(server, networkmanager)));
+
+                            networkmanager.isPending = false; // PandaSpigot
+                            networkmanager.setPacketListener(
+                                new HandshakeListener(net.minecraft.server.ServerConnection.this.server, networkmanager)
+                            );
                         }
                     })
                     .group(boss, worker)
