@@ -197,7 +197,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     }
 
     private boolean b(PacketPlayInFlying packetplayinflying) {
-        return !Doubles.isFinite(packetplayinflying.a()) || !Doubles.isFinite(packetplayinflying.b()) || !Doubles.isFinite(packetplayinflying.c()) || !Floats.isFinite(packetplayinflying.e()) || !Floats.isFinite(packetplayinflying.d());
+        return !Doubles.isFinite(packetplayinflying.a()) || !Doubles.isFinite(packetplayinflying.b()) || !Doubles.isFinite(packetplayinflying.c()) || !Floats.isFinite(packetplayinflying.e()) || !Floats.isFinite(packetplayinflying.d())
+            || !Floats.isFinite(packetplayinflying.pitch) || !Float.isFinite(packetplayinflying.yaw) || Double.isNaN(packetplayinflying.x) || Double.isNaN(packetplayinflying.y) || Double.isNaN(packetplayinflying.z);
     }
 
     public void a(PacketPlayInFlying packetplayinflying) {

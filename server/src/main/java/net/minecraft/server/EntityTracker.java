@@ -117,7 +117,7 @@ public class EntityTracker {
 
             this.c.add(entitytrackerentry);
             this.trackedEntities.a(entity.getId(), entitytrackerentry);
-//            entitytrackerentry.scanPlayers(this.world.players); mhq
+            entitytrackerentry.scanPlayers(this.world.players);
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity To Track");
