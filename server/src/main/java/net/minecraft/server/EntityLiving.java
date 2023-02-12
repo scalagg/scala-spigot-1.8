@@ -915,7 +915,6 @@ public abstract class EntityLiving extends Entity {
     }
 
     public void a(Entity entity, float f, double d0, double d1, DamageSource damageSource) {
-
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
 
