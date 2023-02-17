@@ -51,7 +51,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     public static int TPS = 20;
     private static final int SAMPLE_INTERVAL = TPS;
     public static long TICK_TIME = SEC_IN_NANO / TPS;
-    public static long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * (TPS * 3);
     public static long NORMAL_TICK_TIME = TPS / 20;
     private static net.minecraft.server.MinecraftServer l;
     public final MethodProfiler methodProfiler = new MethodProfiler();
@@ -214,7 +213,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
     }
 
     public static long az() {
-        return System.currentTimeMillis();
+        return getMillis();
     }
 
     private void queueWorldsForAutoSave() {
