@@ -60,6 +60,7 @@ data class ScalaSpigotConfig(
         """
     )
     val armorStandTicking: Boolean = false,
+    val armorStandMovements: Boolean = false,
     val armorStandEntityLookupsEnabled: Boolean = true,
     @TomlComment(
         """

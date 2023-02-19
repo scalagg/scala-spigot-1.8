@@ -1229,8 +1229,7 @@ public abstract class World implements IBlockAccess {
 
         if (entity instanceof EntityTNTPrimed) return arraylist; // TacoSpigot - Optimize tnt entity movement
         if (entity instanceof EntityFallingBlock) return arraylist; // TacoSpigot - Optimize falling block movement
-
-        if (entity instanceof EntityArmorStand && !ScalaSpigot.INSTANCE.getConfig().getArmorStandEntityLookupsEnabled()) return arraylist; // Paper
+        if (entity instanceof EntityArmorStand) return arraylist; // Paper
 
         double d0 = 0.25D;
         List list = this.getEntities(entity, axisalignedbb.grow(d0, d0, d0));

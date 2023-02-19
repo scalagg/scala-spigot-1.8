@@ -586,6 +586,13 @@ public class EntityArmorStand extends EntityLiving {
         this.bj = flag;
     }
 
+    @Override
+    public void move(double d0, double d1, double d2) {
+        if (ScalaSpigot.INSTANCE.getConfig().getArmorStandMovements()) {
+            super.move(d0, d1, d2);
+        }
+    }
+
     private void a(boolean flag) {
         double d0 = this.locX;
         double d1 = this.locY;
