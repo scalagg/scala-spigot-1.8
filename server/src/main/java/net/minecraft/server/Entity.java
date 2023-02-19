@@ -236,6 +236,7 @@ public abstract class Entity implements ICommandListener, OptimizedRemoveUtil.Ma
 		this.datawatcher.a(2, "");
 		this.datawatcher.a(4, Byte.valueOf((byte) 0));
 		this.h();
+		this.datawatcher.registrationLocked = true; // PandaSpigot
 	}
 
 	protected abstract void h();

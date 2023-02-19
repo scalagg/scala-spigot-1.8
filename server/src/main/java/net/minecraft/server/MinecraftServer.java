@@ -46,7 +46,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
 
     public static final File a = new File("usercache.json");
     public static final long SEC_IN_NANO = 1000000000;
-    public static long LAST_TICK_TIME;
     public static int currentTick = 0;
     public static int TPS = 20;
     private static final int SAMPLE_INTERVAL = TPS;
@@ -613,8 +612,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
                         tickSection = curTime;
                     }
                     lastTick = curTime;
-
-                    LAST_TICK_TIME = System.currentTimeMillis();
 
                     this.nextTickTime += 50L;
                     this.methodProfiler.a("tick");

@@ -23,13 +23,15 @@ public class DataWatcher {
     private final Map<Integer, net.minecraft.server.DataWatcher.WatchableObject> d = gnu.trove.TDecorators.wrap( dataValues );
     // Spigot End
     private boolean e;
-    private ReadWriteLock f = new ReentrantReadWriteLock();
+    // private ReadWriteLock f = new ReentrantReadWriteLock(); // PandaSpigot - Remove DataWatcher Locking
 
     public DataWatcher(Entity entity) {
         this.a = entity;
     }
 
+    boolean registrationLocked; // PandaSpigot
     public <T> void a(int i, T t0) {
+        if (registrationLocked) throw new IllegalStateException("Registering datawatcher object after entity initialization"); // PandaSpigot
         int integer = classToId.get(t0.getClass()); // Spigot
 
         if (integer == -1) { // Spigot
@@ -41,9 +43,9 @@ public class DataWatcher {
         } else {
             net.minecraft.server.DataWatcher.WatchableObject datawatcher_watchableobject = new net.minecraft.server.DataWatcher.WatchableObject(integer, i, t0); // Spigot
 
-            this.f.writeLock().lock();
+            // this.f.writeLock().lock(); // PandaSpigot
             this.dataValues.put(i, datawatcher_watchableobject); // Spigot
-            this.f.writeLock().unlock();
+            // this.f.writeLock().unlock(); // PandaSpigot
             this.b = false;
         }
     }
@@ -51,9 +53,9 @@ public class DataWatcher {
     public void add(int i, int j) {
         net.minecraft.server.DataWatcher.WatchableObject datawatcher_watchableobject = new net.minecraft.server.DataWatcher.WatchableObject(j, i, (Object) null);
 
-        this.f.writeLock().lock();
+        // this.f.writeLock().lock(); // PandaSpigot
         this.dataValues.put(i, datawatcher_watchableobject); // Spigot
-        this.f.writeLock().unlock();
+        // this.f.writeLock().unlock(); // PandaSpigot
         this.b = false;
     }
 
@@ -82,7 +84,7 @@ public class DataWatcher {
     }
 
     private net.minecraft.server.DataWatcher.WatchableObject j(int i) {
-        this.f.readLock().lock();
+       /* this.f.readLock().lock();
 
         net.minecraft.server.DataWatcher.WatchableObject datawatcher_watchableobject;
 
@@ -97,7 +99,8 @@ public class DataWatcher {
         }
 
         this.f.readLock().unlock();
-        return datawatcher_watchableobject;
+        return datawatcher_watchableobject;*/
+        return (WatchableObject) this.dataValues.get(i);
     }
 
     public net.minecraft.server.DataWatcher clone() {
@@ -153,7 +156,7 @@ public class DataWatcher {
         ArrayList arraylist = null;
 
         if (this.e) {
-            this.f.readLock().lock();
+            //this.f.readLock().lock();
             Iterator iterator = this.dataValues.valueCollection().iterator(); // Spigot
 
             while (iterator.hasNext()) {
@@ -180,7 +183,7 @@ public class DataWatcher {
                 }
             }
 
-            this.f.readLock().unlock();
+            //this.f.readLock().unlock();
         }
 
         this.e = false;
@@ -188,7 +191,7 @@ public class DataWatcher {
     }
 
     public void a(PacketDataSerializer packetdataserializer) throws IOException {
-        this.f.readLock().lock();
+        ///this.f.readLock().lock();
         Iterator iterator = this.dataValues.valueCollection().iterator(); // Spigot
 
         while (iterator.hasNext()) {
@@ -197,14 +200,14 @@ public class DataWatcher {
             a(packetdataserializer, datawatcher_watchableobject);
         }
 
-        this.f.readLock().unlock();
+        //this.f.readLock().unlock();
         packetdataserializer.writeByte(127);
     }
 
     public List<net.minecraft.server.DataWatcher.WatchableObject> c() {
         ArrayList arraylist = Lists.newArrayList(); // Spigot
 
-        this.f.readLock().lock();
+        //this.f.readLock().lock();
 
         arraylist.addAll(this.dataValues.valueCollection()); // Spigot
         // Spigot start - copy ItemStacks to prevent ConcurrentModificationExceptions
@@ -223,7 +226,7 @@ public class DataWatcher {
         }
         // Spigot end
 
-        this.f.readLock().unlock();
+        //this.f.readLock().unlock();
         return arraylist;
     }
 
