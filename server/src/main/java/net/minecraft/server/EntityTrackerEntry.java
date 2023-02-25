@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import it.unimi.dsi.fastutil.objects.Reference2BooleanArrayMap;
 import javolution.util.FastSet;
 import org.apache.logging.log4j.Logger;
 
@@ -65,7 +66,7 @@ public class EntityTrackerEntry {
     // PaperSpigot start
     // Replace trackedPlayers Set with a Map. The value is true until the player receives
     // their first update (which is forced to have absolute coordinates), false afterward.
-    public java.util.Map<EntityPlayer, Boolean> trackedPlayerMap = new java.util.HashMap<EntityPlayer, Boolean>();
+    public java.util.Map<EntityPlayer, Boolean> trackedPlayerMap = new Reference2BooleanArrayMap<>();
     public Set<EntityPlayer> trackedPlayers = trackedPlayerMap.keySet();
     // PaperSpigot end
 
