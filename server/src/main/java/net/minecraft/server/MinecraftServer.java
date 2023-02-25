@@ -688,11 +688,6 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         return this.forceTicks || this.runningTask() || getMillis() < this.nextTickTime;
     }
 
-    private void executeModerately() {
-        this.runAllRunnable();
-        java.util.concurrent.locks.LockSupport.parkNanos("executing tasks", 1000L);
-    }
-
     protected void waitUntilNextTick() {
         this.controlTerminate(() -> !this.canSleepForTickNoOversleep());
     }
@@ -890,9 +885,7 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             }
 
             try {
-                if (this.ticks % NORMAL_TICK_TIME == 0) {
                     worldserver.tickEntities();
-                }
             } catch (Throwable throwable1) {
                 try {
                     crashreport = CrashReport.a(throwable1, "Exception ticking world entities");
