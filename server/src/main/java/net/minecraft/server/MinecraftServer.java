@@ -885,7 +885,9 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             }
 
             try {
+                if (this.ticks % NORMAL_TICK_TIME == 0) {
                     worldserver.tickEntities();
+                }
             } catch (Throwable throwable1) {
                 try {
                     crashreport = CrashReport.a(throwable1, "Exception ticking world entities");
