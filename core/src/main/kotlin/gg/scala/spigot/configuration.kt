@@ -123,6 +123,7 @@ data class ScalaSpigotConfig(
     )
     val optimizeTntMovement: Boolean = true,
     val optimizeLiquidExplosions: Boolean = true,
+    val slowedEntityTicking: Boolean = true,
 
     val fishingRodMultiplier: Double = 1.0,
     val playerTimeStatisticsInterval: Int = 20,

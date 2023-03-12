@@ -885,7 +885,13 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
             }
 
             try {
-                if (this.ticks % NORMAL_TICK_TIME == 0) {
+                // ScalaSpigot - Gives us more control over smoothness > performance
+                if (ScalaSpigot.INSTANCE.getConfig().getSlowedEntityTicking()) {
+                    if (this.ticks % NORMAL_TICK_TIME == 0) {
+                        worldserver.tickEntities();
+                    }
+                }
+                else {
                     worldserver.tickEntities();
                 }
             } catch (Throwable throwable1) {
