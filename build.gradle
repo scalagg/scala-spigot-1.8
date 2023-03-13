@@ -41,7 +41,13 @@ allprojects {
     version "1.1.2"
 
     repositories {
-        mavenCentral()
+        mavenCentral() {
+            content {
+                // destroytokyo's repo is being used to resolve slf4j. 
+                // why? i don't know. hoping this works.
+                includeGroupByRegex "org\\.slf4j.*"
+            }
+        }
     }
 }
 
