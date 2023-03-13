@@ -28,8 +28,7 @@ ext {
         }
 
         return stdout.toString().trim()
-        
-        /// dh3e9wuiofhjnoikwejmnfi
+
     }
 
     gitHash = getGitHash
@@ -42,13 +41,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        mavenCentral() {
-            content {
-                // destroytokyo's repo is being used to resolve slf4j. 
-                // why? i don't know. hoping this works.
-                includeGroupByRegex "org\\.slf4j.*"
-            }
-        }
     }
 }
 

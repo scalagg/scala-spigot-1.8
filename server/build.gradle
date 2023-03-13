@@ -8,13 +8,13 @@ repositories {
         url "https://hub.spigotmc.org/nexus/content/groups/public/"
     }
     maven {
-        url "https://ci.destroystokyo.com/plugin/repository/everything/"
-    }
-    maven {
         url "https://repository.apache.org/content/groups/snapshots/"
     }
     maven {
         url "https://repo.velocitypowered.com/snapshots/"
+        content {
+            includeGroupByRegex "com\\.mojang.*"
+        }
     }
 
     mavenCentral()
