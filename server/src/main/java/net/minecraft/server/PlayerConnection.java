@@ -1414,9 +1414,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                         return;
                     }
 
-                    final var start = System.nanoTime();
                     this.player.attack(entity);
-                    System.out.println("Took " + (System.nanoTime() - start) + "ns to attack " + entity.getName());
 
                     if (itemInHand != null && itemInHand.count <= -1) {
                         this.player.updateInventory(this.player.activeContainer);
