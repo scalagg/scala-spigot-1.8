@@ -1341,12 +1341,24 @@ public abstract class EntityLiving extends Entity {
         return 0.42F;
     }
 
+    protected long lastJumpTime = 0L; // Reaper start - arrow velocity fix
     protected void bF() {
+        // Reaper start - arrow velocity fix
+        long time = System.nanoTime();
+        boolean canCrit = true;
+        if (this instanceof EntityPlayer) {
+            canCrit = false;
+            if (time - this.lastJumpTime > (long)(0.250e9)) {
+                this.lastJumpTime = time;
+                canCrit = true;
+            }
+        }
+        // Reaper end - arrow velocity fix
         this.motY = (double) this.bE();
         if (this.hasEffect(MobEffectList.JUMP)) {
             this.motY += (double) ((float) (this.getEffect(MobEffectList.JUMP).getAmplifier() + 1) * 0.1F);
         }
-
+        if (canCrit) // Reaper - arrow velocity fix
         if (this.isSprinting()) {
             float f = this.yaw * 0.017453292F;
 
