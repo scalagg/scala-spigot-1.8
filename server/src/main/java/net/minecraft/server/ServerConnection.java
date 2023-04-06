@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import gg.scala.spigot.ScalaSpigot;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
@@ -121,7 +122,7 @@ public class ServerConnection {
                     MinecraftServer.LOGGER.info("[binder] Finding best event group type using fall-through.");
                 }
                 case EPOLL: {
-                    if (Epoll.isAvailable()) {
+                    if (Epoll.isAvailable() && !ScalaSpigot.INSTANCE.getConfig().getForceNioTransport()) {
                         boss = new EpollEventLoopGroup(0);
                         worker = new EpollEventLoopGroup(workerThreadCount);
 
@@ -133,7 +134,7 @@ public class ServerConnection {
                     }
                 }
                 case KQUEUE: {
-                    if (KQueue.isAvailable()) {
+                    if (KQueue.isAvailable() && !ScalaSpigot.INSTANCE.getConfig().getForceNioTransport()) {
                         boss = new KQueueEventLoopGroup(0);
                         worker = new KQueueEventLoopGroup(workerThreadCount);
 
@@ -166,9 +167,9 @@ public class ServerConnection {
                                 // Ignore
                             }
 
-                            if (!DISABLE_FLUSH_CONSOLIDATION) {
+                            /*if (!DISABLE_FLUSH_CONSOLIDATION) {
                                 channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
-                            }
+                            }*/
 
                             channel
                                 .pipeline()
