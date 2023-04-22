@@ -65,7 +65,7 @@ public class BiomeDecorator {
 
 	public void a(World var1, Random var2, BiomeBase var3, BlockPosition var4) {
 		if (this.a != null) {
-			throw new RuntimeException("Already decorating");
+
 		} else {
 			this.a = var1;
 			String var5 = var1.getWorldData().getGeneratorOptions();
