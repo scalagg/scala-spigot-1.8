@@ -32,7 +32,9 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
 	}
 
 	public void a(PacketListenerPlayIn var1) {
+		var current = System.currentTimeMillis();
 		var1.a(this);
+		System.out.println(System.currentTimeMillis() - current);
 	}
 
 	public Entity a(World var1) {

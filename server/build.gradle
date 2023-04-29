@@ -32,15 +32,15 @@ dependencies {
     implementation "com.eatthepath:fast-uuid:0.2.0"
     implementation "it.unimi.dsi:fastutil:8.5.8"
 
-    implementation "io.netty:netty-all:4.1.86.Final"
+    implementation "io.netty:netty-all:4.1.92.Final"
     implementation "commons-io:commons-io:2.11.0"
     implementation "org.apache.commons:commons-lang3:3.12.0"
     implementation "commons-codec:commons-codec:1.15"
 
     // ScalaSpigot start
-    implementation "org.apache.logging.log4j:log4j-core:2.19.0"
-    implementation "org.apache.logging.log4j:log4j-iostreams:2.19.0"
-    implementation "org.apache.logging.log4j:log4j-api:2.19.0"
+    implementation "org.apache.logging.log4j:log4j-core:2.20.0"
+    implementation "org.apache.logging.log4j:log4j-iostreams:2.20.0"
+    implementation "org.apache.logging.log4j:log4j-api:2.20.0"
 
     implementation fileTree("lib")
     implementation "com.mojang:authlib:1.5.25"
@@ -75,8 +75,8 @@ dependencies {
 
     implementation "io.sentry:sentry:6.4.2"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.20"
 }
 
 processResources {

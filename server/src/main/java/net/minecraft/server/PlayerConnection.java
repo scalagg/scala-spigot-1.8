@@ -1414,14 +1414,15 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                         return;
                     }
 
+                    var thing = System.currentTimeMillis();
                     this.player.attack(entity);
+                    System.out.println("=== " + (System.currentTimeMillis() - thing));
 
                     // wuangg start - fix sword blocking desync
                     if (this.player.isBlocking()) {
                         this.player.bU();
                     }
                     // wuangg end
-
 
                     if (itemInHand != null && itemInHand.count <= -1) {
                         this.player.updateInventory(this.player.activeContainer);

@@ -74,9 +74,11 @@ public class EntityTrackerEntry {
         this.b = i;
         this.c = j;
         this.u = flag;
-        this.xLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locX * 32.0D);
-        this.yLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locY * 32.0D);
-        this.zLoc = gg.scala.spigot.util.MathHelper.floorD(entity.locZ * 32.0D);
+        // PandaSpigot start
+        this.xLoc = (int) Math.round(entity.locX * 32.0D);
+        this.yLoc = (int) Math.round(entity.locY * 32.0D);
+        this.zLoc = (int) Math.round(entity.locZ * 32.0D);
+        // PandaSpigot end
         this.yRot = gg.scala.spigot.util.MathHelper.d(entity.yaw * 256.0F / 360.0F);
         this.xRot = gg.scala.spigot.util.MathHelper.d(entity.pitch * 256.0F / 360.0F);
         this.i = gg.scala.spigot.util.MathHelper.d(entity.getHeadRotation() * 256.0F / 360.0F);
@@ -137,9 +139,9 @@ public class EntityTrackerEntry {
 
             if (this.tracker.vehicle == null) {
                 ++this.v;
-                i = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locX * 32.0D);
-                j = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locY * 32.0D);
-                int k = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locZ * 32.0D);
+                i = (int) Math.round(this.tracker.locX * 32.0D);
+                j = (int) Math.round(this.tracker.locY * 32.0D);
+                int k = (int) Math.round(this.tracker.locZ * 32.0D);
                 int l = gg.scala.spigot.util.MathHelper.d(this.tracker.yaw * 256.0F / 360.0F);
                 int i1 = gg.scala.spigot.util.MathHelper.d(this.tracker.pitch * 256.0F / 360.0F);
                 int j1 = i - this.xLoc;
@@ -258,9 +260,11 @@ public class EntityTrackerEntry {
                     this.xRot = j;
                 }
 
-                this.xLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locX * 32.0D);
-                this.yLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locY * 32.0D);
-                this.zLoc = gg.scala.spigot.util.MathHelper.floorD(this.tracker.locZ * 32.0D);
+                // PandaSpigot start
+                this.xLoc = (int) Math.round(this.tracker.locX * 32.0D);
+                this.yLoc = (int) Math.round(this.tracker.locY * 32.0D);
+                this.zLoc = (int) Math.round(this.tracker.locZ * 32.0D);
+                // PandaSpigot end
                 this.b();
                 this.x = true;
             }
