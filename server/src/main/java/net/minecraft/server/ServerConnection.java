@@ -167,9 +167,9 @@ public class ServerConnection {
                                 // Ignore
                             }
 
-                            /*if (!DISABLE_FLUSH_CONSOLIDATION) {
-                                channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
-                            }*/
+                            if (!DISABLE_FLUSH_CONSOLIDATION) {
+//                                channel.pipeline().addFirst("flush_consolidator", new FlushConsolidationHandler()); // PandaSpigot
+                            }
 
                             channel
                                 .pipeline()

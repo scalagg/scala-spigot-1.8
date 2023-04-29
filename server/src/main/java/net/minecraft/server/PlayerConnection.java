@@ -1074,10 +1074,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     }
 
     public void chat(String s, boolean async) {
-
-//        System.out.println("poop");
-
-
         if (s.isEmpty() || this.player.getChatFlags() == EntityHuman.EnumChatVisibility.HIDDEN) {
             return;
         }
@@ -1358,12 +1354,12 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         this.player.resetIdleTimer();
 
         if (entity != null) {
-                boolean flag = this.player.hasLineOfSight(entity);
-                double d0 = 36.0D;
+            boolean flag = this.player.hasLineOfSight(entity);
+            double d0 = 36.0D;
 
-                if (!flag) {
-                    d0 = 9.0D;
-                }
+            if (!flag) {
+                d0 = 9.0D;
+            }
 
             if (this.player.h(entity) < d0) {
                 ItemStack itemInHand = this.player.inventory.getItemInHand();
@@ -1414,9 +1410,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                         return;
                     }
 
-                    var thing = System.currentTimeMillis();
                     this.player.attack(entity);
-                    System.out.println("=== " + (System.currentTimeMillis() - thing));
 
                     // wuangg start - fix sword blocking desync
                     if (this.player.isBlocking()) {

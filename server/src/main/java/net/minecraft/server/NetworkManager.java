@@ -389,15 +389,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
                 // PandaSpigot start - optimize packets that are not flushed
             };
 
-//            if (!flush) {
-//                // create a LazyRunnable that when executed, calls command.run()
-//                io.netty.util.concurrent.AbstractEventExecutor.LazyRunnable run = command::run;
-//                this.channel.eventLoop().execute(run);
-//            } else {
-//                // if flushing, just schedule like normal
-//                this.channel.eventLoop().execute(command);
-//            }
-
             this.channel.eventLoop().execute(command);
             // PandaSpigot end
         }

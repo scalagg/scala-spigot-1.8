@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Chunk {
 
     private static final Logger c = MinecraftServer.LOGGER;
-    private final ChunkSection[] sections;
+    public ChunkSection[] sections;
     private final byte[] e;
     private final int[] f;
     private final boolean[] g;

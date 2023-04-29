@@ -21,97 +21,94 @@ public class Main {
     public static boolean useConsole = true;
 
     public static void main(String[] args) {
-        if (System.getProperty("jdk.nio.maxCachedBufferSize") == null)
-            System.setProperty("jdk.nio.maxCachedBufferSize", "262144"); // PandaSpigot - cap per-thread NIO cache size
-
         OptionParser parser = new OptionParser() {
             {
                 acceptsAll(asList("?", "help"), "Show the help");
 
                 acceptsAll(asList("c", "config"), "Properties file to use")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("server.properties"))
-                        .describedAs("Properties file");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("server.properties"))
+                    .describedAs("Properties file");
 
                 acceptsAll(asList("P", "plugins"), "Plugin directory to use")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("plugins"))
-                        .describedAs("Plugin directory");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("plugins"))
+                    .describedAs("Plugin directory");
 
                 acceptsAll(asList("h", "host", "server-ip"), "Host to listen on")
-                        .withRequiredArg()
-                        .ofType(String.class)
-                        .describedAs("Hostname or IP");
+                    .withRequiredArg()
+                    .ofType(String.class)
+                    .describedAs("Hostname or IP");
 
                 acceptsAll(asList("W", "world-dir", "universe", "world-container"), "World container")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .describedAs("Directory containing worlds");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .describedAs("Directory containing worlds");
 
                 acceptsAll(asList("w", "world", "level-name"), "World name")
-                        .withRequiredArg()
-                        .ofType(String.class)
-                        .describedAs("World name");
+                    .withRequiredArg()
+                    .ofType(String.class)
+                    .describedAs("World name");
 
                 acceptsAll(asList("p", "port", "server-port"), "Port to listen on")
-                        .withRequiredArg()
-                        .ofType(Integer.class)
-                        .describedAs("Port");
+                    .withRequiredArg()
+                    .ofType(Integer.class)
+                    .describedAs("Port");
 
                 acceptsAll(asList("o", "online-mode"), "Whether to use online authentication")
-                        .withRequiredArg()
-                        .ofType(Boolean.class)
-                        .describedAs("Authentication");
+                    .withRequiredArg()
+                    .ofType(Boolean.class)
+                    .describedAs("Authentication");
 
                 acceptsAll(asList("s", "size", "max-players"), "Maximum amount of players")
-                        .withRequiredArg()
-                        .ofType(Integer.class)
-                        .describedAs("Server size");
+                    .withRequiredArg()
+                    .ofType(Integer.class)
+                    .describedAs("Server size");
 
                 acceptsAll(asList("d", "date-format"), "Format of the date to display in the console (for log entries)")
-                        .withRequiredArg()
-                        .ofType(SimpleDateFormat.class)
-                        .describedAs("Log date format");
+                    .withRequiredArg()
+                    .ofType(SimpleDateFormat.class)
+                    .describedAs("Log date format");
 
                 acceptsAll(asList("log-pattern"), "Specfies the log filename pattern")
-                        .withRequiredArg()
-                        .ofType(String.class)
-                        .defaultsTo("server.log")
-                        .describedAs("Log filename");
+                    .withRequiredArg()
+                    .ofType(String.class)
+                    .defaultsTo("server.log")
+                    .describedAs("Log filename");
 
                 acceptsAll(asList("log-limit"), "Limits the maximum size of the log file (0 = unlimited)")
-                        .withRequiredArg()
-                        .ofType(Integer.class)
-                        .defaultsTo(0)
-                        .describedAs("Max log size");
+                    .withRequiredArg()
+                    .ofType(Integer.class)
+                    .defaultsTo(0)
+                    .describedAs("Max log size");
 
                 acceptsAll(asList("log-count"), "Specified how many log files to cycle through")
-                        .withRequiredArg()
-                        .ofType(Integer.class)
-                        .defaultsTo(1)
-                        .describedAs("Log count");
+                    .withRequiredArg()
+                    .ofType(Integer.class)
+                    .defaultsTo(1)
+                    .describedAs("Log count");
 
                 acceptsAll(asList("log-append"), "Whether to append to the log file")
-                        .withRequiredArg()
-                        .ofType(Boolean.class)
-                        .defaultsTo(true)
-                        .describedAs("Log append");
+                    .withRequiredArg()
+                    .ofType(Boolean.class)
+                    .defaultsTo(true)
+                    .describedAs("Log append");
 
                 acceptsAll(asList("log-strip-color"), "Strips color codes from log file");
 
                 acceptsAll(asList("b", "bukkit-settings"), "File for bukkit settings")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("bukkit.yml"))
-                        .describedAs("Yml file");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("bukkit.yml"))
+                    .describedAs("Yml file");
 
                 acceptsAll(asList("C", "commands-settings"), "File for command settings")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("commands.yml"))
-                        .describedAs("Yml file");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("commands.yml"))
+                    .describedAs("Yml file");
 
                 acceptsAll(asList("nojline"), "Disables jline and emulates the vanilla console");
 
@@ -123,18 +120,18 @@ public class Main {
 
                 // Spigot Start
                 acceptsAll(asList("S", "spigot-settings"), "File for spigot settings")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("spigot.yml"))
-                        .describedAs("Yml file");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("spigot.yml"))
+                    .describedAs("Yml file");
                 // Spigot End
 
                 // PaperSpigot Start
                 acceptsAll(asList("paper", "paper-settings"), "File for paperspigot settings")
-                        .withRequiredArg()
-                        .ofType(File.class)
-                        .defaultsTo(new File("paper.yml"))
-                        .describedAs("Yml file");
+                    .withRequiredArg()
+                    .ofType(File.class)
+                    .defaultsTo(new File("paper.yml"))
+                    .describedAs("Yml file");
                 // PaperSpigot End
             }
         };
@@ -181,30 +178,7 @@ public class Main {
                 System.out.println("Libraries are loading, please wait...");
                 startup = System.nanoTime();
 
-                // PandaSpigot start - Modern tick loop
-                net.minecraft.server.DispenserRegistry.c();
-                OptionSet finalOptions = options;
-
-                net.minecraft.server.DedicatedServer server = MinecraftServer.spin(thread -> {
-                    net.minecraft.server.DedicatedServer dedicatedserver = new net.minecraft.server.DedicatedServer(finalOptions, thread);
-
-                    if (finalOptions.has("port")) {
-                        int port = (Integer) finalOptions.valueOf("port");
-                        if (port > 0) {
-                            dedicatedserver.setPort(port);
-                        }
-                    }
-
-                    if (finalOptions.has("universe")) {
-                        dedicatedserver.universe = (File) finalOptions.valueOf("universe");
-                    }
-
-                    if (finalOptions.has("world")) {
-                        dedicatedserver.setWorld((String) finalOptions.valueOf("world"));
-                    }
-                    return dedicatedserver;
-                });
-                // PandaSpigot end - Modern tick loop
+                MinecraftServer.main(options);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
