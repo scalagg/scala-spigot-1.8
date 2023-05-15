@@ -42,8 +42,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
 
     // CraftBukkit start - Signature changed
     // PandaSpigot start - Modern tick loop
-    public DedicatedServer(joptsimple.OptionSet options) {
-        super(options, Proxy.NO_PROXY, DedicatedServer.a);
+    public DedicatedServer(joptsimple.OptionSet options, Thread serverThread) {
+        super(options, Proxy.NO_PROXY, DedicatedServer.a, serverThread);
         // PandaSpigot end
         // CraftBukkit end
         Thread thread = new Thread("Server Infinisleeper") {

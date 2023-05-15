@@ -743,6 +743,23 @@ public abstract class EntityLiving extends Entity {
                     if (ScalaSpigot.INSTANCE.getConfig().getFixNoDamageTicks()) {
                         return false;
                     }
+                    // This
+                    if (f <= this.lastDamage) {
+                        this.forceExplosionKnockback = true; // CraftBukkit - SPIGOT-949 - for vanilla consistency, cooldown does not prevent explosion knockback
+                        return false;
+                    }
+
+                    // CraftBukkit start
+                    if (!this.d(damagesource, f - this.lastDamage)) {
+                        return false;
+                    }
+                    // CraftBukkit end
+                    this.lastDamage = f;
+                    flag = false;
+
+
+                    // Manny look into this shit
+                    return false;
                 } else {
                     // CraftBukkit start
                     float previousHealth = this.getHealth();
