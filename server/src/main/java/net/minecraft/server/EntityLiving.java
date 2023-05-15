@@ -756,10 +756,6 @@ public abstract class EntityLiving extends Entity {
                     // CraftBukkit end
                     this.lastDamage = f;
                     flag = false;
-
-
-                    // Manny look into this shit
-                    return false;
                 } else {
                     // CraftBukkit start
                     float previousHealth = this.getHealth();
