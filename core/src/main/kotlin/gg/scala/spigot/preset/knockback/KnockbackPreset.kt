@@ -13,6 +13,6 @@ open class KnockbackPreset(
     var autoWTap: Boolean = false,
     var fixWTap: Boolean = false,
     var distanceCheck: Boolean = true,
-    var rodHorizontal: Double = 1.0,
-    var rodVertical: Double = 1.0,
+    var rodHorizontalMultiplier: Double = 1.0,
+    var rodVerticalMultiplier: Double = 1.0,
 )
