@@ -943,14 +943,18 @@ public abstract class EntityLiving extends Entity {
             this.motY += preset.getVertical();
             this.motZ -= d1 / magnitude * preset.getHorizontal();
 
-            System.out.println(damageSource.getClass().getName());
-            if (damageSource instanceof EntityDamageSourceIndirect sourceIndirect) {
-                System.out.println(sourceIndirect.getEntity().getClass().getName());
-                if (sourceIndirect.getEntity() instanceof EntityFishingHook) {
-                    this.motX *= preset.getRodHorizontalMultiplier();
-                    this.motY *= preset.getRodVerticalMultiplier();
-                    this.motZ *= preset.getRodHorizontalMultiplier();
-                    System.out.println("done");
+            if (damageSource instanceof EntityDamageSourceIndirect) {
+                final EntityDamageSourceIndirect sourceIndirect = (EntityDamageSourceIndirect) damageSource;
+
+                if (sourceIndirect.getProximateDamageSource() instanceof EntityFishingHook) {
+                    if (preset.getRodHorizontalMultiplier() != 0) {
+                        this.motX *= preset.getRodHorizontalMultiplier();
+                        this.motZ *= preset.getRodHorizontalMultiplier();
+                    }
+
+                    if (preset.getRodVerticalMultiplier() != 0) {
+                        this.motY *= preset.getRodVerticalMultiplier();
+                    }
                 }
             }
 
