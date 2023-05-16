@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -246,15 +247,16 @@ public class EntityTracker {
     }
 
     public void a(EntityPlayer entityplayer, Chunk chunk) {
-        Iterator iterator = this.c.iterator();
+        for (List<Entity> slice : chunk.entitySlices) { // Manny - Optimize entity tracker
+            for (Entity entity : slice) {
+                if (entity != entityplayer) {
+                    EntityTrackerEntry entry = trackedEntities.get(entity.getId());
 
-        while (iterator.hasNext()) {
-            EntityTrackerEntry entitytrackerentry = (EntityTrackerEntry) iterator.next();
-
-            if (entitytrackerentry.tracker != entityplayer && entitytrackerentry.tracker.ae == chunk.locX && entitytrackerentry.tracker.ag == chunk.locZ) {
-                entitytrackerentry.updatePlayer(entityplayer);
+                    if (entry != null) {
+                        entry.updatePlayer(entityplayer);
+                    }
+                }
             }
         }
-
     }
 }

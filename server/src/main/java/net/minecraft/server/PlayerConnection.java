@@ -414,7 +414,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                         return;
                     }
 
-                    float f4 = 0.0625F;
+                    double f4 = 9.999999747378752E-6D;
                     boolean flag = worldserver.getCubes(this.player, this.player.getBoundingBox().shrink((double) f4, (double) f4, (double) f4)).isEmpty();
 
                     if (this.player.onGround && !packetplayinflying.f() && d12 > 0.0D) {

@@ -2893,8 +2893,8 @@ public abstract class World implements IBlockAccess {
         double d4 = -1.0D;
         EntityHuman entityhuman = null;
 
-        for (int i = 0; i < this.players.size(); ++i) {
-            EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
+        for (Object o : a(EntityHuman.class, AxisAlignedBB.a(d0 - d3, d1 - d3, d2 - d3, d0 + d3, d1 + d3, d2 + d3))) {
+            EntityHuman entityhuman1 = (EntityHuman) o;
             // CraftBukkit start - Fixed an NPE
             if (entityhuman1 == null || entityhuman1.dead || !entityhuman1.affectsSpawning) {
                 continue;

@@ -15,6 +15,7 @@ import net.minecraft.server.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 // CraftBukkit end
@@ -276,10 +277,30 @@ public class EntityArrow extends Entity implements IProjectile {
                                 entityliving.o(entityliving.bv() + 1);
                             }
 
-                            if (this.knockbackStrength > 0) {
-                                f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
-                                if (f3 > 0.0F) {
-                                    movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3);
+                            if (movingobjectposition.entity instanceof EntityPlayer && this.shooter != null && this.shooter != movingobjectposition.entity) {
+                                EntityPlayer hookedPlayer = (EntityPlayer) movingobjectposition.entity;
+                                var preset = hookedPlayer.getKnockbackPreset();
+                                Vector vector = new Vector(this.motX, this.motY, this.motZ).normalize();
+
+                                double d8 = vector.getX() / 1.6D * preset.getBowHorizontalMultiplier();
+                                double d9 = 0.36D * preset.getBowVerticalMultiplier();
+                                double d10 = vector.getZ() / 1.6D * preset.getBowHorizontalMultiplier();
+
+                                if (this.knockbackStrength > 0) {
+                                    d8 *= (this.knockbackStrength + 1);
+                                    d10 *= (this.knockbackStrength + 1);
+                                }
+                                hookedPlayer.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(hookedPlayer.getId(), d8, d9, d10));
+                                hookedPlayer.velocityChanged = false;
+                                hookedPlayer.motX = d8;
+                                hookedPlayer.motY = d9;
+                                hookedPlayer.motZ = d10;
+                            } else {
+                                if (this.knockbackStrength > 0) {
+                                    f3 = (float) gg.scala.spigot.util.MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                                    if (f3 > 0.0F) {
+                                        movingobjectposition.entity.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f3);
+                                    }
                                 }
                             }
 

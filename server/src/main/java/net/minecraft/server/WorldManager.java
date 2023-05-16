@@ -69,7 +69,7 @@ public class WorldManager implements IWorldAccess {
     }
 
     public void b(int i, BlockPosition blockposition, int j) {
-        Iterator iterator = this.a.getPlayerList().v().iterator();
+        Iterator iterator = this.world.players.iterator();
 
         // CraftBukkit start
         EntityHuman entityhuman = null;
@@ -80,7 +80,7 @@ public class WorldManager implements IWorldAccess {
         while (iterator.hasNext()) {
             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
 
-            if (entityplayer != null && entityplayer.world == this.world && entityplayer.getId() != i) {
+            if (entityplayer != null  && entityplayer.getId() != i) {
                 double d0 = (double) blockposition.getX() - entityplayer.locX;
                 double d1 = (double) blockposition.getY() - entityplayer.locY;
                 double d2 = (double) blockposition.getZ() - entityplayer.locZ;

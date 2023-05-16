@@ -15,4 +15,6 @@ open class KnockbackPreset(
     var distanceCheck: Boolean = true,
     var rodHorizontalMultiplier: Double = 1.0,
     var rodVerticalMultiplier: Double = 1.0,
+    var bowHorizontalMultiplier: Double = 0.8,
+    var bowVerticalMultiplier: Double = 0.95,
 )
