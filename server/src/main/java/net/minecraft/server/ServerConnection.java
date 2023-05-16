@@ -16,6 +16,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.incubator.channel.uring.IOUringEventLoopGroup;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,7 @@ public class ServerConnection {
         EPOLL,
         KQUEUE,
         NIO,
+        IO_URING,
         DEFAULT
     }
 
@@ -58,6 +60,18 @@ public class ServerConnection {
             return this.a();
         }
     };
+
+    // PandaSpigot start - Add support for io_uring
+    public static final LazyInitVar<io.netty.incubator.channel.uring.IOUringEventLoopGroup> SERVER_IO_URING_EVENT_GROUP = new LazyInitVar<io.netty.incubator.channel.uring.IOUringEventLoopGroup>() {
+        private io.netty.incubator.channel.uring.IOUringEventLoopGroup a() {
+            return new io.netty.incubator.channel.uring.IOUringEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty io_uring Server IO #%d").setDaemon(true).build());
+        }
+
+        protected io.netty.incubator.channel.uring.IOUringEventLoopGroup init() {
+            return this.a();
+        }
+    };
+    // PandaSpigot end - Add support for io_uring
     public static final LazyInitVar<LocalEventLoopGroup> c = new LazyInitVar() {
         private LocalEventLoopGroup a() {
             return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
@@ -120,6 +134,18 @@ public class ServerConnection {
                 default:
                 case DEFAULT: {
                     MinecraftServer.LOGGER.info("[binder] Finding best event group type using fall-through.");
+                }
+                case IO_URING: {
+                    if (io.netty.incubator.channel.uring.IOUring.isAvailable() && ScalaSpigot.INSTANCE.getConfig().getExperimentalIoUring()) {
+                        boss = new IOUringEventLoopGroup(0);
+                        worker = new IOUringEventLoopGroup(workerThreadCount);
+
+                        channel = io.netty.incubator.channel.uring.IOUringServerSocketChannel.class;
+
+                        MinecraftServer.LOGGER.info("[binder] Using io_uring, best of fall-through.");
+
+                        break;
+                    }
                 }
                 case EPOLL: {
                     if (Epoll.isAvailable() && !ScalaSpigot.INSTANCE.getConfig().getForceNioTransport()) {
