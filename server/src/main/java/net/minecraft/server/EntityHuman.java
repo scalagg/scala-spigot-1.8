@@ -1002,7 +1002,16 @@ public abstract class EntityHuman extends EntityLiving {
                 boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
 
                 if (flag && f > 0.0F) {
-                    f *= 1.5F;
+                    var canConfigure = true;
+                    if (this instanceof EntityPlayer entityPlayer) {
+                        PlayerCriticalHitEvent critEvent = new PlayerCriticalHitEvent(entityPlayer.getBukkitEntity());
+                        org.bukkit.Bukkit.getPluginManager().callEvent(critEvent);
+                        canConfigure = !critEvent.isCancelled();
+                    }
+
+                    if (canConfigure) {
+                        f *= 1.5F;
+                    }
                 }
 
                 f += f1;
