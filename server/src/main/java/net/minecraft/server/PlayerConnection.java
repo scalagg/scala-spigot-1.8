@@ -75,11 +75,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
     private boolean processedDisconnect;
     public Runnable playerJoinReady; // Paper
 
-    // ScalaSpigot Start - Running and eating
-    private boolean expectingStartPlace;
-    private int ticksSinceExpectedStart;
-    // ScalaSpigot End
-
     public PlayerConnection(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
         this.minecraftServer = minecraftserver;
         this.networkManager = networkmanager;
@@ -203,23 +198,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
 
     public void a(PacketPlayInFlying packetplayinflying) {
         PlayerConnectionUtils.ensureMainThread(packetplayinflying, this, this.player.u());
-
-        // ScalaSpigot Start - Running and eating
-        if (this.expectingStartPlace) {
-            ++this.ticksSinceExpectedStart;
-
-            if (this.ticksSinceExpectedStart > 3) {
-                this.expectingStartPlace = false;
-
-                PlayerRunAndEatAttemptEvent event = new PlayerRunAndEatAttemptEvent(player.getBukkitEntity());
-                Bukkit.getPluginManager().callEvent(event);
-
-                if (!event.isCancelled() && this.player.bS()) {
-                    this.player.bU();
-                }
-            }
-        }
-        // ScalaSpigot End
 
         if (this.b(packetplayinflying)) {
             this.disconnect("Invalid move packet received");
@@ -715,10 +693,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                 return;
             }
 
-            if (this.expectingStartPlace) {
-                this.expectingStartPlace = false;
-            }
-
             int itemstackAmount = itemstack.count;
 
             if (!throttled) {
@@ -897,17 +871,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         } else if (packet instanceof PacketPlayOutSpawnPosition) {
             PacketPlayOutSpawnPosition packet6 = (PacketPlayOutSpawnPosition) packet;
             this.player.compassTarget = new Location(this.getPlayer().getWorld(), packet6.position.getX(), packet6.position.getY(), packet6.position.getZ());
-        }
-
-        // ScalaSpigot Start - Running and eating
-        if (packet instanceof PacketPlayOutSetSlot) {
-            PacketPlayOutSetSlot setSlotPacket = (PacketPlayOutSetSlot) packet;
-
-            if (setSlotPacket.b >= 36 && setSlotPacket.b <= 44 && setSlotPacket.a == 0 && setSlotPacket.c != null && setSlotPacket.c.getItem() instanceof ItemFood) {
-                this.sendPacket(new PacketPlayOutTransaction(0, (short) 32767, false));
-            }
-        } else if (packet instanceof PacketPlayOutOpenWindow) {
-            this.sendPacket(new PacketPlayOutTransaction(0, (short) 32767, false));
         }
 
         try {
@@ -1887,22 +1850,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
         }
 
         PlayerConnectionUtils.ensureMainThread(packetplayintransaction, this, this.player.u());
-
-        // ScalaSpigot Start - Running and eating
-        if (packetplayintransaction.a() == 0) {
-            if (packetplayintransaction.b() == 32767) {
-                this.expectingStartPlace = true;
-                this.ticksSinceExpectedStart = 0;
-            } else if (packetplayintransaction.b() == 32766 && this.player.bS()) {
-                PlayerRunAndEatAttemptEvent event = new PlayerRunAndEatAttemptEvent(player.getBukkitEntity());
-                Bukkit.getPluginManager().callEvent(event);
-
-                if (!event.isCancelled()) {
-                    this.player.bU();
-                }
-            }
-        }
-        // ScalaSpigot End
 
         Short s = this.n.get(this.player.activeContainer.windowId);
 
