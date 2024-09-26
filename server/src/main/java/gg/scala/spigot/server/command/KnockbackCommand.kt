@@ -169,7 +169,25 @@ class KnockbackCommand : BukkitCommand("knockback")
                     {
                         val value = args[3]
                         field.isAccessible = true
-                        field.set(existing, value.toDouble())
+
+                        when (field.type) {
+                            Double::class.java -> {
+                                field.set(existing, value.toDouble())
+                            }
+                            Int::class.java -> {
+                                field.set(existing, value.toInt())
+                            }
+                            Boolean::class.java -> {
+                                field.set(existing, value.equals("true", ignoreCase = true))
+                            }
+                            String::class.java -> {
+                                field.set(existing, value)
+                            }
+                            else -> {
+                                sender.sendMessage("${ChatColor.RED}Unsupported field type: ${field.type.simpleName}")
+                                return true
+                            }
+                        }
 
                         sender.sendMessage("${ChatColor.GREEN}Updated field ${ChatColor.WHITE}${field.name}${ChatColor.GREEN} to ${ChatColor.WHITE}${value}${ChatColor.GREEN} for preset ${ChatColor.YELLOW}${args[1]}${ChatColor.GREEN}.")
 

@@ -166,9 +166,24 @@ class PotionCommand : BukkitCommand("potion")
                     {
                         val value = args[3]
                         field.isAccessible = true
-                        field.set(existing, value.toFloat())
 
-                        sender.sendMessage("set to $value")
+                        when (field.type) {
+                            Float::class.java -> {
+                                field.set(existing, value.toFloat())
+                            }
+                            Double::class.java -> {
+                                field.set(existing, value.toDouble())
+                            }
+                            Int::class.java -> {
+                                field.set(existing, value.toInt())
+                            }
+                            else -> {
+                                sender.sendMessage("Unsupported field type: ${field.type.simpleName}")
+                                return true
+                            }
+                        }
+
+                        sender.sendMessage("Successfully updated field ${field.name} to $value for preset ${args[1]}.")
 
                         ScalaSpigot.saveConfig(Bukkit.getWorldContainer())
                     } catch (exception: Exception)
