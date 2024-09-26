@@ -72,7 +72,7 @@ public class EntityEnderPearl extends EntityProjectile {
 
                     // ScalaSpigot Start - Fix an issue with
                     // the player not landing on the ground, instead of going into the air.
-                    location.setY((int) location.getY());
+                    location.setY(location.getBlockY());
                     // ScalaSpigot End
 
                     PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
