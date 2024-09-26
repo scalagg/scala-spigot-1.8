@@ -992,10 +992,6 @@ public abstract class EntityHuman extends EntityLiving {
 
             final KnockbackPreset preset = getKnockbackPreset();
 
-//            if (!this.isSprinting() && previousSprintStatus && preset.getExtraHorizontal() > 0.0) { //WTAP FIX?
-//                i += preset.getExtraHorizontal();
-//            }
-
             this.previousSprintStatus = this.isSprinting();
 
             if (f > 0.0F || f1 > 0.0F) {
@@ -1048,17 +1044,6 @@ public abstract class EntityHuman extends EntityLiving {
                         );
                         this.setApplyingSprintKnockback(false);
 
-                        // Fix Random Decrease in Entity Motion
-                        var extraHorz = preset.getExtraHorizontal();
-
-                        if (preset.getFixWTap()) {
-                            if (entity.motX < extraHorz && entity.motZ < extraHorz && entity.motY < preset.getExtraVertical()) {
-
-                                entity.motX += extraHorz;
-                                entity.motZ += extraHorz;
-                                entity.motY += preset.getExtraVertical();
-                            }
-                        }
                     }
 
                     this.motX *= preset.getSlowdown();

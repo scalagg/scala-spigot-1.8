@@ -99,6 +99,7 @@ object PotionHandler : PresetHandler<PotionPreset>()
                         ""
                     ),
                     offset = -20F,
+                    splashTick = 5,
                     speed = 0.5F,
                     distance = 0.05F,
                     hitbox = 1.0F

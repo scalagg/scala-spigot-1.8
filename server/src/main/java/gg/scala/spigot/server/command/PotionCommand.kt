@@ -55,6 +55,7 @@ class PotionCommand : BukkitCommand("potion")
                         id = "default",
                         details = listOf(""),
                         offset = -20F,
+                        splashTick = 5,
                         speed = 0.5F,
                         distance = 0.05F,
                         hitbox = 1.0F
@@ -155,7 +156,6 @@ class PotionCommand : BukkitCommand("potion")
 
                     if (field == null)
                     {
-                        sender.sendMessage("invailid fucker")
                         sender.sendMessage("valid: ")
                         sender.sendMessage(PotionPreset::class.java.declaredFields.joinToString(separator = ", ") {it.name}
                         )

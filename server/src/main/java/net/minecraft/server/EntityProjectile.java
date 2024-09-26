@@ -134,7 +134,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity1 = (Entity) list.get(i);
 
-                    if (entity1.ad() && (entity1 != entityliving || this.ar >= 5)) {
+                    if (entity1.ad() && (entity1 != entityliving || this.ar >= preset.getSplashTick())) {
                         float f = 0.30F;
                         AxisAlignedBB axisalignedbb = entity1.getBoundingBox().grow(f, f, f);
                         MovingObjectPosition movingobjectposition1 = axisalignedbb.a(vec3d, vec3d1);

@@ -11,7 +11,6 @@ open class KnockbackPreset(
     var extraVertical: Double,
     var slowdown: Double = 0.6,
     var autoWTap: Boolean = false,
-    var fixWTap: Boolean = false,
     var distanceCheck: Boolean = true,
     var rodHorizontalMultiplier: Double = 1.0,
     var rodVerticalMultiplier: Double = 1.0,
