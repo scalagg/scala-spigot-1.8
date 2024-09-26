@@ -167,6 +167,11 @@ class PotionCommand : BukkitCommand("potion")
                         val value = args[3]
                         field.isAccessible = true
 
+                        if (field.name == "splashTick" && value.toInt() > 5 || value.toInt() < 1) {
+                            sender.sendMessage("${ChatColor.RED}You cannot have a ${ChatColor.WHITE}Splash Tick Rate ${ChatColor.RED}higher than 5 or lower than 1.")
+                            return true
+                        }
+
                         when (field.type) {
                             Float::class.java -> {
                                 field.set(existing, value.toFloat())
