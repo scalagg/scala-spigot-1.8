@@ -30,7 +30,7 @@ dependencies {
     implementation "com.github.chhh:javolution-core-java-msftbx:6.11.8"
 
     implementation "com.eatthepath:fast-uuid:0.2.0"
-    implementation "it.unimi.dsi:fastutil:8.5.8"
+    implementation "it.unimi.dsi:fastutil:8.5.9"
 
     implementation "io.netty:netty-all:4.1.92.Final"
 
