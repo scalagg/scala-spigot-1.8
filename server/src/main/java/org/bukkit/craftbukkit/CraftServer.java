@@ -1342,7 +1342,7 @@ public final class CraftServer implements Server {
             // Spigot Start
             GameProfile profile = null;
             // Only fetch an online UUID in online mode
-            if (MinecraftServer.getServer().getOnlineMode() || org.spigotmc.SpigotConfig.bungee) {
+            if ( ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode() ) { // PandaSpigot - Handle via setting
                 profile = MinecraftServer.getServer().getUserCache().getProfile(name);
             }
             // Spigot end
@@ -1768,6 +1768,27 @@ public final class CraftServer implements Server {
     public UnsafeValues getUnsafe() {
         return CraftMagicNumbers.INSTANCE;
     }
+
+    // PandaSpigot start - PlayerProfile API
+    @Override
+    public com.destroystokyo.paper.profile.PlayerProfile createProfile(UUID uuid) {
+        return createProfile(uuid, null);
+    }
+
+    @Override
+    public com.destroystokyo.paper.profile.PlayerProfile createProfile(String name) {
+        return createProfile(null, name);
+    }
+
+    @Override
+    public com.destroystokyo.paper.profile.PlayerProfile createProfile(UUID uuid, String name) {
+        Player player = uuid != null ? Bukkit.getPlayer(uuid) : (name != null ? Bukkit.getPlayerExact(name) : null);
+        if (player != null) {
+            return new com.destroystokyo.paper.profile.CraftPlayerProfile((CraftPlayer)player);
+        }
+        return new com.destroystokyo.paper.profile.CraftPlayerProfile(uuid, name);
+    }
+    // PandaSpigot end
 
     private final Spigot spigot = new Spigot() {
 

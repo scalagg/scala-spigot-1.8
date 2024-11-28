@@ -71,8 +71,11 @@ public class UserCache {
             }
         };
 
-        minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
-        if (!minecraftserver.getOnlineMode() && agameprofile[0] == null) {
+        // PandaSpigot start - Handle via setting
+        if (ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode()) {
+            minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
+        } else if (agameprofile[0] == null) {
+            // PandaSpigot end
             UUID uuid = EntityHuman.a(new GameProfile(null, s));
             GameProfile gameprofile = new GameProfile(uuid, s);
 
@@ -81,6 +84,8 @@ public class UserCache {
 
         return agameprofile[0];
     }
+
+    public void saveProfile(GameProfile gameprofile) { this.a(gameprofile); } // PandaSpigot - OBFHELPER
 
     public void a(GameProfile gameprofile) {
         this.a(gameprofile, null);
@@ -141,12 +146,20 @@ public class UserCache {
         return usercache_usercacheentry == null ? null : usercache_usercacheentry.a();
     }
 
+    // PandaSpigot start
+    public GameProfile getProfileIfCached(String name) {
+        UserCache.UserCacheEntry entry = this.c.get(name.toLowerCase(Locale.ROOT));
+        return entry == null ? null : entry.b;
+    }
+    // PandaSpigot end
+
     public String[] a() {
         ArrayList arraylist = Lists.newArrayList(this.c.keySet());
 
         return (String[]) arraylist.toArray(new String[arraylist.size()]);
     }
 
+    public GameProfile getProfile(UUID uuid) { return this.a(uuid); } // PandaSpigot - OBFHELPER
     public GameProfile a(UUID uuid) {
         net.minecraft.server.UserCache.UserCacheEntry usercache_usercacheentry = (net.minecraft.server.UserCache.UserCacheEntry) this.d.get(uuid);
 

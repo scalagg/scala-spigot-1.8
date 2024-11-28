@@ -1344,6 +1344,8 @@ public abstract class MinecraftServer extends ReentrantIAsyncHandler<TasksPerTic
         return true;
     }
 
+    public MinecraftSessionService getMinecraftSessionService() { return this.aD(); } // PandaSpigot - OBFHELPER
+
     public MinecraftSessionService aD() {
         return this.W;
     }

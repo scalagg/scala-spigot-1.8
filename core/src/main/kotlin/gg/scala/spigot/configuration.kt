@@ -139,6 +139,14 @@ data class ScalaSpigotConfig(
 
     @TomlComment(
         """
+            Instructs the server how to handle player UUIDs and data when behind a proxy.
+              * Set to match your proxy's online-mode setting.
+        """
+    )
+    val proxyOnlineMode: Boolean = true,
+
+    @TomlComment(
+        """
             User authenticator thread-pool settings:
              * Should keep default.
         """

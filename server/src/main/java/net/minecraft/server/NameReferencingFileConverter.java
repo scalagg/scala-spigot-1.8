@@ -10,6 +10,7 @@ import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
+import gg.scala.spigot.ScalaSpigot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.github.paperspigot.exception.ServerInternalException;
@@ -56,7 +57,7 @@ public class NameReferencingFileConverter {
             }
         }), String.class);
 
-        if (minecraftserver.getOnlineMode() || org.spigotmc.SpigotConfig.bungee) { // Spigot: bungee = online mode, for now.
+        if (ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode()) { // Spigot: bungee = online mode, for now. // PandaSpigot - Handle via setting
             minecraftserver.getGameProfileRepository().findProfilesByNames(astring, Agent.MINECRAFT, profilelookupcallback);
         } else {
             String[] astring1 = astring;

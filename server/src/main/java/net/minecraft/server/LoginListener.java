@@ -272,8 +272,16 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
             UUID uniqueId = i.getId();
             final org.bukkit.craftbukkit.CraftServer server = net.minecraft.server.LoginListener.this.server.server;
 
-            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
+            // PandaSpigot start - Ability to change PlayerProfile in AsyncPreLoginEvent
+            com.destroystokyo.paper.profile.PlayerProfile profile = com.destroystokyo.paper.profile.CraftPlayerProfile.asBukkitCopy(i);
+            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId, profile);
             server.getPluginManager().callEvent(asyncEvent);
+            profile = asyncEvent.getPlayerProfile();
+            profile.complete();
+            i = com.destroystokyo.paper.profile.CraftPlayerProfile.asAuthlib(profile);
+            playerName = i.getName();
+            uniqueId = i.getId();
+            // PandaSpigot end
 
             if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
                 final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
