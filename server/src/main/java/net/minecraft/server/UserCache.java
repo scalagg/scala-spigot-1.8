@@ -71,8 +71,11 @@ public class UserCache {
             }
         };
 
-        minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
-        if (!minecraftserver.getOnlineMode() && agameprofile[0] == null) {
+        // PandaSpigot start - Handle via setting
+        if (ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode()) {
+            minecraftserver.getGameProfileRepository().findProfilesByNames(new String[] { s}, Agent.MINECRAFT, profilelookupcallback);
+        } else if (agameprofile[0] == null) {
+            // PandaSpigot end
             UUID uuid = EntityHuman.a(new GameProfile(null, s));
             GameProfile gameprofile = new GameProfile(uuid, s);
 

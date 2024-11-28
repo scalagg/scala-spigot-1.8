@@ -136,6 +136,14 @@ public class CraftPlayerProfile implements PlayerProfile {
     @Override
     public boolean completeFromCache() {
         MinecraftServer server = MinecraftServer.getServer();
+        /**
+         *    -= EDITORIAL NOTE =-
+         *
+         *    The line below this used to be:
+         *    return completeFromCache(false, server.getOnlineMode() || SpigotConfig.bungee);
+         *    However I had forgotten to unselect this whenever committing the PlayerProfile API backports.
+         *    So keep in mind that this was supposed to be committed alongside "feat: add setting for proxy online mode status"
+         */
         return completeFromCache(false, ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode());
     }
 
@@ -175,6 +183,14 @@ public class CraftPlayerProfile implements PlayerProfile {
 
     public boolean complete(boolean textures) {
         MinecraftServer server = MinecraftServer.getServer();
+        /**
+         *    -= EDITORIAL NOTE =-
+         *
+         *    The line below this used to be:
+         *    return complete(textures, server.getOnlineMode() || SpigotConfig.bungee);
+         *    However I had forgotten to unselect this whenever committing the PlayerProfile API backports.
+         *    So keep in mind that this was supposed to be committed alongside "feat: add setting for proxy online mode status"
+         */
         return complete(textures, ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode());
     }
 

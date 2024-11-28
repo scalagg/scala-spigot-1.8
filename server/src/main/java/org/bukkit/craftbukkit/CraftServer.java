@@ -1342,7 +1342,7 @@ public final class CraftServer implements Server {
             // Spigot Start
             GameProfile profile = null;
             // Only fetch an online UUID in online mode
-            if (MinecraftServer.getServer().getOnlineMode() || org.spigotmc.SpigotConfig.bungee) {
+            if ( ScalaSpigot.INSTANCE.getConfig().getProxyOnlineMode() ) { // PandaSpigot - Handle via setting
                 profile = MinecraftServer.getServer().getUserCache().getProfile(name);
             }
             // Spigot end
