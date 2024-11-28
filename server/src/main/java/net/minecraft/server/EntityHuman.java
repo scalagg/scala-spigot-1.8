@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public abstract class EntityHuman extends EntityLiving {
 
-    private final GameProfile bH;
+    private GameProfile bH; public final void setProfile(final GameProfile profile) { this.bH = profile; } // PandaSpigot - OBFHELPER
     public PlayerInventory inventory = new PlayerInventory(this);
     public Container defaultContainer;
     public Container activeContainer;
